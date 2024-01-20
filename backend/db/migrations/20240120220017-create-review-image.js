@@ -9,7 +9,7 @@ if (process.env.NODE_ENV === "production") {
 module.exports = {
     async up(queryInterface, Sequelize) {
         await queryInterface.createTable(
-            "Bookings",
+            "ReviewImages",
             {
                 id: {
                     allowNull: false,
@@ -17,40 +17,27 @@ module.exports = {
                     primaryKey: true,
                     type: Sequelize.INTEGER,
                 },
-                spotId: {
+                reviewId: {
                     type: Sequelize.INTEGER,
                     allowNull: false,
                     references: {
-                        model: "Spots",
+                        model: "Reviews",
                         key: "id",
                     },
                     onDelete: "CASCADE",
                 },
-                userId: {
-                    type: Sequelize.INTEGER,
-                    allowNull: false,
-                    references: {
-                        model: "Users",
-                        key: "id",
-                    },
-                    onDelete: "CASCADE",
-                },
-                startDate: {
-                    type: Sequelize.DATE,
-                    allowNull: false,
-                },
-                endDate: {
-                    type: Sequelize.DATE,
+                url: {
+                    type: Sequelize.STRING,
                     allowNull: false,
                 },
                 createdAt: {
-                    type: Sequelize.DATE,
                     allowNull: false,
+                    type: Sequelize.DATE,
                     defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
                 },
                 updatedAt: {
-                    type: Sequelize.DATE,
                     allowNull: false,
+                    type: Sequelize.DATE,
                     defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
                 },
             },
@@ -58,7 +45,7 @@ module.exports = {
         );
     },
     async down(queryInterface, Sequelize) {
-        options.tableName = "Bookings";
-        await queryInterface.dropTable("Bookings");
+        options.tableName = "ReviewImages";
+        await queryInterface.dropTable("ReviewImages");
     },
 };

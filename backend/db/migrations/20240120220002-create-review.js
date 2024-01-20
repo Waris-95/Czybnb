@@ -9,7 +9,7 @@ if (process.env.NODE_ENV === "production") {
 module.exports = {
     async up(queryInterface, Sequelize) {
         await queryInterface.createTable(
-            "Bookings",
+            "Reviews",
             {
                 id: {
                     allowNull: false,
@@ -35,22 +35,22 @@ module.exports = {
                     },
                     onDelete: "CASCADE",
                 },
-                startDate: {
-                    type: Sequelize.DATE,
+                review: {
+                    type: Sequelize.STRING,
                     allowNull: false,
                 },
-                endDate: {
-                    type: Sequelize.DATE,
+                stars: {
+                    type: Sequelize.INTEGER,
                     allowNull: false,
                 },
                 createdAt: {
-                    type: Sequelize.DATE,
                     allowNull: false,
+                    type: Sequelize.DATE,
                     defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
                 },
                 updatedAt: {
-                    type: Sequelize.DATE,
                     allowNull: false,
+                    type: Sequelize.DATE,
                     defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
                 },
             },
@@ -58,7 +58,7 @@ module.exports = {
         );
     },
     async down(queryInterface, Sequelize) {
-        options.tableName = "Bookings";
-        await queryInterface.dropTable("Bookings");
+        options.tableName = "Reviews";
+        await queryInterface.dropTable("Reviews");
     },
 };
