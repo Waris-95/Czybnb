@@ -1,7 +1,7 @@
 // backend/routes/api/session.js
 const express = require('express');
 const { Op } = require('sequelize');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
