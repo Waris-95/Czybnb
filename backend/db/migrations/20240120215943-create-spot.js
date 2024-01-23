@@ -9,7 +9,7 @@ if (process.env.NODE_ENV === "production") {
 module.exports = {
     async up(queryInterface, Sequelize) {
         await queryInterface.createTable(
-            "SpotImages",
+            "Spots",
             {
                 id: {
                     allowNull: false,
@@ -17,21 +17,47 @@ module.exports = {
                     primaryKey: true,
                     type: Sequelize.INTEGER,
                 },
-                spotId: {
+                ownerId: {
                     type: Sequelize.INTEGER,
                     allowNull: false,
                     references: {
-                        model: "Spots",
+                        model: "Users",
                         key: "id",
                     },
                     onDelete: "CASCADE",
                 },
-                url: {
+                address: {
                     type: Sequelize.STRING,
                     allowNull: false,
                 },
-                preview: {
-                    type: Sequelize.BOOLEAN,
+                city: {
+                    type: Sequelize.STRING,
+                    allowNull: false,
+                },
+                state: {
+                    type: Sequelize.STRING,
+                },
+                country: {
+                    type: Sequelize.STRING,
+                    allowNull: false,
+                },
+                lat: {
+                    type: Sequelize.DECIMAL,
+                },
+                lng: {
+                    type: Sequelize.DECIMAL,
+                },
+                name: {
+                    type: Sequelize.STRING,
+                    allowNull: false,
+                    unique: true,
+                },
+                description: {
+                    type: Sequelize.STRING,
+                    allowNull: false,
+                },
+                price: {
+                    type: Sequelize.DECIMAL,
                     allowNull: false,
                 },
                 createdAt: {
@@ -49,7 +75,7 @@ module.exports = {
         );
     },
     async down(queryInterface, Sequelize) {
-        options.tableName = "SpotImages";
-        await queryInterface.dropTable("SpotImages");
+        options.tableName = "Spots";
+        await queryInterface.dropTable("Spots");
     },
 };
