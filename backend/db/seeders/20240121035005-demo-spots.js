@@ -75,10 +75,10 @@ module.exports = {
             {
                 name: {
                     [Op.in]: [
-                        "Cozy Home",
-                        "Other Place",
-                        "This One",
-                        "The Den",
+                        "New Home",
+                        "Mountain Retreate",
+                        "Lakeside Haven",
+                        "Tech Oasis",
                     ],
                 },
             },
