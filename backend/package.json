@@ -72,7 +72,6 @@
     "moment-timezone": "^0.5.44",
     "morgan": "^1.10.0",
     "ms": "^2.0.0",
-    "mysql2": "^3.8.0",
     "negotiator": "^0.6.3",
     "object-assign": "^4.1.1",
     "object-inspect": "^1.13.1",
