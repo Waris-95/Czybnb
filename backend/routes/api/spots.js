@@ -5,6 +5,8 @@ const { User,Spot,SpotImage,Review,sequelize, } = require('../../db/models');
 const router = express.Router();
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
+
+
 router.get('/', async (req, res) => {
   try {
     const spots = await Spot.findAll({
