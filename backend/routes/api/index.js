@@ -4,6 +4,7 @@ const sessionRouter = require('./session.js');
 const usersRouter = require('./users.js');
 const { restoreUser } = require("../../utils/auth.js");
 const spotsRouter = require('./spots.js');
+const spotsImageRouter = require('./spot-images.js');
 
 
 // Connect restoreUser middleware to the API router
@@ -11,6 +12,8 @@ const spotsRouter = require('./spots.js');
   // If current user session is not valid, set req.user to null
 
 router.use(restoreUser);
+
+router.use('/spot-images', spotsImageRouter);
 
   router.use('/spots', spotsRouter);
 
