@@ -208,6 +208,46 @@ router.get('/:spotId', async (req, res) => {
   }
 });
 
+// Add an image to a spot based on spot id
+router.post('/api/reviews/:reviewId/images', requireAuth, async (req, res) => {
+    try {
+      const spotId = req.params.spotId;
+      const userId = req.user.id;
+      const { url, preview } = req.body;
+  
+      // Check if the spot exists and belongs to the current user
+      const spot = await Spot.findOne({
+        where: {
+          id: spotId,
+          ownerId: userId,
+        },
+      });
+  
+      if (!spot) {
+        return res.status(404).json({ message: "Spot couldn't be found" });
+      }
+  
+      // Create the image
+      const image = await SpotImage.create({
+        spotId,
+        url,
+        preview,
+      }, {
+        // Exclude createdAt, updatedAt, and spotId fields
+        attributes: { exclude: ['createdAt', 'updatedAt', 'spotId'] },
+      });
+  
+      // Remove the updatedAt, createdAt, and spotId fields from the image object
+      const { updatedAt, createdAt, spotId: imageSpotId, ...imageWithoutTimestamps } = image.toJSON();
+  
+      res.status(200).json(imageWithoutTimestamps);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
+
 // Route to create a new spot
 router.post('/', requireAuth, async (req, res, next) => {
   try {
@@ -251,6 +291,94 @@ router.post('/', requireAuth, async (req, res, next) => {
     next(error);
   }
 });
+
+// Edit a Spot
+router.put("/api/spots/:spotId", requireAuth, async (req, res) => {
+    try {
+      const spotId = req.params.spotId;
+      const userId = req.user.id;
+      const {
+        address,
+        city,
+        state,
+        country,
+        lat,
+        lng,
+        name,
+        description,
+        price,
+      } = req.body;
+  
+      // Check if the spot exists and belongs to the current user
+      const spot = await Spot.findOne({
+        where: {
+          id: spotId,
+          ownerId: userId,
+        },
+      });
+  
+      if (!spot) {
+        return res.status(404).json({ message: "Spot couldn't be found" });
+      }
+  
+      // Update the spot
+      spot.address = address;
+      spot.city = city;
+      spot.state = state;
+      spot.country = country;
+      spot.lat = lat;
+      spot.lng = lng;
+      spot.name = name;
+      spot.description = description;
+      spot.price = price;
+  
+      await spot.save();
+  
+      res.status(200).json(spot);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+// delete a spot
+router.delete('/api/spots/:spotId', requireAuth, async  (req, res, next) => {
+    try {
+        console.log('Deleting spot with ID:', req.params.spotId);
+
+        const spot = await Spot.findByPk(req.params.spotId);
+
+        if (spot) {
+            if (req.user.id === spot.ownerId) {
+                await spot.destroy();
+                console.log('Spot successfully deleted');
+                return res.json({ message: "Successfully deleted" });
+            } else {
+                console.log('Not authorized to delete this spot');
+                const err = new Error("Forbidden");
+                err.title = "Forbidden";
+                err.errors = { message: "Not authorized to take this action" };
+                err.status = 403;
+                return next(err);
+            }
+        } else {
+            console.log('Spot not found');
+            const err = new Error("Spot couldn't be found");
+            err.title = "Spot couldn't be found";
+            err.errors = { message: "Spot couldn't be found" };
+            err.status = 404;
+            return next(err);
+        }
+    } catch (error) {
+        console.error('Error deleting spot:', error);
+        const err  = new Error("Internal Server Error");
+        err.title = "Internal Server Error";
+        err.errors = { message: "Internal Server Error" };
+        err.status = 500;
+        return next(err);
+    }
+})
+
 
 // Export the router for use in the application
 module.exports = router;
