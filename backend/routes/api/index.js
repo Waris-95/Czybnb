@@ -7,6 +7,7 @@ const spotsRouter = require('./spots.js');
 const spotsImageRouter = require('./spot-images.js');
 const reviewImagesRouter = require("./review-images.js");
 const spotImagesRouter = require("./spot-images.js");
+const reviewsRouter = require('/reviews.js')
 
 
 // Connect restoreUser middleware to the API router
@@ -15,9 +16,11 @@ const spotImagesRouter = require("./spot-images.js");
 
 router.use(restoreUser);
 
+router.use('/reviews', reviewsRouter);
+
 router.use('/spot-images', spotsImageRouter);
 
-  router.use('/spots', spotsRouter);
+router.use('/spots', spotsRouter);
 
 router.use('/session', sessionRouter);
 
