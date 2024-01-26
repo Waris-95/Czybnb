@@ -209,7 +209,7 @@ router.get('/:spotId', async (req, res) => {
 });
 
 // Add an image to a spot based on spot id
-router.post('/api/reviews/:reviewId/images', requireAuth, async (req, res) => {
+router.post('/:spotId/images', requireAuth, async (req, res) => {
     try {
       const spotId = req.params.spotId;
       const userId = req.user.id;
@@ -293,7 +293,7 @@ router.post('/', requireAuth, async (req, res, next) => {
 });
 
 // Edit a Spot
-router.put("/api/spots/:spotId", requireAuth, async (req, res) => {
+router.put("/:spotId", requireAuth, async (req, res) => {
     try {
       const spotId = req.params.spotId;
       const userId = req.user.id;
@@ -342,7 +342,7 @@ router.put("/api/spots/:spotId", requireAuth, async (req, res) => {
   });
 
 // delete a spot
-router.delete('/api/spots/:spotId', requireAuth, async  (req, res, next) => {
+router.delete('/:spotId', requireAuth, async  (req, res, next) => {
     try {
         console.log('Deleting spot with ID:', req.params.spotId);
 
