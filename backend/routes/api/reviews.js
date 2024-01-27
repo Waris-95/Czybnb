@@ -60,7 +60,9 @@ router.get("/current", requireAuth, async (req, res, next) => {
       formattedReview.Spot.previewImage = spotImages.length > 0 ? spotImages[0].url : null;
       delete formattedReview.Spot.SpotImages;
 
+    //   console.log(formattedReview);
       return formattedReview;
+    
     });
     // Respond with the formatted reviews
     return res.status(200).json({ Reviews: formattedReviews });
@@ -68,5 +70,26 @@ router.get("/current", requireAuth, async (req, res, next) => {
     next(error);
   }
 });
+
+// add an image to a review based on the review's ID
+router.post("/:reviewId/images", requireAuth, async (req, res, next) => {
+    const { url } = req.body;  
+    const { user } = req;
+    
+    try {
+        const review = await Review.findByPk(req.params.reviewId);
+        
+        if (!review || review.userId !== user.id) {
+            return res.status(404).json({ message: "Review couldn't be found" });
+        }
+        const allImages = await ReviewImage.findAll({
+            where: {
+                reviewId: req.params.reviewId,
+            },
+        });
+    } catch (error) {
+
+    }
+})
 
 module.exports = router;
