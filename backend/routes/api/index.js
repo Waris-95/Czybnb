@@ -17,7 +17,7 @@ const reviewsRouter = require('./reviews.js')
   
   router.use('/reviews', reviewsRouter);
   
-  router.use('/spot-images', spotsImageRouter);
+  router.use('/spot-images', spotImagesRouter);
   
   router.use('/spots', spotsRouter);
   
