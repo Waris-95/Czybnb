@@ -111,5 +111,18 @@ router.post("/:reviewId/images", requireAuth, async (req, res, next) => {
     }
 });
 
+// edit a review || update and return an existing review.
+router.put("/:reviewId", requireAuth, async (req, res) => {
+    const { review, stars} = req.body;
+    const { user } = req;
+
+    try {
+        const reviewId = await Review.findByPk(req.params.reviewId);
+        
+
+    } catch (error) {
+        next(error)
+    }
+})
 
 module.exports = router;
