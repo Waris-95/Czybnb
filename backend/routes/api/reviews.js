@@ -111,18 +111,53 @@ router.post("/:reviewId/images", requireAuth, async (req, res, next) => {
     }
 });
 
-// edit a review || update and return an existing review.
+// Edit a review or update and return an existing review.
 router.put("/:reviewId", requireAuth, async (req, res) => {
-    const { review, stars} = req.body;
+    // Extract necessary information from the request
+    const { review, stars } = req.body;
     const { user } = req;
 
     try {
-        const reviewId = await Review.findByPk(req.params.reviewId);
-        
+        // Find the review by its ID
+        const existingReview = await Review.findByPk(req.params.reviewId);
 
+        // Check if the review exists
+        if (!existingReview) {
+            return res.status(404).json({ message: "Review not found" });
+        }
+
+        // Check if the authenticated user is the owner of the review
+        if (existingReview.userId !== user.id) {
+            return res.status(403).json({ message: "Unauthorized to perform this action" });
+        }
+
+        // Validate the review and stars
+        const errors = {};
+        if (!review) {
+            errors.review = "Review text is required";
+        }
+        if (!stars || stars < 1 || stars > 5) {
+            errors.stars = "Stars must be an integer from 1 to 5";
+        }
+
+        // Return a validation error if there are any errors
+        if (Object.keys(errors).length > 0) {
+            return res.status(400).json({ message: "Validation error", errors });
+        }
+
+        // Update the existing review with the new values
+        existingReview.review = review;
+        existingReview.stars = stars;
+        await existingReview.save();
+
+        // Return the updated review
+        return res.status(200).json(existingReview);
     } catch (error) {
-        next(error)
+        // Handle any errors and return a 500 Internal Server Error
+        console.error(error);
+        return res.status(500).json({ message: "Internal server error" });
     }
-})
+});
+
 
 module.exports = router;
