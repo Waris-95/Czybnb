@@ -112,7 +112,8 @@ router.get('/current', requireAuth, async (req, res) => {
       }
 
       // Set preview image URL or null
-      const previewImage = spot.SpotImages && spot.SpotImages.length > 0 ? spot.SpotImages[0].url : null;
+      const previewImage = spot.SpotImages && spot.SpotImages.length > 0 ? spot.SpotImages[0].url : 
+      null;
 
       // Create a formatted spot object
       return {
