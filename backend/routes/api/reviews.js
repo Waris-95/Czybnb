@@ -57,7 +57,7 @@ router.get("/current", requireAuth, async (req, res, next) => {
       const formattedReview = review.toJSON();
       // Extract SpotImages from Spot and set previewImage
       const spotImages = formattedReview.Spot?.SpotImages || [];
-      formattedReview.Spot.previewImage = spotImages.length > 0 ? spotImages[0].url : null;
+      // formattedReview.Spot.previewImage = spotImages.length > 0 ? spotImages[0].url : null;
       delete formattedReview.Spot.SpotImages;
 
     //   console.log(formattedReview);
@@ -160,36 +160,23 @@ router.put("/:reviewId", requireAuth, async (req, res) => {
 });
 
 // Delete a Review
-router.delete("/:reviewId", requireAuth, async (req, res, next) => {
-  // Extract the authenticated user from the request
+router.delete("/:reviewId", requireAuth, async (req, res) => {
   const { user } = req;
-
   try {
-    // Find the review by its ID
     const review = await Review.findByPk(req.params.reviewId);
-
-    // Check if the review exists
     if (!review) {
       return res.status(404).json({ message: "Review couldn't be found" });
     }
-
-    // Check if the authenticated user is the owner of the review
     if (review.userId !== user.id) {
       return res.status(403).json({
         message: "You must log in as the owner of this review to delete",
       });
     }
-
-    // Delete the review
     await review.destroy();
-
-    // Respond with a success message
     return res.status(200).json({ message: "Successfully deleted" });
   } catch (error) {
-    // Pass any errors to the error handling middleware
     next(error);
   }
 });
-
 
 module.exports = router;
