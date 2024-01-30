@@ -159,24 +159,36 @@ router.put("/:reviewId", requireAuth, async (req, res) => {
     }
 });
 
-// Delete a Review
-router.delete("/:reviewId", requireAuth, async (req, res) => {
-  const { user } = req;
+// DELETE endpoint for deleting a review
+router.delete("/:reviewId", requireAuth, async (req, res, next) => {
+  const { user } = req; // Extract user from request
+
   try {
+    // Find the review by its primary key
     const review = await Review.findByPk(req.params.reviewId);
+
+    // Check if the review exists
     if (!review) {
       return res.status(404).json({ message: "Review couldn't be found" });
     }
+
+    // Check if the authenticated user is the owner of the review
     if (review.userId !== user.id) {
       return res.status(403).json({
         message: "You must log in as the owner of this review to delete",
       });
     }
+
+    // Delete the review from the database
     await review.destroy();
+
+    // Return success message
     return res.status(200).json({ message: "Successfully deleted" });
   } catch (error) {
+    // Pass the error to the error-handling middleware
     next(error);
   }
 });
 
 module.exports = router;
+
