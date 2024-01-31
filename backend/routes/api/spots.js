@@ -598,6 +598,7 @@ router.post("/:spotId/reviews", requireAuth, async (req, res) => {
 //Create a Spot Post
 router.post("/", requireAuth, async (req, res, next) => {
   try {
+    // Extract spot details from the request body
     const {
       address,
       city,
@@ -629,7 +630,7 @@ router.post("/", requireAuth, async (req, res, next) => {
       return res.status(400).json({ message: "Bad Request", errors });
     }
 
-    // Create the new spot
+    // Create the new spot in the database
     const newSpot = await Spot.create({
       ownerId: req.user.id,
       address,
@@ -643,16 +644,22 @@ router.post("/", requireAuth, async (req, res, next) => {
       price,
     });
 
+    // Return a 201 Created response with the newly created spot
     return res.status(201).json(newSpot);
   } catch (error) {
+    // If an error occurs during spot creation, pass the error to the next middleware
     next(error);
   }
 });
+
 // Edit a Spot
 router.put("/:spotId", requireAuth, async (req, res) => {
   try {
+    // Extract spotId from the request parameters and userId from the authenticated user
     const spotId = req.params.spotId;
     const userId = req.user.id;
+
+    // Extract fields to update from the request body
     const {
       address,
       city,
@@ -673,11 +680,12 @@ router.put("/:spotId", requireAuth, async (req, res) => {
       },
     });
 
+    // If the spot is not found, return a 404 Not Found response
     if (!spot) {
       return res.status(404).json({ message: "Spot couldn't be found" });
     }
 
-    // Update the spot
+    // Update the spot with the new information
     spot.address = address;
     spot.city = city;
     spot.state = state;
@@ -688,10 +696,13 @@ router.put("/:spotId", requireAuth, async (req, res) => {
     spot.description = description;
     spot.price = price;
 
+    // Save the changes to the spot in the database
     await spot.save();
 
+    // Return a 200 OK response with the updated spot information
     res.status(200).json(spot);
   } catch (error) {
+    // If an error occurs during the update process, log the error and return a 500 Internal Server Error response
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
