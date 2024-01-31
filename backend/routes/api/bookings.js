@@ -98,15 +98,99 @@ router.get("/current", requireAuth, async (req, res) => {
 });
 
 
-// ediiting a booking 
-router.put("/:bookingId", requireAuth, async (req, res) => {
-    const { user } = req;
-    const { startDate, endDate } = req.body;
-    try {
+// Edit a booking
+router.put("/:bookingId", validateBooking, async (req, res, next) => {
+    const booking = await Booking.findByPk(req.params.bookingId);
 
-    } catch (error) {
-        
+    if (booking) {
+        if (booking.userId === req.user.id) {
+            const { startDate, endDate } = req.body;
+            const spot = await Spot.findByPk(booking.spotId);
+            const bookings = await spot.getBookings();
+            const startValue = new Date(startDate).getTime();
+            const endValue = new Date(endDate).getTime();
+
+            if (bookings.length > 0) {
+                for (const currBooking of bookings) {
+                    if (currBooking.id !== booking.id) {
+                        const bookingStart = new Date(
+                            currBooking.startDate
+                        ).getTime();
+                        const bookingEnd = new Date(
+                            currBooking.endDate
+                        ).getTime();
+
+                        let bookingErr = [];
+
+                        if (
+                            startValue >= bookingStart &&
+                            startValue <= bookingEnd
+                        ) {
+                            bookingErr.push("start");
+                        }
+                        if (
+                            endValue >= bookingStart &&
+                            endValue <= bookingEnd
+                        ) {
+                            bookingErr.push("end");
+                        }
+
+                        if (bookingErr.length > 0) {
+                            const err = new Error(
+                                "Sorry, this spot is already booked for the specified dates"
+                            );
+                            err.title = "Booking error";
+                            err.errors = {};
+                            if (bookingErr.includes("start")) {
+                                err.errors.startDate =
+                                    "Start date conflicts with an existing booking";
+                            }
+                            if (bookingErr.includes("end")) {
+                                err.errors.endDate =
+                                    "End date conflicts with an existing booking";
+                            }
+                            err.status = 403;
+                            return next(err);
+                        }
+                    }
+                }
+            }
+
+            const currTime = Date.now();
+            if (currTime > endValue) {
+                const err = new Error("Past bookings can't be modified");
+                err.title = "Past bookings can't be modified";
+                err.errors = { message: "Past bookings can't be modified" };
+                err.status = 403;
+                return next(err);
+            }
+
+            booking.startDate = startDate;
+            booking.endDate = endDate;
+
+            await booking.save();
+
+            return res.json(booking);
+        } else {
+            const err = new Error("Forbidden");
+            err.title = "Forbidden";
+            err.errors = { message: "Not authorized to take this action" };
+            err.status = 403;
+            return next(err);
+        }
     }
-})
+
+    const err = new Error("Booking couldn't be found");
+    err.title = "Booking couldn't be found";
+    err.errors = { message: "Booking couldn't be found" };
+    err.status = 404;
+    return next(err);
+});
+
+// delete a booking 
+
+
+
+
 
 module.exports = router
