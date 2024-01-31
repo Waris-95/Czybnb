@@ -700,9 +700,11 @@ router.put("/:spotId", requireAuth, async (req, res) => {
 // Delete a spot *
 router.delete("/:spotId", requireAuth, async (req, res) => {
   try {
+    // Extract user ID and spot ID from the request
     const userId = req.user.id;
     const spotId = req.params.spotId;
 
+    // Find the spot to be deleted using a specific query
     const spot = await Spot.findOne({
       where: {
         id: spotId,
@@ -710,17 +712,25 @@ router.delete("/:spotId", requireAuth, async (req, res) => {
       },
     });
 
+    // Check if the spot exists and is owned by the user
     if (!spot) {
+      // If not found or not owned, return a 404 Not Found status
       return res.status(404).json({ message: "Spot couldn't be found" });
     }
 
+    // Delete the spot from the database
     await spot.destroy();
 
+    // Respond with a 200 OK status and a success message
     res.status(200).json({ message: "Successfully deleted" });
   } catch (error) {
-    console.error(error);
+    // Handle any errors that occur during the process
+    console.error("Error deleting spot:", error);
+
+    // Respond with a 500 Internal Server Error status and an error message
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 module.exports = router;
