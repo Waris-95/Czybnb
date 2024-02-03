@@ -1,35 +1,32 @@
 const express = require("express");
 const { requireAuth } = require("../../utils/auth");
+
+const { Review, Spot, User, ReviewImage } = require("../../db/models");
+
 const router = express.Router();
-const { Op } = require("sequelize");
-const { Review, ReviewImage } = require("../../db/models");
 
-// DELETE endpoint for deleting a review image
+// Delete a review image
 router.delete("/:imageId", requireAuth, async (req, res, next) => {
-    const { user } = req; // Extract user from request
-
-    try {
-        // Find the review image by its primary key, including associated review
-        const reviewImage = await ReviewImage.findByPk(req.params.imageId, {
-            include: {
-                model: Review, // Include associated review for additional checks
-            },
-        });
-
-        // Check if the review image exists or if it doesn't belong to the authenticated user
-        if (!reviewImage || reviewImage.Review.userId !== user.id) {
-            return res.status(404).json({ message: "Review Image couldn't be found" });
+    const image = await ReviewImage.unscoped().findByPk(req.params.imageId);
+    if (image) {
+        const review = await Review.findByPk(image.reviewId);
+        if (req.user.id === review.userId) {
+            image.destroy();
+            return res.json({ message: "Succesfully deleted" });
+        } else {
+            const err = new Error("Forbidden");
+            err.title = "Forbidden";
+            err.errors = { message: "Not authorized to take this action" };
+            err.status = 403;
+            return next(err);
         }
-
-        // Delete the review image from the database
-        await reviewImage.destroy();
-
-        // Return success message
-        return res.status(200).json({ message: "Successfully deleted" });
-    } catch (error) {
-        // Pass the error to the error-handling middleware
-        next(error);
     }
+
+    const err = new Error("Review image couldn't be found");
+    err.title = "Review image couldn't be found";
+    err.errors = { message: "Review image couldn't be found" };
+    err.status = 404;
+    return next(err);
 });
 
 module.exports = router;
