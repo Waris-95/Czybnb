@@ -616,6 +616,7 @@ router.post("/:spotId/bookings", validateBooking, async (req, res, next) => {
 
     if (spot) {
         const { startDate, endDate } = req.body;
+        
         const bookings = await spot.getBookings();
 
         if (bookings.length > 0) {
