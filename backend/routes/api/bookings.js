@@ -61,41 +61,6 @@ const validateBooking = [
             return endDate > startDate;
         })
         .withMessage("endDate cannot be on or before startDate"),
-    check("startDate")
-        .custom(async (value, { req }) => {
-            const startDate = new Date(value).getTime();
-            const endDate = new Date(req.body.endDate).getTime();
-            const spot = await Spot.findByPk(req.params.bookingId); // Assuming you have Spot model and findByPk method
-            const bookings = await spot.getBookings();
-
-            for (const currBooking of bookings) {
-                const bookingStart = new Date(
-                    currBooking.startDate
-                ).getTime();
-                const bookingEnd = new Date(
-                    currBooking.endDate
-                ).getTime();
-
-                if (
-                    (startDate >= bookingStart && startDate <= bookingEnd) ||
-                    (endDate >= bookingStart && endDate <= bookingEnd) ||
-                    (startDate <= bookingStart && endDate >= bookingEnd)
-                ) {
-                    const err = new Error(
-                        "The specified dates overlap with an existing booking"
-                    );
-                    err.title = "Booking error";
-                    err.errors = {
-                        message:
-                            "The specified dates overlap with an existing booking",
-                    };
-                    err.status = 403;
-                    throw err;
-                }
-            }
-            return true;
-        })
-        .withMessage("Booking overlaps with an existing booking"),
     handleValidationErrors,
     requireAuth,
 ];
