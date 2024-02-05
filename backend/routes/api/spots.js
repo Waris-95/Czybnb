@@ -616,39 +616,39 @@ router.post("/:spotId/bookings", validateBooking, async (req, res, next) => {
 
     if (spot) {
         const { startDate, endDate } = req.body;
+        const startValue = new Date(startDate).getTime();
+        const endValue = new Date(endDate).getTime();
         
         const bookings = await spot.getBookings();
 
         if (bookings.length > 0) {
             for (const currBooking of bookings) {
-                const startValue = new Date(startDate).getTime();
-                const endValue = new Date(endDate).getTime();
                 const bookingStart = new Date(currBooking.startDate).getTime();
                 const bookingEnd = new Date(currBooking.endDate).getTime();
 
-                let bookingErr = [];
-
-                if (startValue >= bookingStart && startValue <= bookingEnd) {
-                    bookingErr.push("start");
-                }
-                if (endValue >= bookingStart && endValue <= bookingEnd) {
-                    bookingErr.push("end");
-                }
-
-                if (bookingErr.length > 0) {
+                if (
+                    (startValue >= bookingStart && startValue <= bookingEnd) ||
+                    (endValue >= bookingStart && endValue <= bookingEnd) ||
+                    (startValue <= bookingStart && endValue >= bookingEnd)
+                ) {
                     const err = new Error(
                         "Sorry, this spot is already booked for the specified dates"
                     );
                     err.title = "Booking error";
                     err.errors = {};
-                    if (bookingErr.includes("start")) {
-                        err.errors.startDate =
-                            "Start date conflicts with an existing booking";
-                    }
-                    if (bookingErr.includes("end")) {
-                        err.errors.endDate =
-                            "End date conflicts with an existing booking";
-                    }
+                    err.errors.message = "Booking conflicts with an existing booking";
+                    err.status = 403;
+                    return next(err);
+                }
+
+                // Check if an existing startDate/endDate is in between incoming dates
+                if (bookingStart >= startValue && bookingEnd <= endValue) {
+                    const err = new Error(
+                        "Sorry, this spot is already booked for the specified dates"
+                    );
+                    err.title = "Booking error";
+                    err.errors = {};
+                    err.errors.message = "Booking conflicts with an existing booking";
                     err.status = 403;
                     return next(err);
                 }
