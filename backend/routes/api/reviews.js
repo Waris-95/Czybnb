@@ -115,34 +115,50 @@ const validateReview = [
 ];
 
 // Edit an existing review
-router.put("/:reviewId", validateReview, async (req, res, next) => {
-    const thisReview = await Review.findByPk(req.params.reviewId);
+router.put('/:reviewId', requireAuth, validateReview, async (req, res, next) => {
+    let { reviewId } = req.params;
+    reviewId = parseInt(reviewId);
 
-    if (thisReview) {
-        if (req.user.id === thisReview.userId) {
-            const { review, stars } = req.body;
+    let { review, stars } = req.body;
 
-            thisReview.review = review;
-            thisReview.stars = stars;
+    let findReview = await Review.findByPk(reviewId);
+    if (findReview === null) {
+        const error = new Error();
+        error.message = "Review couldn't be found"
+        error.status = 404;
 
-            thisReview.save();
-
-            return res.json(thisReview);
-        } else {
-            const err = new Error("Forbidden");
-            err.title = "Forbidden";
-            err.errors = { message: "Not authorized to take this action" };
-            err.status = 403;
-            return next(err);
-        }
+        return next(error);
     }
 
-    const err = new Error("Review couldn't be found");
-    err.title = "Review couldn't be found";
-    err.errors = { message: "Review couldn't be found" };
-    err.status = 404;
-    return next(err);
-});
+    //make sure User is also owner
+    let { user } = req;
+    user = user.toJSON();
+    const userId = user.id;
+    if (findReview.userId !== userId) {
+        const error = new Error();
+        error.message = "Forbidden"
+        error.status = 403;
+
+        return next(error);
+    }
+
+    // findReview = findReview.toJSON();
+
+    await Review.update({
+        review: review,
+        stars: stars
+    },
+    {
+        where: {
+            id: reviewId
+        }
+    })
+
+    findReview = await Review.findByPk(reviewId);
+
+    return res.json(findReview)
+
+})
 
 // Delete a review
 router.delete("/:reviewId", requireAuth, async (req, res, next) => {
