@@ -1,683 +1,695 @@
-const express = require("express");
-const { Op } = require("sequelize");
-const { requireAuth } = require("../../utils/auth");
-const { check } = require("express-validator");
-const { handleValidationErrors } = require("../../utils/validation");
+const express = require('express');
+const { Op } = require('sequelize');
+const bcrypt = require('bcryptjs');
+const { check } = require('express-validator');
+const { handleValidationErrors } = require('../../utils/validation');
 
-const {
-    Spot,
-    SpotImage,
-    User,
-    Review,
-    ReviewImage,
-    Booking,
-} = require("../../db/models");
+const { setTokenCookie, requireAuth } = require('../../utils/auth');
+const { Spot, User, Review, ReviewImage, SpotImage, Booking } = require('../../db/models');
 
 const router = express.Router();
 
-const validateQueries = [
-    check("page")
-        .custom((value) => {
-            if (value) {
-                return parseInt(value) >= 1;
-            } else {
-                return true;
-            }
-        })
-        .withMessage("Page must be greater than or equal to 1"),
-    check("size")
-        .custom((value) => {
-            if (value) {
-                return value >= 1;
-            } else {
-                return true;
-            }
-        })
-        .withMessage("Size must be greater than or equal to 1"),
-    check("maxLat")
-        .custom((value) => {
-            if (value) {
-                return parseInt(value) < 90 && parseInt(value) > -90;
-            } else {
-                return true;
-            }
-        })
-        .custom((value, { req }) => {
-            if (value) {
-                if (req.query.minLat) {
-                    return parseInt(value) > parseInt(req.query.minLat);
-                }
-            }
-            return true;
-        })
-        .withMessage("Maximum latitude is invalid"),
-    check("minLat")
-        .custom((value) => {
-            if (value) {
-                return parseInt(value) < 90 && parseInt(value) > -90;
-            } else {
-                return true;
-            }
-        })
-        .custom((value, { req }) => {
-            if (value) {
-                if (req.query.maxLat) {
-                    return parseInt(value) < parseInt(req.query.maxLat);
-                }
-            }
-            return true;
-        })
-        .withMessage("Minimum latitude is invalid"),
-    check("minLng")
-        .custom((value) => {
-            if (value) {
-                return parseInt(value) < 180 && parseInt(value) > -180;
-            } else {
-                return true;
-            }
-        })
-        .custom((value, { req }) => {
-            if (value) {
-                if (req.query.maxLng) {
-                    return parseInt(value) < parseInt(req.query.maxLng);
-                }
-            }
-            return true;
-        })
-        .withMessage("Minimum longitude is invalid"),
-    check("maxLng")
-        .custom((value) => {
-            if (value) {
-                return parseInt(value) < 180 && parseInt(value) > -180;
-            } else {
-                return true;
-            }
-        })
-        .custom((value, { req }) => {
-            if (value) {
-                if (req.query.minLng) {
-                    return parseInt(value) > parseInt(req.query.minLng);
-                }
-            }
-            return true;
-        })
-        .withMessage("Maximum longitude is invalid"),
-    check("minPrice")
-        .custom((value) => {
-            if (value) {
-                return parseInt(value) >= 0;
-            } else {
-                return true;
-            }
-        })
-        .custom((value, { req }) => {
-            if (value) {
-                if (req.query.maxPrice) {
-                    return parseInt(value) < parseInt(req.query.maxPrice);
-                }
-            }
-            return true;
-        })
-        .withMessage("Minimum price must be greater than or equal to 0"),
-    check("maxPrice")
-        .custom((value) => {
-            if (value) {
-                console.log(value);
-                return parseInt(value) >= 0;
-            } else {
-                return true;
-            }
-        })
-        .custom((value, { req }) => {
-            if (value) {
-                if (req.query.minPrice) {
-                    return parseInt(value) > parseInt(req.query.minPrice);
-                }
-            }
-            return true;
-        })
-        .withMessage("Maximum price must be greater than or equal to 0"),
-    handleValidationErrors,
-];
+//newSection/ Create a new Spot
 
-// Get all spots
-router.get("/", validateQueries, async (req, res) => {
-    // create query object
-    let query = {
-        where: {},
-    };
+    //subSection/ Validate new Spot form submission
+    const validateNewSpot = [
+        check('address')
+            .exists({ checkFalsy: true })
+            .withMessage('Street address is required'),
+        check('city')
+            .exists({ checkFalsy: true })
+            .withMessage('City is required'),
+        check('state')
+            .exists({ checkFalsy: true })
+            .withMessage('State is required'),
+        check('country')
+            .exists({ checkFalsy: true })
+            .withMessage('Country is required'),
+        check('lat')
+            .exists({ checkFalsy: true })
+            .isFloat({min: -90, max: 90})
+            .withMessage('Latitude is not valid'),
+        check('lng')
+            .exists({ checkFalsy: true })
+            .isFloat({min:-180, max: 180})
+            .withMessage('Longitude is not valid'),
+        check('name')
+            .exists({ checkFalsy: true })
+            .isLength({min: 0, max: 50})
+            .withMessage('Name must be less than 50 characters'),
+        check('description')
+            .exists({ checkFalsy: true })
+            .withMessage('Description is required'),
+        check('price')
+            .exists({ checkFalsy: true })
+            .isFloat({ min: 0 })
+            .withMessage('Price per day is required'),
+        handleValidationErrors
+    ]
 
-    // pagination
-    const page = req.query.page === undefined ? 1 : parseInt(req.query.page);
-    const size = req.query.size === undefined ? 20 : parseInt(req.query.size);
+router.post('/', requireAuth, validateNewSpot, async (req, res, next) => {
+    let { user } = req;
+    user = user.toJSON();
+    let userId = user.id;
 
-    query.limit = size;
-    query.offset = size * (page - 1);
+    const { 
+        address, 
+        city, 
+        state, 
+        country, 
+        lat, 
+        lng, 
+        name, 
+        description, 
+        price } = req.body;
 
-    // console.log("~~~~~~~~~~~~");
-    // console.log("size:", size);
-    // console.log("page:", page);
-    // console.log("limit:", query.limit);
-    // console.log("offset:", query.offset);
-    // console.log(query);
-    // console.log("~~~~~~~~~~~~");
-
-    // Check for queries and apply if they exist
-    let { maxLat, minLat, minLng, maxLng, minPrice, maxPrice } = req.query;
-
-    // min and max latitude
-    if (maxLat && minLat) {
-        query.where.lat = { [Op.between]: [minLat, maxLat] };
-    } else if (maxLat && !minLat) {
-        query.where.lat = { [Op.lte]: maxLat };
-    } else if (!maxLat && minLat) {
-        query.where.lat = { [Op.gte]: minLat };
-    }
-
-    // min and max longitude
-    if (maxLng && minLng) {
-        query.where.lng = { [Op.between]: [minLng, maxLng] };
-    } else if (maxLng && !minLng) {
-        query.where.lng = { [Op.lte]: maxLng };
-    } else if (!maxLng && minLng) {
-        query.where.lng = { [Op.gte]: minLng };
-    }
-
-    // min and max price
-    if (minPrice && maxPrice) {
-        query.where.price = { [Op.between]: [minPrice, maxPrice] };
-    } else if (minPrice && !maxPrice) {
-        query.where.price = { [Op.gte]: minPrice };
-    } else if (!minPrice && maxPrice) {
-        query.where.price = { [Op.lte]: maxPrice };
-    }
-
-    // console.log("~~~~~~~~~~~~");
-    // console.log("query params:", query);
-    // console.log("~~~~~~~~~~~~");
-
-    // Get spots
-    const spots = await Spot.findAll(query);
-
-    for (const spot of spots) {
-        // Add average rating to object
-        const reviews = await Review.findAll({ where: { spotId: spot.id } });
-
-        const reviewCount = reviews.length;
-
-        const starTotal = reviews.reduce((total, review) => {
-            total += review.stars;
-            return total;
-        }, 0);
-
-        const avgRating = Number.parseFloat(starTotal / reviewCount).toFixed(2);
-        spot.dataValues.avgRating = avgRating;
-
-        // Add previewImage url to object
-        const previewImage = await SpotImage.findOne({
-            where: { spotId: spot.id, preview: true },
-        });
-
-        if (previewImage) {
-            spot.dataValues.previewImage = previewImage.url;
-        } else {
-            spot.dataValues.previewImage = "No preview image found";
-        }
-    }
-
-    return res.json({ Spots: spots, page, size });
-});
-
-router.get("/current", requireAuth, async (req, res, next) => {
-    const spots = await Spot.findAll({ where: { ownerId: req.user.id } });
-
-    let Spots = [];
-
-    for (const spot of spots) {
-        // Add average rating to object
-        const reviews = await Review.findAll({ where: { spotId: spot.id } });
-
-        const reviewCount = reviews.length;
-
-        const starTotal = reviews.reduce((total, review) => {
-            total += review.stars;
-            return total;
-        }, 0);
-
-        const avgRating = starTotal / reviewCount;
-        spot.dataValues.avgRating = avgRating;
-
-        // Add previewImage url to object
-        const previewImage = await SpotImage.findOne({
-            where: { spotId: spot.id, preview: true },
-        });
-
-        if (previewImage) {
-            spot.dataValues.previewImage = previewImage.url;
-        } else {
-            spot.dataValues.previewImage = "No preview image found";
-        }
-
-        Spots.push(spot.dataValues);
-    }
-
-    return res.json({ Spots });
-});
-
-router.get("/:spotId", async (req, res, next) => {
-    const spot = await Spot.findByPk(req.params.spotId);
-
-    if (!spot) {
-        const err = new Error("Spot couldn't be found");
-        err.title = "Spot couldn't be found";
-        err.errors = { message: "Spot couldn't be found" };
-        err.status = 404;
-        return next(err);
-    }
-    // Get reviews for this spot
-    const reviews = await Review.findAll({
-        where: { spotId: req.params.spotId },
+    const newSpot = await Spot.create({
+        ownerId: userId,
+        address: address,
+        city: city,
+        state: state,
+        country: country,
+        lat: lat,
+        lng: lng,
+        name: name,
+        description: description,
+        price: price
     });
 
-    const numReviews = reviews.length;
-    // Find the total number of stars across reviews for this spot
-    const starTotal = reviews.reduce((total, review) => {
-        total += review.stars;
-        return total;
-    }, 0);
+    res.statusCode = 201;
+    return res.json(newSpot)
 
-    // Get the average rating
-    const avgStarRating = starTotal / numReviews;
-    spot.dataValues.numReviews = numReviews;
-    spot.dataValues.avgStarRating = avgStarRating;
-
-    // Get the images for this spot
-    const spotImages = await SpotImage.findAll({
-        where: { spotId: req.params.spotId },
-        attributes: ["id", "url", "preview"],
-    });
-    // console.log(spotImages);
-    spot.dataValues.SpotImages = [];
-    for (const spotImage of spotImages) {
-        spot.dataValues.SpotImages.push(spotImage.dataValues);
-    }
-
-    // Get the owner of this spot by Id
-    const owner = await User.findByPk(spot.ownerId, {
-        attributes: ["id", "firstName", "lastName"],
-    });
-    spot.dataValues.Owner = owner;
-
-    return res.json(spot);
 });
 
-const validateSpot = [
-    check("address")
-        .exists({ checkFalsy: true })
-        .withMessage("Street address is required"),
-    check("city").exists({ checkFalsy: true }).withMessage("City is required"),
-    check("state")
-        .exists({ checkFalsy: true })
-        .withMessage("State is required"),
-    check("country")
-        .exists({ checkFalsy: true })
-        .withMessage("Country is required"),
-    check("lat")
-        .exists({ checkFalsy: true })
-        .custom((value) => {
-            return parseInt(value) < 90 && parseInt(value) > -90;
-        })
-        .withMessage("Latitude is not valid"),
-    check("lng")
-        .exists({ checkFalsy: true })
-        .custom((value) => {
-            return parseInt(value) < 180 && parseInt(value) > -180;
-        })
-        .withMessage("Longitude is not valid"),
-    check("name")
-        .exists({ checkFalsy: true })
-        .isLength({ max: 50 })
-        .withMessage("Name must be less than 50 characters"),
-    check("description")
-        .exists({ checkFalsy: true })
-        .withMessage("Description is required"),
-    check("price")
-        .exists({ checkFalsy: true })
-        .withMessage("Price per day is required"),
-    handleValidationErrors,
-    requireAuth,
-];
-// Create a new spot as an authorized user
-router.post("/", validateSpot, async (req, res, next) => {
-    const {
-        address,
-        city,
-        state,
-        country,
-        lat,
-        lng,
-        name,
-        description,
-        price,
-    } = req.body;
+//newSection/ Create Image for a Spot
 
-    const spot = await Spot.create({
-        ownerId: req.user.id,
-        address,
-        city,
-        state,
-        country,
-        lat,
-        lng,
-        name,
-        description,
-        price,
-    });
+router.post('/:spotId/images', requireAuth, async (req, res, next) => {
+    let { spotId } = req.params;
+    spotId = parseInt(spotId);
 
-    return res.json(spot);
-});
-
-// Add an image to a spot based on Spot's id
-router.post("/:spotId/images", requireAuth, async (req, res, next) => {
-    const spot = await Spot.findByPk(req.params.spotId);
-
-    if (spot) {
-        if (req.user.id === spot.ownerId) {
-            const { url, preview } = req.body;
-            const newSpotImage = await SpotImage.create({
-                spotId: req.params.spotId,
-                url,
-                preview,
-            });
-
-            return res.json({
-                id: newSpotImage.id,
-                url: newSpotImage.url,
-                preview: newSpotImage.preview,
-            });
-        } else {
-            const err = new Error("Forbidden");
-            err.title = "Forbidden";
-            err.errors = { message: "Not authorized to take this action" };
-            err.status = 403;
-            return next(err);
-        }
-    }
-
-    const err = new Error("Spot couldn't be found");
-    err.title = "Spot couldn't be found";
-    err.errors = { message: "Spot couldn't be found" };
-    err.status = 404;
-    return next(err);
-});
-
-// Updates and returns an existing spot.
-router.put("/:spotId", validateSpot, async (req, res, next) => {
-    const spot = await Spot.findByPk(req.params.spotId);
-
-    if (spot) {
-        if (spot.ownerId === req.user.id) {
-            const {
-                address,
-                city,
-                state,
-                country,
-                lat,
-                lng,
-                name,
-                description,
-                price,
-            } = req.body;
-
-            if (address) spot.address = address;
-            if (city) spot.city = city;
-            if (state) spot.state = state;
-            if (country) spot.country = country;
-            if (lat) spot.lat = lat;
-            if (lng) spot.lng = lng;
-            if (name) spot.name = name;
-            if (description) spot.description = description;
-            if (price) spot.price = price;
-
-            await spot.save();
-
-            res.json(spot);
-        } else {
-            const err = new Error("Forbidden");
-            err.title = "Forbidden";
-            err.errors = { message: "Not authorized to take this action" };
-            err.status = 403;
-            return next(err);
-        }
-    }
-
-    const err = new Error("Spot couldn't be found");
-    err.title = "Spot couldn't be found";
-    err.errors = { message: "Spot couldn't be found" };
-    err.status = 404;
-    return next(err);
-});
-
-// Delete an existing spot
-router.delete("/:spotId", requireAuth, async (req, res, next) => {
-    const spot = await Spot.findByPk(req.params.spotId);
     
-    // console.log("User: ", req.user);
-    // console.log("Spot: " spot.toJSON());
+    const checkValidSpot = await Spot.findByPk(spotId);
+    if (checkValidSpot === null) {
+        const error = new Error();
+        error.message = "Spot couldn't be found"
+        error.status = 404;
+        
+        return next(error);
+    }
+    
+    //make sure User is also owner
+    let { user } = req;
+    user = user.toJSON();
+    const userId = user.id;
+    if (checkValidSpot.ownerId !== userId) {
+        const error = new Error();
+        error.message = "Forbidden"
+        error.status = 403;
 
-    if (spot) {
-        if (spot.ownerId === req.user.id) {
-            await spot.destroy();
-            return res.json({ message: "Succesfully deleted" });
-        } else {
-            const err = new Error("Forbidden");
-            err.title = "Forbidden";
-            err.errors = { message: "Not authorized to take this action" };
-            err.status = 403;
-            return next(err);
-        }
+        return next(error);
     }
 
-    const err = new Error("Spot couldn't be found");
-    err.title = "Spot couldn't be found";
-    err.errors = { message: "Spot couldn't be found" };
-    err.status = 404;
-    return next(err);
-});
+    const { url, preview } = req.body;
 
-// Get all reviews by spot id
-router.get("/:spotId/reviews", async (req, res, next) => {
-    const Reviews = await Review.findAll({
-        where: { spotId: req.params.spotId },
-        include: [
-            { model: User, attributes: ["id", "firstName", "lastName"] },
-            { model: ReviewImage, attributes: ["id", "url"] },
-        ],
+    let spotImage = await SpotImage.create({
+        spotId: spotId,
+        imageUrl: url,
+        preview: preview
     });
 
-    const spot = await Spot.findByPk(req.params.spotId);
+    delete spotImage.dataValues.spotId;
+    delete spotImage.dataValues.createdAt;
+    delete spotImage.dataValues.updatedAt;
 
-    if (!spot) {
-        const err = new Error("Spot couldn't be found");
-        err.title = "Spot couldn't be found";
-        err.errors = { message: "Spot couldn't be found" };
-        err.status = 404;
-        return next(err);
-    }
-
-    return res.json({ Reviews });
+    return res.json(spotImage);
 });
 
-const validateReview = [
-    check("review")
-        .exists({ checkFalsy: true })
-        .withMessage("Review text is required"),
-    check("stars")
-        .exists({ checkFalsy: true })
-        .custom((value) => {
-            return parseInt(value) < 6 && parseInt(value) > 0;
+
+//newSection/ Get all Spots of Current User
+
+router.get('/current', requireAuth, async(req, res, next) => {
+    let { user } = req;
+    user = user.toJSON();
+    let userId = user.id;
+    
+    let userSpots = await Spot.findAll({
+        where: {
+            ownerId: userId
+        },
+        include: [
+            {
+                model: SpotImage,
+                where: {
+                    preview: true
+                },
+                attributes: ["imageUrl"]
+            },
+            {
+                model: Review,
+                attributes: ["stars"]
+            }
+        ]
+    }) 
+
+    userSpots = userSpots.map((userSpot)=> {
+        let avgRating = 0;
+        const jsonSpot = userSpot.toJSON();
+        jsonSpot.Reviews.forEach((review)=> {
+            avgRating += review.stars
         })
-        .withMessage("Stars must be an integer from 1 to 5"),
-    handleValidationErrors,
-    requireAuth,
-];
+        avgRating = avgRating / jsonSpot.Reviews.length
+        jsonSpot.avgRating = avgRating;
+        delete jsonSpot.Reviews
+        return jsonSpot
+    })
 
-// Create a review for a spot
-router.post("/:spotId/reviews", requireAuth, validateReview, async (req, res, next) => {
-    const spot = await Spot.findByPk(req.params.spotId);
+    return res.json({Spots: userSpots});
+})
 
-    if (spot) {
-        const thisReview = await Review.findOne({
-            where: { userId: req.user.id, spotId: req.params.spotId },
-        });
 
-        if (thisReview) {
-            const err = new Error("User already has a review for this spot");
-            err.title = "User already has a review for this spot";
-            err.errors = { message: "User already has a review for this spot" };
-            err.status = 500;
-            return next(err);
-        }
+//newSection/ Get Spot by Id
 
-        const { review, stars } = req.body;
+router.get('/:spotId', async (req, res, next) => {
+    let { spotId } = req.params;
+    spotId = parseInt(spotId);
 
-        const newReview = await Review.create({
-            userId: req.user.id,
-            spotId: parseInt(req.params.spotId),
-            review,
-            stars,
-        });
-
-        return res.json(newReview);
-    }
-
-    const err = new Error("Spot couldn't be found");
-    err.title = "Spot couldn't be found";
-    err.errors = { message: "Spot couldn't be found" };
-    err.status = 404;
-    return next(err);
-});
-
-// Get all bookings for a spot specified by id
-router.get("/:spotId/bookings", requireAuth, async (req, res, next) => {
-    const spot = await Spot.findByPk(req.params.spotId);
-    let bookings;
-
-    if (spot) {
-        if (req.user.id !== spot.ownerId) {
-            bookings = await Booking.findAll({
-                where: { spotId: req.params.spotId },
-                attributes: ["spotId", "startDate", "endDate"],
-            });
-        } else {
-            bookings = await Booking.findAll({
-                where: { spotId: req.params.spotId },
-                include: [
-                    {
-                        model: User,
-                        attributes: ["id", "firstName", "lastName"],
-                    },
-                ],
-            });
-        }
-
-        return res.json({ Bookings: bookings });
-    }
-
-    const err = new Error("Spot couldn't be found");
-    err.title = "Spot couldn't be found";
-    err.errors = { message: "Spot couldn't be found" };
-    err.status = 404;
-    return next(err);
-});
-
-const validateBooking = [
-    check("startDate")
-        .exists({ checkFalsy: true })
-        .withMessage("Must choose a start date"),
-    check("endDate")
-        .exists({ checkFalsy: true })
-        .withMessage("Must choose an end date"),
-    check("endDate")
-        .custom((value, { req }) => {
-            const endDate = new Date(value).getTime();
-            const startDate = new Date(req.body.startDate).getTime();
-
-            return endDate > startDate;
-        })
-        .withMessage("endDate cannot be on or before startDate"),
-    handleValidationErrors,
-    requireAuth,
-];
-
-// Create a booking for a spot based on id
-router.post("/:spotId/bookings", validateBooking, async (req, res, next) => {
-    const spot = await Spot.findByPk(req.params.spotId);
-
-    if (spot) {
-        const { startDate, endDate } = req.body;
-        const startValue = new Date(startDate).getTime();
-        const endValue = new Date(endDate).getTime();
-        
-        const bookings = await spot.getBookings();
-
-        if (bookings.length > 0) {
-            for (const currBooking of bookings) {
-                const bookingStart = new Date(currBooking.startDate).getTime();
-                const bookingEnd = new Date(currBooking.endDate).getTime();
-
-                if (
-                    (startValue >= bookingStart && startValue <= bookingEnd) ||
-                    (endValue >= bookingStart && endValue <= bookingEnd) ||
-                    (startValue <= bookingStart && endValue >= bookingEnd)
-                ) {
-                    const err = new Error(
-                        "Sorry, this spot is already booked for the specified dates"
-                    );
-                    err.title = "Booking error";
-                    err.errors = {};
-                    err.errors.message = "Booking conflicts with an existing booking";
-                    err.status = 403;
-                    return next(err);
+    let checkValidSpot = await Spot.findByPk(spotId, {
+        include: [
+            {
+                model: SpotImage,
+                attributes: {
+                    include: ['id', 'imageUrl', 'preview'],
+                    exclude: ['spotId', 'createdAt', 'updatedAt']
                 }
+            },
+            {
+                model: User,
+                attributes: {
+                    include: ['id', 'firstName', 'lastName'],
+                    exclude: ['username', 'email', 'hashedPassword', 'createdAt', 'updatedAt']
+                }
+            },
+            {
+                model: Review,
+                attributes: ['stars']
+            }
+        ]
+    });
 
-                // Check if an existing startDate/endDate is in between incoming dates
-                if (bookingStart >= startValue && bookingEnd <= endValue) {
-                    const err = new Error(
-                        "Sorry, this spot is already booked for the specified dates"
-                    );
-                    err.title = "Booking error";
-                    err.errors = {};
-                    err.errors.message = "Booking conflicts with an existing booking";
-                    err.status = 403;
-                    return next(err);
+    //check exists
+    if (checkValidSpot === null) {
+        const error = new Error();
+        error.message = "Spot couldn't be found"
+        error.status = 404;
+
+        return next(error);
+    }
+
+
+    //alias User as Owner
+    checkValidSpot = checkValidSpot.toJSON();
+    checkValidSpot.Owner = checkValidSpot.User
+    delete checkValidSpot.User;
+
+    //get Number of Reviews and avgStarRating
+    checkValidSpot.numReviews = checkValidSpot.Reviews.length;
+
+    let avgRating = 0;
+    checkValidSpot.Reviews.forEach((review) => {
+        avgRating += review.stars
+    })
+    avgRating = avgRating / checkValidSpot.Reviews.length;
+    checkValidSpot.avgStarRating = avgRating;
+
+    delete checkValidSpot.Reviews;
+
+    return res.json(checkValidSpot);
+
+})
+
+//newSection/ Edit Spot by Id
+
+router.put('/:spotId', requireAuth, validateNewSpot, async (req, res, next) => {
+    let { spotId } = req.params;
+    spotId = parseInt(spotId);
+    let { address, city, state, country, lat, lng, name, description, price } = req.body;
+
+    let spotToEdit = await Spot.findByPk(spotId);
+
+    //check exists
+    if (spotToEdit === null) {
+        const error = new Error();
+        error.message = "Spot couldn't be found"
+        error.status = 404;
+
+        return next(error);
+    }
+
+    //make sure User is also owner
+    let { user } = req;
+    user = user.toJSON();
+    const userId = user.id;
+    if (spotToEdit.ownerId !== userId) {
+        const error = new Error();
+        error.message = "Forbidden"
+        error.status = 403;
+
+        return next(error);
+    }
+
+    await Spot.update({
+        address: address,
+        city: city,
+        state: state,
+        country: country,
+        lat: lat,
+        lng: lng,
+        name: name,
+        description: description,
+        price: price
+    },
+    {
+        where: {
+            id: spotId
+        }
+    });
+
+    spotToEdit = await Spot.findByPk(spotId);
+
+    return res.json(spotToEdit);
+})
+
+
+
+//newSection/ Get all Spots
+
+    //subSection/ Validate req.query
+    const validateQuery = [
+        check('page')
+            .optional()
+            .isInt({min: 1, max: 10})
+            .withMessage("Page must be greater than or equal to 1"),
+        check('size')
+            .optional()
+            .isInt({min: 1, max: 20})
+            .withMessage("Size must be greater than or equal to 1"),
+        check('minLat')
+            .optional()
+            .isFloat({min: -90, max: 90})
+            .withMessage("Minimum latitude is invalid"),
+        check('maxLat')
+            .optional()
+            .isFloat({min: -90, max: 90})
+            .withMessage("Maximum latitude is invalid"),
+        check('minLng')
+            .optional()
+            .isFloat({min: -180, max: 180})
+            .withMessage("Minimum latitude is invalid"),
+        check('maxLng')
+            .optional()
+            .isFloat({min: -180, max: 180})
+            .withMessage("Maximum latitude is invalid"),
+        check('minPrice')
+            .optional()
+            .isFloat({min: 0})
+            .withMessage("Minimum price must be greater than or equal to 0"),
+        check('maxPrice')
+            .optional()
+            .isFloat({min: 0})
+            .withMessage("Maximum price must be greater than or equal to 0"),
+        handleValidationErrors
+    ]
+
+router.get('/', validateQuery, async (req, res, next) => {
+
+    let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
+
+    const pagination = {};
+    if (page) pagination.limit = parseInt(size);
+    if (size) pagination.offset = parseInt(size) * (parseInt(page) - 1);
+
+    const where = {};
+    if (minLat && maxLat) {
+        where.lat = { [Op.between]: [minLat, maxLat] };
+    } else {
+        if (minLat) where.lat = { [Op.gte]: parseInt(minLat) };
+        if (maxLat) where.lat = { [Op.lte]: parseInt(maxLat) };
+    }
+
+    if (minLng && maxLng) {
+        where.lng = { [Op.between]: [minLng, maxLng] };
+    } else {
+        if (minLng) where.lng = { [Op.gte]: parseInt(minLng) };
+        if (maxLng) where.lng = { [Op.lte]: parseInt(maxLng) };
+    }
+
+    if (minPrice && maxPrice) {
+        where.price = { [Op.between]: [minPrice, maxPrice] };
+    } else {
+        if (minPrice) where.price = { [Op.gte]: parseInt(minPrice) };
+        if (maxPrice) where.price = { [Op.lte]: parseInt(maxPrice) };
+    }
+
+    let spots  = await Spot.findAll({
+        where: where,
+        include: [
+        {
+            model: SpotImage,
+            where: {
+                preview: true
+            },
+            attributes: ["imageUrl"]
+        },
+        {
+            model: Review,
+            attributes: ["stars"]
+        }
+    ],
+    ...pagination
+    });
+
+    spots = spots.map((spot)=> {
+        let avgRating = 0;
+        const jsonSpot = spot.toJSON();
+        jsonSpot.Reviews.forEach((review)=> {
+            avgRating += review.stars
+        })
+        avgRating = avgRating / jsonSpot.Reviews.length
+        jsonSpot.avgRating = avgRating;
+        delete jsonSpot.Reviews
+        return jsonSpot
+    })
+
+
+    return res.json(spots);
+})
+
+//newSection/ Get Reviews by Spot
+router.get('/:spotId/reviews', async (req, res, next) => {
+    let { spotId } = req.params;
+    spotId = parseInt(spotId);
+
+
+
+    let spotReviews = await Review.findAll({
+        where: {
+            spotId: spotId
+        },
+        include:[
+            {
+            model: User,
+            attributes: {
+                exclude: ['username', 'email', 'hashedPassword', 'createdAt', 'updatedAt']
+                }
+            },
+            {
+                model: ReviewImage,
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt']
                 }
             }
-        }
+    ]
+    })
 
-        if (spot.ownerId !== req.user.id) {
-            const newBooking = await Booking.create({
-                userId: req.user.id,
-                spotId: parseInt(req.params.spotId),
-                startDate,
-                endDate,
-            });
+    if (!spotReviews.length) {
+        const error = new Error();
+        error.message = "Spot couldn't be found"
+        error.status = 404;
 
-            return res.json(newBooking);
-        } else {
-            const err = new Error("Forbidden");
-            err.title = "Forbidden";
-            err.errors = { message: "Not authorized to take this action" };
-            err.status = 403;
-            return next(err);
-        }
+        return next(error);
     }
 
-    const err = new Error("Spot couldn't be found");
-    err.title = "Spot couldn't be found";
-    err.errors = { message: "Spot couldn't be found" };
-    err.status = 404;
-    return next(err);
-});
+    return res.json({Reviews: spotReviews})
+})
+
+//newSection/ Create new Review
+
+
+    //subSection/ Validate User Input
+    const validateReview = [
+        check('review')
+            .exists({ checkFalsy: true })
+            .withMessage("Review text is required"),
+        check('stars')
+            .exists({ checkFalsy: true })
+            .isFloat({min: 1, max: 5})
+            .withMessage("Stars must be an integer from 1 to 5"),
+        handleValidationErrors
+    ]
+
+router.post("/:spotId/reviews", requireAuth, validateReview, async (req, res, next) => {
+    let { spotId } = req.params;
+    spotId = parseInt(spotId);
+
+    let { user } = req;
+    user = user.toJSON();
+    let userId = user.id;
+
+    const { review, stars } = req.body;
+
+    
+    let validateSpot = await Spot.findByPk(spotId, {
+        attributes: {
+            include: ['id'],
+            exclude: ['address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt']
+        },
+        include: {
+            model: Review,
+            attributes: {
+                include: ['userId', 'stars'],
+                exclude: ['createdAt', 'updatedAt']
+            }
+        }
+    })
+
+
+
+    //! invalid spotId
+    if (validateSpot === null) {
+        const error = new Error();
+        error.message = "Spot couldn't be found"
+        error.status = 404;
+
+        return next(error);
+    }
+
+    validateSpot = validateSpot.toJSON()
+
+    //! already reviewed
+    if (validateSpot.Reviews.length) {
+        const error = new Error();
+        error.message = "User already has a review for this spot"
+
+        return next(error)
+    }
+    
+    console.log("########### ", validateSpot, " ############");
+
+
+    let newReview = await Review.create({
+        userId: userId,
+        spotId: spotId,
+        review: review,
+        stars: stars
+    })
+
+    res.statusCode = 201;
+    return res.json(newReview)
+
+})
+
+
+//newSection/ Create Booking using spotId
+router.post('/:spotId/bookings', requireAuth, async (req, res, next) => {
+    let { user } = req;
+    user = user.toJSON();
+    let userId = user.id;
+
+    let { spotId } = req.params;
+    spotId = parseInt(spotId);
+
+    let findSpot = await Spot.findByPk(spotId);
+    if (!findSpot) {
+        const error = new Error();
+        error.message = "Spot couldn't be found"
+        error.status = 404;
+
+        return next(error);
+    }
+
+    if (findSpot.toJSON().ownerId === userId) {
+        const error = new Error();
+        error.errors = "Forbidden"
+        error.message = "Cannot create a booking at your own Spot"
+        error.status = 403;
+
+        return next(error);
+    }
+
+    let { startDate, endDate } = req.body;
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+
+    if (start >= end || end <= start) {
+        const error = new Error();
+        error.message = "Bad Request";
+        error.errors = { endDate: "endDate cannot be on or before startDate"}
+        error.status = 400
+
+        return next(error)
+    }
+
+    let bookingSpot = await Booking.findOne({
+        where: {
+            spotId: spotId,
+            [Op.or]: [
+                {
+                    startDate: {
+                        [Op.between]: [start, end]
+                    }
+                },
+                {
+                    endDate: {
+                        [Op.between]: [start, end]
+                    }
+                },
+                {
+                    [Op.and]: {
+                        startDate: {
+                            [Op.lte]: start
+                        },
+                        endDate: {
+                            [Op.gte]: end
+                        } 
+                    }
+                }
+            ]
+        }
+    })
+
+    if (bookingSpot) {
+            const error = new Error();
+            error.message = "Sorry, this spot is already booked for the specified dates";
+            error.errors = [
+                {startDate: "Start date conflicts with an existing booking"},
+                {endDate: "End date conflicts with an existing booking"}
+            ]
+            error.status = 403
+
+            return next(error)
+    }
+
+    let newBooking = await Booking.create({
+        userId: userId,
+        spotId: spotId,
+        startDate: start,
+        endDate: end
+    });
+
+    return res.json(newBooking);
+
+})
+
+//newSection/ Get all Bookings for spot by spotId
+router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {
+    let { spotId } = req.params;
+    spotId = parseInt(spotId);
+
+    let { user } = req;
+    if (user) {
+        user = user.toJSON();
+        userId = user.id;
+    }
+
+    
+    let getSpotBookings = await Booking.findAll({
+        where: {
+            spotId: spotId
+        },
+        include: [
+            {
+            model: User,
+            attributes: {
+                exclude: ['username', 'email', 'updatedAt', 'createdAt', 'hashedPassword']
+                }
+            },
+            {
+                model: Spot,
+                attributes: {
+                    exclude: ['id', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt']
+                }
+            }
+        ]
+    })
+
+    if (!getSpotBookings.length) {
+        const error = new Error();
+        error.message = "Spot couldn't be found"
+        error.status = 404;
+
+        return next(error);
+    }
+
+    const spotBookings = []
+    getSpotBookings.forEach((booking) => {
+        let currBooking = booking.toJSON();
+        spotBookings.push(currBooking)
+    })
+
+    const getBookingsNonOwner = [];
+    if (userId !== spotBookings[0].Spot.ownerId) {
+        spotBookings.forEach((booking) => {
+            const genBookingInfo = {};
+            genBookingInfo.spotId = booking.spotId;
+            genBookingInfo.startDate = booking.startDate;
+            genBookingInfo.endDate = booking.endDate;
+
+            getBookingsNonOwner.push(genBookingInfo);
+        })
+
+        return res.json({Bookings: getBookingsNonOwner});
+    }
+
+    const getBookingsOwner = [];
+    spotBookings.forEach((booking) => {
+        delete booking.Spot;
+        getBookingsOwner.push(booking);
+    })
+
+    return res.json({Bookings: getBookingsOwner});
+
+})
+
+
+//newSection/ Delete a Spot
+router.delete('/:spotId', requireAuth, async (req, res, next) => {
+    let {spotId} = req.params;
+    spotId = parseInt(spotId);
+
+    let spotToDelete = await Spot.findByPk(spotId);
+    if (!spotToDelete) {
+        const error = new Error();
+        error.message = "Spot couldn't be found"
+        error.status = 404;
+
+        return next(error);
+    }
+
+    //make sure User is also owner
+    let { user } = req;
+    user = user.toJSON();
+    const userId = user.id;
+    if (spotToDelete.ownerId !== userId) {
+        const error = new Error();
+        error.message = "Forbidden"
+        error.status = 403;
+
+        return next(error);
+    }
+
+    await spotToDelete.destroy();
+
+    return res.json({message: "Successfully deleted"});
+})
 
 module.exports = router;
