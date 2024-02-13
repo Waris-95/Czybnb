@@ -1,214 +1,218 @@
-// Import necessary modules and models
-const express = require("express");
-const { requireAuth } = require("../../utils/auth");
+const express = require('express');
+const { requireAuth } = require('../../utils/auth');
+const { Booking, Spot, SpotImage } = require('../../db/models');
+const { Op } = require('sequelize');
+const { check } = require("express-validator");
+const { handleValidationErrors } = require("../../utils/validation");
+const { validateBookingDates } = require('../../utils/validateSomeRoutes');
+
 const router = express.Router();
-const { Op } = require("sequelize");
-const {
-  Spot,
-  Review,
-  SpotImage,
-  User,
-  Booking,
-  sequelize,
-  ReviewImage,
-} = require("../../db/models");
 
-// Define a route to get all of the current user's bookings
-router.get("/current", requireAuth, async (req, res) => {
+router.get('/current', requireAuth, async (req, res, next) => {
   try {
-    // Extract the user information from the request object
-    const { user } = req;
-
-    // Fetch all bookings for the current user, including related spot and spot images
     const bookings = await Booking.findAll({
-      where: {
-        userId: user.id,
-      },
+      where: { userId: req.user.id },
       include: [
         {
           model: Spot,
-          as: "Spot",
           attributes: [
-            "id",
-            "ownerId",
-            "address",
-            "city",
-            "state",
-            "country",
-            "lat",
-            "lng",
-            "name",
-            "price",
+            'id',
+            'ownerId',
+            'address',
+            'city',
+            'state',
+            'country',
+            'lat',
+            'lng',
+            'name',
+            'price',
           ],
           include: [
             {
               model: SpotImage,
-              as: "SpotImages",
-              attributes: ["id", "url"],
+              as: 'SpotImages',
+              attributes: ['url'],
               where: { preview: true },
-              required: false,
+              required: false, // query does not fail if no SpotImages are found
             },
           ],
         },
       ],
     });
 
-    // Prepare an array to store the formatted bookings
-    const formattedBookings = [];
+    const formattedBookings = bookings.map((booking) => {
+      const spotDetails = booking.Spot
+        ? {
+            id: booking.Spot.id,
+            ownerId: booking.Spot.ownerId,
+            address: booking.Spot.address,
+            city: booking.Spot.city,
+            state: booking.Spot.state,
+            country: booking.Spot.country,
+            lat: booking.Spot.lat,
+            lng: booking.Spot.lng,
+            name: booking.Spot.name,
+            price: booking.Spot.price,
+            previewImage:
+              booking.Spot.SpotImages && booking.Spot.SpotImages[0]
+                ? booking.Spot.SpotImages[0].url
+                : null,
+          }
+        : {}; //if there are no spot
 
-    // Iterate through each booking to format the data
-    bookings.forEach((booking) => {
-      // Extract relevant information from the booking and related spot
-      const spot = booking.Spot;
-      const previewImage =
-        spot.SpotImages.length > 0 ? spot.SpotImages[0].url : null;
-
-      // Build a formatted booking object and push it to the array
-      formattedBookings.push({
+      return {
         id: booking.id,
         spotId: booking.spotId,
-        Spot: {
-          id: spot.id,
-          ownerId: spot.ownerId,
-          address: spot.address,
-          city: spot.city,
-          state: spot.state,
-          country: spot.country,
-          lat: spot.lat,
-          lng: spot.lng,
-          name: spot.name,
-          price: spot.price,
-          previewImage: previewImage,
-        },
+        Spot: spotDetails,
         userId: booking.userId,
         startDate: booking.startDate,
         endDate: booking.endDate,
         createdAt: booking.createdAt,
         updatedAt: booking.updatedAt,
-      });
+      };
     });
 
-    // Send the formatted bookings as a JSON response
-    res.status(200).json({ Bookings: formattedBookings });
+    res.json({ Bookings: formattedBookings });
   } catch (error) {
-    // Handle errors, log them, and send an internal server error response
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 });
 
 
+
+const validateBooking = [
+  requireAuth,
+  check("startDate")
+      .exists({ checkFalsy: true })
+      .withMessage("Must choose a start date"),
+  check("endDate")
+      .exists({ checkFalsy: true })
+      .withMessage("Must choose an end date"),
+  check("endDate")
+      .custom((value, { req }) => {
+          const endDate = new Date(value).getTime();
+          const startDate = new Date(req.body.startDate).getTime();
+
+          return endDate > startDate;
+      })
+      .withMessage("endDate cannot be on or before startDate"),
+  handleValidationErrors,
+];
+
 // Edit a booking
-router.put("/:bookingId", requireAuth, async (req, res) => {
-    // Extract user and new dates from the request
-    const { user } = req;
-    const { startDate, endDate } = req.body;
-  
-    try {
-      // Find the booking to be edited by its ID
-      const booking = await Booking.findByPk(req.params.bookingId);
-  
-      // Check if the booking exists
-      if (!booking) {
-        return res.status(404).json({ message: "Booking couldn't be found" });
+router.put("/:bookingId", validateBooking, async (req, res, next) => {
+  const booking = await Booking.findByPk(req.params.bookingId);
+
+  if (booking) {
+      if (booking.userId === req.user.id) {
+          const { startDate, endDate } = req.body;
+          const spot = await Spot.findByPk(booking.spotId);
+          const bookings = await spot.getBookings();
+          const startValue = new Date(startDate).getTime();
+          const endValue = new Date(endDate).getTime();
+
+          if (bookings.length > 0) {
+              for (const currBooking of bookings) {
+                  if (currBooking.id !== booking.id) {
+                      const bookingStart = new Date(
+                          currBooking.startDate
+                      ).getTime();
+                      const bookingEnd = new Date(
+                          currBooking.endDate
+                      ).getTime();
+
+                      // Simplified the condition for checking if there's an overlap
+                      if (
+                          (startValue >= bookingStart && startValue <= bookingEnd) ||
+                          (endValue >= bookingStart && endValue <= bookingEnd) ||
+                          (startValue <= bookingStart && endValue >= bookingEnd)
+                      ) {
+                          const err = new Error(
+                              "Sorry, this spot is already booked for the specified dates"
+                          );
+                          err.title = "Booking error";
+                          // Structured the error object with startDate and endDate errors
+                          err.errors = {
+                              startDate: "Start date conflicts with an existing booking",
+                              endDate: "End date conflicts with an existing booking"
+                          };
+                          err.status = 403;
+                          return next(err);
+                      }
+                  }
+              }
+          }
+
+          const currTime = Date.now();
+          if (currTime > endValue) {
+              const err = new Error("Past bookings can't be modified");
+              err.title = "Past bookings can't be modified";
+              err.errors = { message: "Past bookings can't be modified" };
+              err.status = 403;
+              return next(err);
+          }
+
+          booking.startDate = startDate;
+          booking.endDate = endDate;
+
+          await booking.save();
+
+          return res.json(booking);
+      } else {
+          const err = new Error("Forbidden");
+          err.title = "Forbidden";
+          err.errors = { message: "Not authorized to take this action" };
+          err.status = 403;
+          return next(err);
       }
-  
-      // Check if the user is the owner of the booking
-      if (booking.userId !== user.id) {
-        return res.status(403).json({
-          message: "You must log in as the owner of this booking to edit",
-        });
-      }
-  
-      // Check if the booking is in the past and can't be modified
-      if (booking.endDate < new Date()) {
-        return res
-          .status(403)
-          .json({ message: "Past bookings can't be modified" });
-      }
-  
-      // Remove the time portion of the dates
-      const formattedStartDate = new Date(startDate).toISOString().split("T")[0];
-      const formattedEndDate = new Date(endDate).toISOString().split("T")[0];
-  
-      // Check for conflicting bookings for the same spot and date range
-      const conflictingBooking = await Booking.findOne({
-        where: {
-          spotId: booking.spotId,
-          startDate: { [Op.lte]: formattedEndDate },
-          endDate: { [Op.gte]: formattedStartDate },
-          id: { [Op.not]: booking.id },
-        },
-      });
-  
-      // If conflicting booking is found, handle the error
-      if (conflictingBooking) {
-        return res.status(403).json({
-          message: "Sorry, this spot is already booked for the specified dates",
-          errors: {
-            startDate: "Start date conflicts with an existing booking",
-            endDate: "End date conflicts with an existing booking",
-          },
-        });
-      }
-  
-      // Update the booking with the new formatted dates
-      booking.startDate = formattedStartDate;
-      booking.endDate = formattedEndDate;
-  
-      // Save the changes to the database
-      await booking.save();
-  
-      // Return the updated booking as a JSON response
-      return res.status(200).json(booking);
-    } catch (error) {
-      // Handle errors, log them, and send an internal server error response
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
-    }
+  }
+
+  const err = new Error("Booking couldn't be found");
+  err.title = "Booking couldn't be found";
+  err.errors = { message: "Booking couldn't be found" };
+  err.status = 404;
+  return next(err);
 });
 
 
-// Delete a booking 
-router.delete("/:bookingId", requireAuth, async (req, res) => {
-    // Extract user information from the request
-    const { user } = req;
+// Delete a booking
+router.delete('/:bookingId', requireAuth, async (req, res, next) => {
+  try {
+    const { bookingId } = req.params;
+    const userId = req.user.id; // Retrieve the user ID from req.user
 
-    try {
-        // Find the booking to be deleted, including associated spot details
-        const booking = await Booking.findByPk(req.params.bookingId, {
-            include: {
-                model: Spot,
-            },
-        });
+    const booking = await Booking.findByPk(bookingId, {
+      include: {
+        model: Spot,
+        attributes: ['ownerId'],
+      },
+    });
 
-        // Check if the booking exists
-        if (!booking) {
-            return res.status(404).json({ message: "Booking couldn't be found" });
-        }
-
-        // Check if the booking has already started and can't be deleted
-        if (booking.startDate <= new Date()) {
-            return res.status(403).json({ message: "Bookings that have been started can't be deleted" });
-        }
-
-        // Check if the user is either the booking owner or the spot owner
-        if (booking.userId !== user.id && booking.Spot.ownerId !== user.id) {
-            return res.status(403).json({ message: "You are not authorized to delete this booking" });
-        }
-
-        // Delete the booking from the database
-        await booking.destroy();
-
-        // Return a success message as a JSON response
-        return res.status(200).json({ message: "Successfully deleted" });
-    } catch(error) {
-        // Handle errors, log them, and send an internal server error response
-        console.error(error);
-        res.status(500).json({ message: "Internal server error" });
+    if (!booking) {
+      return res.status(404).json({ message: "Booking couldn't be found" });
     }
+
+    // Ensure that the authenticated user is either the booking owner or the spot owner
+    if (booking.userId !== userId && booking.Spot.ownerId !== userId) {
+      const err = new Error("Forbidden");
+      err.title = "Forbidden";
+      err.errors = { message: "Not authorized to take this action" };
+      err.status = 403;
+      return next(err);
+    }
+
+    // Check if the booking has already started; if so, prevent deletion
+    if (new Date(booking.startDate) <= new Date()) {
+      return res.status(403).json({ message: "Bookings that have started can't be deleted" });
+    }
+
+    // Proceed with deletion if all checks pass
+    await booking.destroy();
+    res.json({ message: 'Successfully deleted' });
+  } catch (error) {
+    next(error);
+  }
 });
 
 
-
-module.exports = router
+module.exports = router;

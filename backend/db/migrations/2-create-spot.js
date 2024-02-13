@@ -1,16 +1,12 @@
-"use strict";
-
-/** @type {import('sequelize-cli').Migration} */
-
+'use strict';
 let options = {};
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA; // define your schema in options object
 }
-
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "Spots",
+      'Spots',
       {
         id: {
           allowNull: false,
@@ -20,17 +16,14 @@ module.exports = {
         },
         ownerId: {
           type: Sequelize.INTEGER,
-          references: {
-            model: "Users",
-            key: "id",
-          },
-          onUpdate: "CASCADE",
-          onDelete: "CASCADE",
+          allowNull: true,
+          references: { model: 'Users', key: 'id' },
+          onUpdate: 'CASCADE',
+          onDelete: 'SET NULL', // or 'CASCADE' if you want to delete spots when the user is deleted
         },
         address: {
           type: Sequelize.STRING,
           allowNull: false,
-          unique: true,
         },
         city: {
           type: Sequelize.STRING,
@@ -45,44 +38,38 @@ module.exports = {
           allowNull: false,
         },
         lat: {
-          type: Sequelize.DECIMAL(9, 6),
+          type: Sequelize.DECIMAL,
           allowNull: false,
         },
         lng: {
-          type: Sequelize.DECIMAL(9, 6),
+          type: Sequelize.DECIMAL,
           allowNull: false,
         },
         name: {
           type: Sequelize.STRING(50),
-          allowNull: false,
         },
         description: {
           type: Sequelize.STRING,
-          allowNull: false,
         },
         price: {
-          type: Sequelize.DECIMAL(10, 2),
-          allowNull: false,
+          type: Sequelize.DECIMAL,
         },
         createdAt: {
           allowNull: false,
           type: Sequelize.DATE,
-          defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+          defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
         },
         updatedAt: {
           allowNull: false,
           type: Sequelize.DATE,
-          defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+          defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
         },
       },
       options
     );
-
   },
-
   async down(queryInterface, Sequelize) {
-    options.tableName = "Spots";
-    await queryInterface.dropTable(options);
-    // await queryInterface.removeConstraint('Spots', 'fk_spots_ownerId');
+    options.tableName = 'Spots';
+    return queryInterface.dropTable(options);
   },
 };

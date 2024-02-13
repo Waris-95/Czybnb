@@ -1,63 +1,49 @@
-"use strict";
+'use strict';
 
-const { Booking } = require("../models");
-
+const { Booking } = require('../models');
 let options = {};
-if (process.env.NODE_ENV === "production") {
-    options.schema = process.env.SCHEMA;
+if (process.env.NODE_ENV === 'production') {
+  options.schema = process.env.SCHEMA; // define your schema in options object
 }
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
-    async up(queryInterface, Sequelize) {
-        options.tableName = "Bookings";
-        await Booking.bulkCreate(
-            [
-                {
-                    spotId: 1,
-                    userId: 2,
-                    startDate: "2024-9-17",
-                    endDate: "2024-10-23",
-                },
-                {
-                    spotId: 1,
-                    userId: 3,
-                    startDate: "2024-11-13",
-                    endDate: "2025-11-20",
-                },
-                {
-                    spotId: 2,
-                    userId: 3,
-                    startDate: "2024-12-20",
-                    endDate: "2024-2-2",
-                },
-                {
-                    spotId: 4,
-                    userId: 1,
-                    startDate: "2024-8-13",
-                    endDate: "2024-8-16",
-                },
-            ],
-            { validate: true }
-        );
-    },
+  async up(queryInterface, Sequelize) {
+    await Booking.bulkCreate(
+      [
+        {
+          userId: 1, // assuming John Smith has an id of 1
+          spotId: 1, // assuming the first spot has an id of 1
+          startDate: new Date('2030-11-22'),
+          endDate: new Date('2030-11-26'),
+        },
+        {
+          userId: 2,
+          spotId: 2,
+          startDate: new Date('2030-10-22'),
+          endDate: new Date('2030-10-26'),
+        },
+        {
+          userId: 3,
+          spotId: 3,
+          startDate: new Date('2030-10-22'),
+          endDate: new Date('2030-10-26'),
+        },
+      ],
+      { validate: true }
+    );
+  },
 
-    async down(queryInterface, Sequelize) {
-        options.tableName = "Bookings";
-        const Op = Sequelize.Op;
-        return queryInterface.bulkDelete(
-            options,
-            {
-                startDate: {
-                    [Op.in]: [
-                      "2024-9-17",
-                      "2024-11-13",
-                      "2024-12-20",
-                      "2024-8-13",
-                    ],
-                },
-            },
-            {}
-        );
-    },
+  async down(queryInterface, Sequelize) {
+    options.tableName = 'Bookings';
+    const Op = Sequelize.Op;
+    return queryInterface.bulkDelete(
+      options,
+      {
+        userId: {
+          [Op.in]: [1, 2],
+        },
+      },
+      {}
+    );
+  },
 };
