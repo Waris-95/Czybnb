@@ -15,89 +15,101 @@ const router = express.Router();
 
 // Get all reviews by currently logged in user
 router.get("/current", requireAuth, async (req, res, next) => {
-    let Reviews = [];
-    // Get reviews
+  try {
     const reviews = await Review.findAll({
-        where: { userId: req.user.id },
-        include: [
-            { model: User, attributes: ["id", "firstName", "lastName"] },
-            {
-                model: Spot,
-                attributes: {
-                    exclude: ["createdAt", "updatedAt", "description"],
-                },
-                include: [{ model: SpotImage }],
-            },
-            { model: ReviewImage, attributes: ["id", "url"] },
-        ],
-    });
-    // Modifying data of each review to match output requirements
-    reviews.forEach((review) => {
-        review = review.toJSON();
-        review.Spot.SpotImages.forEach((spotImage) => {
-            if (spotImage.preview === true) {
-                review.Spot.previewImage = spotImage.url;
-            }
-        });
-        if (!review.Spot.previewImage) {
-            review.Spot.previewImage = "No preview image found";
-        }
-        delete review.Spot.SpotImages;
-        Reviews.push(review);
-    });
-    res.json({ Reviews });
+      where: { userId: req.user.id },
+      include: [
+          { 
+              model: User, 
+              as: 'User', // Specify the alias for the User model
+              attributes: ["id", "firstName", "lastName"] 
+          },
+          {
+              model: Spot,
+              as: 'Spot', // Specify the alias for the Spot model
+              attributes: {
+                  exclude: ["createdAt", "updatedAt", "description"],
+              },
+              include: [{ 
+                  model: SpotImage,
+                  as: 'SpotImages' // Specify the alias for the SpotImage model
+              }],
+          },
+          { model: ReviewImage, attributes: ["id", "url"] },
+      ],
+  });
+  
+
+      const formattedReviews = reviews.map((review) => {
+          const formattedReview = review.toJSON();
+          formattedReview.Spot.SpotImages.forEach((spotImage) => {
+              if (spotImage.preview === true) {
+                  formattedReview.Spot.previewImage = spotImage.url;
+              }
+          });
+          if (!formattedReview.Spot.previewImage) {
+              formattedReview.Spot.previewImage = "No preview image found";
+          }
+          delete formattedReview.Spot.SpotImages;
+          return formattedReview;
+      });
+
+      res.json({ Reviews: formattedReviews });
+  } catch (error) {
+      next(error);
+  }
 });
+
+
 
 // Add an image to a review based on review id
 router.post("/:reviewId/images", requireAuth, async (req, res, next) => {
-    const review = await Review.findByPk(req.params.reviewId);
-    const reviewImages = await ReviewImage.findAll({
-        where: { reviewId: req.params.reviewId },
-    });
+  const review = await Review.findByPk(req.params.reviewId);
+  const reviewImages = await ReviewImage.findAll({
+      where: { reviewId: req.params.reviewId },
+  });
 
-    if (reviewImages.length >= 10) {
-        // console.log("reviewImages length:", reviewImages.length);
-        const err = new Error(
-            "Maximum number of images for this resource was reached"
-        );
-        err.title = "Maximum number of images for this resource was reached";
-        err.errors = {
-            message: "Maximum number of images for this resource was reached",
-        };
-        err.status = 403;
-        return next(err);
-    }
+  if (review) {
+      if (review.userId === req.user.id) {
+          if (reviewImages.length >= 10) {
+              // If the number of images for the review has reached the maximum limit, return a Forbidden error
+              const err = new Error("Maximum number of images for this resource was reached");
+              err.title = "Maximum number of images for this resource was reached";
+              err.errors = { message: "Maximum number of images for this resource was reached" };
+              err.status = 403;
+              return next(err);
+          }
 
-    if (review) {
-        if (review.userId === req.user.id) {
-            const { url } = req.body;
+          const { url } = req.body;
 
-            const newImage = await ReviewImage.create({
-                reviewId: parseInt(req.params.reviewId),
-                url,
-            });
+          const newImage = await ReviewImage.create({
+              reviewId: parseInt(req.params.reviewId),
+              url,
+          });
 
-            const data = newImage.toJSON();
+          const data = newImage.toJSON();
 
-            delete data.reviewId;
-            delete data.updatedAt;
-            delete data.createdAt;
+          delete data.reviewId;
+          delete data.updatedAt;
+          delete data.createdAt;
 
-            return res.json(data);
-        } else {
-            const err = new Error("Forbidden");
-            err.title = "Forbidden";
-            err.errors = { message: "Not authorized to take this action" };
-            err.status = 403;
-            return next(err);
-        }
-    }
+          return res.json(data);
+      } else {
+          // If the authenticated user is not the creator of the review, return a Forbidden error
+          const err = new Error("Forbidden");
+          err.title = "Forbidden";
+          err.errors = { message: "Not authorized to take this action" };
+          err.status = 403;
+          return next(err);
+      }
+  }
 
-    const err = new Error("Review couldn't be found");
-    err.title = "Review couldn't be found";
-    err.errors = { message: "Review couldn't be found" };
-    err.status = 404;
-    return next(err);
+  // If the review is not found, return a Not Found error
+  const err = new Error("Review couldn't be found");
+  err.title = "Review couldn't be found";
+  err.errors = { message: "Review couldn't be found" };
+  err.status = 404;
+  return next(err);
 });
 
 const validateReview = [
@@ -115,50 +127,36 @@ const validateReview = [
 ];
 
 // Edit an existing review
-router.put('/:reviewId', requireAuth, validateReview, async (req, res, next) => {
-    let { reviewId } = req.params;
-    reviewId = parseInt(reviewId);
+router.put("/:reviewId", requireAuth, validateReview, async (req, res, next) => {
+  const thisReview = await Review.findByPk(req.params.reviewId);
 
-    let { review, stars } = req.body;
+  if (thisReview) {
+      if (req.user.id === thisReview.userId) {
+          const { review, stars } = req.body;
 
-    let findReview = await Review.findByPk(reviewId);
-    if (findReview === null) {
-        const error = new Error();
-        error.message = "Review couldn't be found"
-        error.status = 404;
+          thisReview.review = review;
+          thisReview.stars = stars;
 
-        return next(error);
-    }
+          thisReview.save();
 
-    //make sure User is also owner
-    let { user } = req;
-    user = user.toJSON();
-    const userId = user.id;
-    if (findReview.userId !== userId) {
-        const error = new Error();
-        error.message = "Forbidden"
-        error.status = 403;
+          return res.json(thisReview);
+      } else {
+          const err = new Error("Forbidden");
+          err.title = "Forbidden";
+          err.errors = { message: "Not authorized to take this action" };
+          err.status = 403;
+          return next(err);
+      }
+  }
 
-        return next(error);
-    }
+  const err = new Error("Review couldn't be found");
+  err.title = "Review couldn't be found";
+  err.errors = { message: "Review couldn't be found" };
+  err.status = 404;
+  return next(err);
+});
 
-    // findReview = findReview.toJSON();
 
-    await Review.update({
-        review: review,
-        stars: stars
-    },
-    {
-        where: {
-            id: reviewId
-        }
-    })
-
-    findReview = await Review.findByPk(reviewId);
-
-    return res.json(findReview)
-
-})
 
 // Delete a review
 router.delete("/:reviewId", requireAuth, async (req, res, next) => {

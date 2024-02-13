@@ -1,35 +1,28 @@
-const express = require("express");
-const { requireAuth } = require("../../utils/auth");
-
-const { Spot, SpotImage, User } = require("../../db/models");
-
+const express = require('express');
+const { SpotImage, Spot } = require('../../db/models');
+const { requireAuth } = require('../../utils/auth');
 const router = express.Router();
 
 // Delete a spot image
-router.delete("/:imageId", requireAuth, async (req, res, next) => {
-    const image = await SpotImage.findByPk(req.params.imageId);
+router.delete('/:imageId', requireAuth, async (req, res, next) => {
+  try {
+    const imageId = req.params.imageId;
+    const spotImage = await SpotImage.findByPk(imageId);
 
-    if (image) {
-        const spot = await Spot.findByPk(image.spotId);
-        if (spot) {
-            if (req.user.id === spot.ownerId) {
-                image.destroy();
-                return res.json({ message: "Succesfully deleted" });
-            } else {
-                const err = new Error("Forbidden");
-                err.title = "Forbidden";
-                err.errors = { message: "Not authorized to take this action" };
-                err.status = 403;
-                return next(err);
-            }
-        }
+    if (!spotImage) {
+      return res.status(404).json({ message: "Spot Image couldn't be found" });
     }
 
-    const err = new Error("Spot image couldn't be found");
-    err.title = "Spot image couldn't be found";
-    err.errors = { message: "Spot image couldn't be found" };
-    err.status = 404;
-    return next(err);
+    const spot = await Spot.findByPk(spotImage.spotId);
+    if (!spot || spot.ownerId !== req.user.id) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
+    await spotImage.destroy();
+    res.json({ message: 'Successfully deleted' });
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;
