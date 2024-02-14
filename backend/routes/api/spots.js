@@ -486,15 +486,15 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
       const err = new Error("Sorry, this spot is already booked for the specified dates");
       err.title = "Booking error";
       err.errors = {};
-
+    
       if (bookingErr.includes("start")) {
         err.errors.startDate = "Start date conflicts with an existing booking";
       }
-
+    
       if (bookingErr.includes("end")) {
         err.errors.endDate = "End date conflicts with an existing booking";
       }
-
+    
       err.status = 403;
       return next(err);
     }
