@@ -16,7 +16,11 @@ router.delete('/:imageId', requireAuth, async (req, res, next) => {
 
     const review = await Review.findByPk(reviewImage.reviewId);
     if (!review || review.userId !== req.user.id) {
-      return res.status(403).json({ message: 'Unauthorized user' });
+      const err = new Error("Forbidden");
+      err.title = "Forbidden";
+      err.errors = { message: "Not authorized to take this action" };
+      err.status = 403;
+      throw err;
     }
 
     await reviewImage.destroy();

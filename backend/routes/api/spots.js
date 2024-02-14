@@ -450,75 +450,77 @@ router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {
 
 // Create a booking for a spot based on id
 router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, next) => {
-  const spot = await Spot.findByPk(req.params.spotId);
+  try {
+    const spot = await Spot.findByPk(req.params.spotId);
 
-  if (!spot) {
-    const err = new Error("Spot couldn't be found");
-    err.title = "Spot couldn't be found";
-    err.errors = { message: "Spot couldn't be found" };
-    err.status = 404;
-    return next(err);
-  }
+    if (!spot) {
+      const err = new Error("Spot couldn't be found");
+      err.title = "Spot couldn't be found";
+      err.errors = { message: "Spot couldn't be found" };
+      err.status = 404;
+      throw err;
+    }
 
-  const { startDate, endDate } = req.body;
-  const bookings = await spot.getBookings();
+    const { startDate, endDate } = req.body;
+    const bookings = await spot.getBookings();
 
-  if (bookings.length > 0) {
-    // Check for booking conflicts
-    let bookingErr = [];
+    if (bookings.length > 0) {
+      // Check for booking conflicts
+      let bookingErr = [];
 
-    for (const currBooking of bookings) {
-      const startValue = new Date(startDate).getTime();
-      const endValue = new Date(endDate).getTime();
-      const bookingStart = new Date(currBooking.startDate).getTime();
-      const bookingEnd = new Date(currBooking.endDate).getTime();
+      for (const currBooking of bookings) {
+        const startValue = new Date(startDate).getTime();
+        const endValue = new Date(endDate).getTime();
+        const bookingStart = new Date(currBooking.startDate).getTime();
+        const bookingEnd = new Date(currBooking.endDate).getTime();
 
-      if (startValue >= bookingStart && startValue <= bookingEnd) {
-        bookingErr.push("start");
+        if (startValue >= bookingStart && startValue <= bookingEnd) {
+          bookingErr.push("start");
+        }
+
+        if (endValue >= bookingStart && endValue <= bookingEnd) {
+          bookingErr.push("end");
+        }
       }
 
-      if (endValue >= bookingStart && endValue <= bookingEnd) {
-        bookingErr.push("end");
+      if (bookingErr.length > 0) {
+        const err = new Error("Sorry, this spot is already booked for the specified dates");
+        err.title = "Booking error";
+        err.errors = {};
+
+        if (bookingErr.includes("start")) {
+          err.errors.startDate = "Start date conflicts with an existing booking";
+        }
+
+        if (bookingErr.includes("end")) {
+          err.errors.endDate = "End date conflicts with an existing booking";
+        }
+
+        err.status = 403;
+        throw err;
       }
     }
 
-    if (bookingErr.length > 0) {
-      const err = new Error("Sorry, this spot is already booked for the specified dates");
-      err.title = "Booking error";
-      err.errors = {};
-    
-      if (bookingErr.includes("start")) {
-        err.errors.startDate = "Start date conflicts with an existing booking";
-      }
-    
-      if (bookingErr.includes("end")) {
-        err.errors.endDate = "End date conflicts with an existing booking";
-      }
-    
+    // Create new booking
+    if (spot.ownerId !== req.user.id) {
+      const newBooking = await Booking.create({
+        userId: req.user.id,
+        spotId: parseInt(req.params.spotId),
+        startDate,
+        endDate,
+      });
+
+      return res.json(newBooking);
+    } else {
+      const err = new Error("Forbidden");
+      err.title = "Forbidden";
+      err.errors = { message: "Not authorized to take this action" };
       err.status = 403;
-      return next(err);
+      throw err;
     }
-  }
-
-  // Create new booking
-  if (spot.ownerId !== req.user.id) {
-    const newBooking = await Booking.create({
-      userId: req.user.id,
-      spotId: parseInt(req.params.spotId),
-      startDate,
-      endDate,
-    });
-
-    return res.json(newBooking);
-  } else {
-    const err = new Error("Forbidden");
-    err.title = "Forbidden";
-    err.errors = { message: "Not authorized to take this action" };
-    err.status = 403;
-    return next(err);
+  } catch (error) {
+    next(error);
   }
 });
-
-
 
 module.exports = router;
