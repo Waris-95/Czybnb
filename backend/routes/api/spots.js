@@ -478,9 +478,8 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
         if (
           (startValue >= bookingStart && startValue <= bookingEnd) || // Inside existing booking
           (endValue >= bookingStart && endValue <= bookingEnd) || // Inside existing booking
-          (startValue <= bookingStart && endValue >= bookingEnd) // Outside existing booking
+          (startValue <= bookingStart && endValue >= bookingEnd) || // Outside existing booking
           (endValue >= bookingStart && endValue <= bookingEnd) // End date falls within existing booking
-
         ) {
           bookingErr.push("overlap");
         }
@@ -520,5 +519,6 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
     next(error);
   }
 });
+
 
 module.exports = router;
