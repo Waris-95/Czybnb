@@ -474,12 +474,15 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
         const bookingStart = new Date(currBooking.startDate).getTime();
         const bookingEnd = new Date(currBooking.endDate).getTime();
 
-        if (startValue >= bookingStart && startValue <= bookingEnd) {
-          bookingErr.push("start");
-        }
+        // Check for overlap
+        if (
+          (startValue >= bookingStart && startValue <= bookingEnd) || // Inside existing booking
+          (endValue >= bookingStart && endValue <= bookingEnd) || // Inside existing booking
+          (startValue <= bookingStart && endValue >= bookingEnd) // Outside existing booking
+          (endValue >= bookingStart && endValue <= bookingEnd) // End date falls within existing booking
 
-        if (endValue >= bookingStart && endValue <= bookingEnd) {
-          bookingErr.push("end");
+        ) {
+          bookingErr.push("overlap");
         }
       }
 
@@ -488,13 +491,8 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
         err.title = "Booking error";
         err.errors = {};
 
-        if (bookingErr.includes("start")) {
-          err.errors.startDate = "Start date conflicts with an existing booking";
-        }
-
-        if (bookingErr.includes("end")) {
-          err.errors.endDate = "End date conflicts with an existing booking";
-        }
+        // Set error message for overlap
+        err.errors.message = "Spot is already booked for the specified dates";
 
         err.status = 403;
         throw err;
