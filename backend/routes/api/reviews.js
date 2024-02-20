@@ -164,7 +164,7 @@ router.delete("/:reviewId", requireAuth, async (req, res, next) => {
 
     if (review) {
         if (req.user.id === review.userId) {
-            review.destroy();
+             await review.destroy(); // Corrected line
 
             return res.json({ message: "Successfully deleted" });
         } else {

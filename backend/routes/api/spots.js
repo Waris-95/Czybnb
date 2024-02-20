@@ -486,12 +486,16 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
       }
 
       if (bookingErr.length > 0) {
-        const err = new Error("Sorry, this spot is already booked for the specified dates");
+        const err = new Error
+          ("Sorry, this spot is already booked for the specified dates");
         err.title = "Booking error";
-        err.errors = {};
+        err.errors = {
+          startDate: "Start date conflicts with an existing booking",
+          endDate: "End date conflicts with an existing booking",
+        };
 
         // Set error message for overlap
-        err.errors.message = "Spot is already booked for the specified dates";
+        // err.errors.message = "Spot is already booked for the specified dates";
 
         err.status = 403;
         throw err;
