@@ -23,7 +23,6 @@ const Sequelize = require('sequelize');
 const router = express.Router();
 
 // GET all spots with query filters
-
 router.get('/', validateQueryParams, async (req, res, next) => {
   try {
     let {
@@ -70,7 +69,7 @@ router.get('/', validateQueryParams, async (req, res, next) => {
           required: false,
         },
       ],
-      group: ['Spot.id'],
+      group: ['Spot.id', 'SpotImages.id'],
       limit: size,
       offset: (page - 1) * size,
       subQuery: false,
