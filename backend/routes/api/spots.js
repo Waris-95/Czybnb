@@ -362,9 +362,11 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
     const spot = await Spot.findByPk(req.params.spotId);
 
     if (!spot) {
-      return res.status(404).json({
-        message: "Spot couldn't be found",
-      });
+      const err = new Error("Spot couldn't be found");
+      err.title = "Spot couldn't be found";
+      err.errors = { message: "Spot couldn't be found" };
+      err.status = 404;
+      throw err;
     }
 
     const { startDate, endDate } = req.body;

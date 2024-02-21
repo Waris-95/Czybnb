@@ -64,45 +64,53 @@ router.get("/current", requireAuth, async (req, res, next) => {
 
 // Add an image to a review based on review id
 router.post("/:reviewId/images", requireAuth, async (req, res, next) => {
-    const review = await Review.findByPk(req.params.reviewId);
-    const reviewImages = await ReviewImage.findAll({
-        where: { reviewId: req.params.reviewId },
-    });
+  const review = await Review.findByPk(req.params.reviewId);
+  const reviewImages = await ReviewImage.findAll({
+      where: { reviewId: req.params.reviewId },
+  });
 
-    if (!review) {
-        const err = new Error("Review couldn't be found");
-        err.status = 404;
-        return next(err);
-    }
+  if (review) {
+      if (review.userId === req.user.id) {
+          if (reviewImages.length >= 10) {
+              // If the number of images for the review has reached the maximum limit, return a Forbidden error
+              const err = new Error("Maximum number of images for this resource was reached");
+              err.title = "Maximum number of images for this resource was reached";
+              err.errors = { message: "Maximum number of images for this resource was reached" };
+              err.status = 403;
+              return next(err);
+          }
 
-    if (review.userId !== req.user.id) {
-        const err = new Error("Forbidden");
-        err.status = 403;
-        return next(err);
-    }
+          const { url } = req.body;
 
-    if (reviewImages.length >= 10) {
-        const err = new Error("Maximum number of images for this resource was reached");
-        err.status = 403;
-        return next(err);
-    }
+          const newImage = await ReviewImage.create({
+              reviewId: parseInt(req.params.reviewId),
+              url,
+          });
 
-    const { url } = req.body;
+          const data = newImage.toJSON();
 
-    const newImage = await ReviewImage.create({
-        reviewId: parseInt(req.params.reviewId),
-        url,
-    });
+          delete data.reviewId;
+          delete data.updatedAt;
+          delete data.createdAt;
 
-    const data = newImage.toJSON();
+          return res.json(data);
+      } else {
+          // If the authenticated user is not the creator of the review, return a Forbidden error
+          const err = new Error("Forbidden");
+          err.title = "Forbidden";
+          err.errors = { message: "Not authorized to take this action" };
+          err.status = 403;
+          return next(err);
+      }
+  }
 
-    delete data.reviewId;
-    delete data.updatedAt;
-    delete data.createdAt;
-
-    return res.json(data);
+  // If the review is not found, return a Not Found error
+  const err = new Error("Review couldn't be found");
+  err.title = "Review couldn't be found";
+  err.errors = { message: "Review couldn't be found" };
+  err.status = 404;
+  return next(err);
 });
-
 
 const validateReview = [
     check("review")
@@ -120,50 +128,59 @@ const validateReview = [
 
 // Edit an existing review
 router.put("/:reviewId", requireAuth, validateReview, async (req, res, next) => {
-    const thisReview = await Review.findByPk(req.params.reviewId);
+  const thisReview = await Review.findByPk(req.params.reviewId);
 
-    if (!thisReview) {
-        const err = new Error("Review couldn't be found");
-        err.status = 404;
-        return next(err);
-    }
+  if (thisReview) {
+      if (req.user.id === thisReview.userId) {
+          const { review, stars } = req.body;
 
-    if (req.user.id !== thisReview.userId) {
-        return res.status(403).json({ message: 'Forbidden' });
-    }
+          thisReview.review = review;
+          thisReview.stars = stars;
 
-    const { review, stars } = req.body;
+          thisReview.save();
 
-    thisReview.review = review;
-    thisReview.stars = stars;
+          return res.json(thisReview);
+      } else {
+          const err = new Error("Forbidden");
+          err.title = "Forbidden";
+          err.errors = { message: "Not authorized to take this action" };
+          err.status = 403;
+          return next(err);
+      }
+  }
 
-    await thisReview.save();
-
-    return res.json(thisReview);
+  const err = new Error("Review couldn't be found");
+  err.title = "Review couldn't be found";
+  err.errors = { message: "Review couldn't be found" };
+  err.status = 404;
+  return next(err);
 });
+
+
 
 // Delete a review
 router.delete("/:reviewId", requireAuth, async (req, res, next) => {
     const review = await Review.findByPk(req.params.reviewId);
 
-    if (!review) {
-        return res.status(404).json({
-            message: "Review couldn't be found",
-          });
+    if (review) {
+        if (req.user.id === review.userId) {
+             await review.destroy(); // Corrected line
+
+            return res.json({ message: "Successfully deleted" });
+        } else {
+            const err = new Error("Forbidden");
+            err.title = "Forbidden";
+            err.errors = { message: "Not authorized to take this action" };
+            err.status = 403;
+            return next(err);
+        }
     }
 
-    if (req.user.id !== review.userId) {
-        res.status(403).json({ message: 'Forbidden' });
-    }
-
-
-    // Proceed with deleting the review
-    try {
-        await review.destroy();
-        return res.json({ message: "Successfully deleted" });
-    } catch (error) {
-        return next(error);
-    }
+    const err = new Error("Review couldn't be found");
+    err.title = "Review couldn't be found";
+    err.errors = { message: "Review couldn't be found" };
+    err.status = 404;
+    return next(err);
 });
 
 module.exports = router;
