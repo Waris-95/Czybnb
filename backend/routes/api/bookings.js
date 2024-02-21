@@ -158,13 +158,9 @@ router.put("/:bookingId", validateBooking, async (req, res, next) => {
           await booking.save();
 
           return res.json(booking);
-      } else {
-          const err = new Error("Forbidden");
-          err.title = "Forbidden";
-          err.errors = { message: "Not authorized to take this action" };
-          err.status = 403;
-          return next(err);
-      }
+       } else {
+        return res.status(403).json({ message: 'Forbidden' });
+    }
   }
 
   const err = new Error("Booking couldn't be found");
@@ -194,11 +190,7 @@ router.delete('/:bookingId', requireAuth, async (req, res, next) => {
 
     // Ensure that the authenticated user is either the booking owner or the spot owner
     if (booking.userId !== userId && booking.Spot.ownerId !== userId) {
-      const err = new Error("Forbidden");
-      err.title = "Forbidden";
-      err.errors = { message: "Not authorized to take this action" };
-      err.status = 403;
-      return next(err);
+      return res.status(403).json({ message: 'Forbidden' });
     }
 
     // Check if the booking has already started; if so, prevent deletion

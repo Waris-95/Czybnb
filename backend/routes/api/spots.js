@@ -510,11 +510,7 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
 
       return res.json(newBooking);
     } else {
-      const err = new Error("Forbidden");
-      err.title = "Forbidden";
-      err.errors = { message: "Not authorized to take this action" };
-      err.status = 403;
-      throw err;
+      return res.status(403).json({ message: 'Forbidden' });
     }
   } catch (error) {
     next(error);

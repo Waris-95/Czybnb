@@ -129,11 +129,7 @@ router.put("/:reviewId", requireAuth, validateReview, async (req, res, next) => 
     }
 
     if (req.user.id !== thisReview.userId) {
-        const err = new Error("Forbidden");
-        err.title = "Forbidden";
-        err.errors = { message: "Not authorized to take this action" };
-        err.status = 403;
-        return next(err);
+        return res.status(403).json({ message: 'Forbidden' });
     }
 
     const { review, stars } = req.body;
@@ -151,16 +147,15 @@ router.delete("/:reviewId", requireAuth, async (req, res, next) => {
     const review = await Review.findByPk(req.params.reviewId);
 
     if (!review) {
-        const err = new Error("Review couldn't be found");
-        err.status = 404;
-        return next(err);
+        return res.status(404).json({
+            message: "Review couldn't be found",
+          });
     }
 
     if (req.user.id !== review.userId) {
-        const err = new Error("Forbidden");
-        err.status = 403;
-        return next(err);
+        res.status(403).json({ message: 'Forbidden' });
     }
+
 
     // Proceed with deleting the review
     try {
