@@ -8,37 +8,44 @@ const { validateBookingDates } = require('../../utils/validateSomeRoutes');
 
 const router = express.Router();
 
-router.get('/current', requireAuth, async (req, res, next) => {
+router.get("/current", requireAuth, async (req, res, next) => {
   try {
     const bookings = await Booking.findAll({
-      where: { userId: req.user.id },
+      where: { spotId: req.params.spotId },
       include: [
         {
           model: Spot,
           attributes: [
-            'id',
-            'ownerId',
-            'address',
-            'city',
-            'state',
-            'country',
-            'lat',
-            'lng',
-            'name',
-            'price',
+            "id",
+            "ownerId",
+            "address",
+            "city",
+            "state",
+            "country",
+            "lat",
+            "lng",
+            "name",
+            "price",
           ],
           include: [
             {
               model: SpotImage,
-              as: 'SpotImages',
-              attributes: ['url'],
+              as: "SpotImages",
+              attributes: ["url"],
               where: { preview: true },
-              required: false, // query does not fail if no SpotImages are found
+              required: false,
             },
           ],
         },
       ],
     });
+
+    if (!bookings) {
+      return res.status(404).json({
+        message: "No bookings found for this spot",
+        statusCode: 404,
+      });
+    }
 
     const formattedBookings = bookings.map((booking) => {
       const spotDetails = booking.Spot
@@ -58,7 +65,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
                 ? booking.Spot.SpotImages[0].url
                 : null,
           }
-        : {}; //if there are no spot
+        : {};
 
       return {
         id: booking.id,
@@ -77,6 +84,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
     next(error);
   }
 });
+
 
 
 

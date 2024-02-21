@@ -17,10 +17,6 @@ module.exports = {
         reviewId: {
           type: Sequelize.INTEGER,
           allowNull: false,
-          references: {
-            model: 'Review', // Update to match the model name
-            key: 'id',
-          },
         },
         url: {
           type: Sequelize.STRING,
