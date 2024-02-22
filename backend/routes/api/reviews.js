@@ -125,33 +125,34 @@ const validateReview = [
 
 // Edit an existing review
 router.put("/:reviewId", requireAuth, validateReview, async (req, res, next) => {
-  const thisReview = await Review.findByPk(req.params.reviewId);
-
-  if (thisReview) {
-      if (req.user.id === thisReview.userId) {
-          const { review, stars } = req.body;
-
-          thisReview.review = review;
-          thisReview.stars = stars;
-
-          thisReview.save();
-
-          return res.json(thisReview);
-      } else {
-          const err = new Error("Forbidden");
-          err.title = "Forbidden";
-          err.errors = { message: "Not authorized to take this action" };
-          err.status = 403;
-          return next(err);
-      }
-  }
-
-  const err = new Error("Review couldn't be found");
-  err.title = "Review couldn't be found";
-  err.errors = { message: "Review couldn't be found" };
-  err.status = 404;
-  return next(err);
-});
+    const thisReview = await Review.findByPk(req.params.reviewId);
+  
+    if (thisReview) {
+        if (req.user.id === thisReview.userId) {
+            const { review, stars } = req.body;
+  
+            thisReview.review = review;
+            thisReview.stars = stars;
+  
+            thisReview.save();
+  
+            return res.json(thisReview);
+        } else {
+            const err = new Error("Forbidden");
+            err.title = "Forbidden";
+            err.errors = { message: "Not authorized to take this action" };
+            err.status = 403;
+            return next(err);
+        }
+    }
+  
+    // Return a 404 response if the review couldn't be found
+    return res.status(404).json({
+      message: "Review couldn't be found",
+    //   { message: "Review couldn't be found" }
+    });
+  });
+  
 
 
 
