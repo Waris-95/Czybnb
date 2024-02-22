@@ -95,11 +95,9 @@ router.post("/:reviewId/images", requireAuth, async (req, res, next) => {
           return res.json(data);
       } else {
           // If the authenticated user is not the creator of the review, return a Forbidden error
-          const err = new Error("Forbidden");
-          err.title = "Forbidden";
-          err.errors = { message: "Not authorized to take this action" };
-          err.status = 403;
-          return next(err);
+          return res.status(403).json({
+            message: 'Forbidden',
+          });
       }
   }
 
@@ -138,11 +136,9 @@ router.put("/:reviewId", requireAuth, validateReview, async (req, res, next) => 
   
             return res.json(thisReview);
         } else {
-            const err = new Error("Forbidden");
-            err.title = "Forbidden";
-            err.errors = { message: "Not authorized to take this action" };
-            err.status = 403;
-            return next(err);
+           return res.status(403).json({
+            message: "Forbidden",
+           });
         }
     }
   
@@ -166,19 +162,15 @@ router.delete("/:reviewId", requireAuth, async (req, res, next) => {
 
             return res.json({ message: "Successfully deleted" });
         } else {
-            const err = new Error("Forbidden");
-            err.title = "Forbidden";
-            err.errors = { message: "Not authorized to take this action" };
-            err.status = 403;
-            return next(err);
+          return res.status(403).json({
+            message: "Forbidden",  
+          });
         }
     }
 
-    const err = new Error("Review couldn't be found");
-    err.title = "Review couldn't be found";
-    err.errors = { message: "Review couldn't be found" };
-    err.status = 404;
-    return next(err);
+    return res.status(404).json({
+        message: "Review couldn't be found",
+    });
 });
 
 module.exports = router;
