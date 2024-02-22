@@ -212,5 +212,4 @@ router.delete('/:bookingId', requireAuth, async (req, res, next) => {
   }
 });
 
-
 module.exports = router;
