@@ -18,7 +18,7 @@ module.exports = {
           type: Sequelize.INTEGER,
           allowNull: false,
           references: {
-            model: 'Review', // Update to match the model name
+            model: 'Reviews', // Update to match the model name
             key: 'id',
           },
         },

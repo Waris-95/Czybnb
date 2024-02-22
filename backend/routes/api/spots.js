@@ -590,11 +590,19 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
       // Check for booking conflicts
       let bookingErr = [];
 
+      console.log("Start Date:", startDate);
+      console.log("End Date:", endDate);
+
+
+
       for (const currBooking of bookings) {
         const startValue = new Date(startDate).getTime();
         const endValue = new Date(endDate).getTime();
         const bookingStart = new Date(currBooking.startDate).getTime();
         const bookingEnd = new Date(currBooking.endDate).getTime();
+
+        console.log("Booking Start Date:", currBooking.startDate);
+        console.log("Booking End Date:", currBooking.endDate);
 
         // Check for overlap
         if (
@@ -641,6 +649,7 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
     next(error);
   }
 });
+
 
 
 module.exports = router;
