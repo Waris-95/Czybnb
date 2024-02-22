@@ -73,11 +73,10 @@ router.post("/:reviewId/images", requireAuth, async (req, res, next) => {
       if (review.userId === req.user.id) {
           if (reviewImages.length >= 10) {
               // If the number of images for the review has reached the maximum limit, return a Forbidden error
-              const err = new Error("Maximum number of images for this resource was reached");
-              err.title = "Maximum number of images for this resource was reached";
-              err.errors = { message: "Maximum number of images for this resource was reached" };
-              err.status = 403;
-              return next(err);
+              res.status(403).json({
+                message: 'Maximum number of images for this resource was reached',
+              });
+            //   return next(err);
           }
 
           const { url } = req.body;
@@ -105,11 +104,9 @@ router.post("/:reviewId/images", requireAuth, async (req, res, next) => {
   }
 
   // If the review is not found, return a Not Found error
-  const err = new Error("Review couldn't be found");
-  err.title = "Review couldn't be found";
-  err.errors = { message: "Review couldn't be found" };
-  err.status = 404;
-  return next(err);
+  return res.status(404).json({
+    message: "Review couldn't be found",
+  });
 });
 
 const validateReview = [
