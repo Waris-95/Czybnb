@@ -8,6 +8,7 @@ const { validateBookingDates } = require('../../utils/validateSomeRoutes');
 
 const router = express.Router();
 
+// Get all bookings by currently logged in user
 router.get('/current', requireAuth, async (req, res, next) => {
   try {
     const bookings = await Booking.findAll({
@@ -39,7 +40,8 @@ router.get('/current', requireAuth, async (req, res, next) => {
         },
       ],
     });
-
+      
+    // Format the bookings to be returned to the client
     const formattedBookings = bookings.map((booking) => {
       const spotDetails = booking.Spot
         ? {
@@ -78,8 +80,8 @@ router.get('/current', requireAuth, async (req, res, next) => {
   }
 });
 
-
-
+  
+// Get all bookings by a specific spot
 const validateBooking = [
   requireAuth,
   check("startDate")
@@ -127,17 +129,25 @@ router.put("/:bookingId", validateBooking, async (req, res, next) => {
                           (endValue >= bookingStart && endValue <= bookingEnd) ||
                           (startValue <= bookingStart && endValue >= bookingEnd)
                       ) {
-                          const err = new Error(
-                              "Sorry, this spot is already booked for the specified dates"
-                          );
-                          err.title = "Booking error";
-                          // Structured the error object with startDate and endDate errors
-                          err.errors = {
-                              startDate: "Start date conflicts with an existing booking",
-                              endDate: "End date conflicts with an existing booking"
-                          };
-                          err.status = 403;
-                          return next(err);
+                          // const err = new Error(
+                          //     "Sorry, this spot is already booked for the specified dates"
+                          // );
+                          // err.title = "Booking error";
+                          // // Structured the error object with startDate and endDate errors
+                          // err.errors = {
+                          //     startDate: "Start date conflicts with an existing booking",
+                          //     endDate: "End date conflicts with an existing booking"
+                          // };
+                          // err.status = 403;
+                          // return next(err);
+                          
+                            return res.status(403).json({
+                              message: 'Sorry, this spot is already booked for the specified dates',
+                              errors: {
+                                startDate: 'Start date conflicts with an existing booking',
+                                endDate: 'End date conflicts with an existing booking',
+                              },
+                            });
                       }
                   }
               }
@@ -163,11 +173,7 @@ router.put("/:bookingId", validateBooking, async (req, res, next) => {
     }
   }
 
-  const err = new Error("Booking couldn't be found");
-  err.title = "Booking couldn't be found";
-  err.errors = { message: "Booking couldn't be found" };
-  err.status = 404;
-  return next(err);
+  return res.status(404).json({ message: "Booking couldn't be found" });
 });
 
 

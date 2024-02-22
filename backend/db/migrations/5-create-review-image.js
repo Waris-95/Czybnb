@@ -20,8 +20,8 @@ module.exports = {
           references: {
             model: 'Reviews', // Update to match the model name
             key: 'id',
-            onDelete: 'CASCADE', // added cascade to delete reviews when deleting review images
-          },
+           },
+          onDelete: 'CASCADE', // added cascade to delete reviews when deleting review images
         },
         url: {
           type: Sequelize.STRING,

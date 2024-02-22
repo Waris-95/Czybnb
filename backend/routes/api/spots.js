@@ -575,6 +575,7 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
   try {
     const spot = await Spot.findByPk(req.params.spotId);
 
+    // Check if the spot exists
     if (!spot) {
       return res.status(404).json({
         message: "Spot couldn't be found",
@@ -588,10 +589,8 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
       // Check for booking conflicts
       let bookingErr = [];
 
-      console.log("Start Date:", startDate);
-      console.log("End Date:", endDate);
-
-
+      // console.log("Start Date:", startDate);
+      // console.log("End Date:", endDate);
 
       for (const currBooking of bookings) {
         const startValue = new Date(startDate).getTime();
@@ -599,8 +598,8 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
         const bookingStart = new Date(currBooking.startDate).getTime();
         const bookingEnd = new Date(currBooking.endDate).getTime();
 
-        console.log("Booking Start Date:", currBooking.startDate);
-        console.log("Booking End Date:", currBooking.endDate);
+        // console.log("Booking Start Date:", currBooking.startDate);
+        // console.log("Booking End Date:", currBooking.endDate);
 
         // Check for overlap
         if (
@@ -613,20 +612,15 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
         }
       }
 
+      // If there are any booking conflicts, return an error
       if (bookingErr.length > 0) {
-        const err = new Error
-          ("Sorry, this spot is already booked for the specified dates");
-        err.title = "Booking error";
-        err.errors = {
-          startDate: "Start date conflicts with an existing booking",
-          endDate: "End date conflicts with an existing booking",
-        };
-
-        // Set error message for overlap
-        // err.errors.message = "Spot is already booked for the specified dates";
-
-        err.status = 403;
-        throw err;
+        return res.status(403).json({
+          message: "Sorry, the spot is already booked for the specified dates",
+          errors: {
+            startDate: "Start date conflicts with an existing booking",
+            endDate: "End date conflicts with an existing booking",
+          },
+        });
       }
     }
 
@@ -641,13 +635,12 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
 
       return res.json(newBooking);
     } else {
+      // If the user is the owner of the spot, create the booking
       return res.status(403).json({ message: 'Forbidden' });
     }
   } catch (error) {
     next(error);
   }
 });
-
-
 
 module.exports = router;
