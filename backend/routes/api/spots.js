@@ -25,6 +25,7 @@ const router = express.Router();
 // GET all spots with query filters
 router.get('/', validateQueryParams, async (req, res, next) => {
   try {
+    // Get the query params
     let {
       page = 1,
       size = 20,
@@ -39,6 +40,7 @@ router.get('/', validateQueryParams, async (req, res, next) => {
     page = parseInt(page, 10);
     size = parseInt(size, 10);
 
+    // Create the where clause
     const whereClause = {
       ...(minLat && { lat: { [Sequelize.Op.gte]: parseFloat(minLat) } }),
       ...(maxLat && { lat: { [Sequelize.Op.lte]: parseFloat(maxLat) } }),
@@ -69,6 +71,7 @@ router.get('/', validateQueryParams, async (req, res, next) => {
           required: false,
         },
       ],
+      // Group by the primary keys of the Spot and SpotImages tables
       group: ['Spot.id', 'SpotImages.id'],
       limit: size,
       offset: (page - 1) * size,
@@ -76,13 +79,17 @@ router.get('/', validateQueryParams, async (req, res, next) => {
       distinct: true,
     });
 
+    // Format the spots to be returned to the client
     const spots = spotsData.rows.map((spot) => {
       const previewImage =
         spot.SpotImages && spot.SpotImages.length > 0
           ? spot.SpotImages[0].url
           : null;
-      // delete spotJSON.SpotImages;
-      // Cast the avgRating to a float
+      // Cast the avgRating to a float and round to a single decimal point
+      const avgRating = spot.dataValues.avgRating
+        ? parseFloat(spot.dataValues.avgRating).toFixed(1)
+        : null;
+        // Return the formatted spot
       return {
         id: spot.id,
         ownerId: spot.ownerId,
@@ -94,7 +101,7 @@ router.get('/', validateQueryParams, async (req, res, next) => {
         lng: parseFloat(spot.lng),
         name: spot.name,
         price: parseFloat(spot.price),
-        avgRating: parseFloat(spot.dataValues.avgRating) || null,
+        avgRating: avgRating, // Update to use the rounded avgRating
         previewImage: previewImage,
       };
     });
@@ -115,11 +122,13 @@ router.get('/current', requireAuth, async (req, res, next) => {
     const userId = req.user.id;
     const spots = await Spot.findAll({
       where: { ownerId: userId },
+      // Include the SpotImages and Reviews for each Spot
       include: [
         {
           model: SpotImage,
           as: 'SpotImages',
           attributes: ['url'],
+          // Only include the preview image
           where: { preview: true },
           required: false,
         },
@@ -139,8 +148,10 @@ router.get('/current', requireAuth, async (req, res, next) => {
 
     const formattedSpots = spots.map((spot) => {
       const spotPlain = spot.get({ plain: true });
-      //delete spotPlain.SpotImages;
-      // Cast the avgRating to a float
+      // Cast the avgRating to a float and round to a single decimal point
+      const avgRating = spotPlain.avgRating
+        ? parseFloat(spotPlain.avgRating).toFixed(1)
+        : null;
       return {
         id: spotPlain.id,
         ownerId: spotPlain.ownerId,
@@ -153,7 +164,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
         name: spotPlain.name,
         description: spotPlain.description,
         price: parseFloat(spotPlain.price),
-        avgRating: parseFloat(spotPlain.avgRating), // Format avgRating
+        avgRating: avgRating, // Update to use the rounded avgRating
         previewImage:
           spot.SpotImages && spot.SpotImages.length > 0
             ? spot.SpotImages[0].url
@@ -166,7 +177,6 @@ router.get('/current', requireAuth, async (req, res, next) => {
     next(error);
   }
 });
-
 
 // Spot by id
 router.get('/:spotId', async (req, res, next) => {
@@ -204,8 +214,9 @@ router.get('/:spotId', async (req, res, next) => {
     }
 
     const spotJson = spot.toJSON();
+    // Cast the avgStarRating to a float and round to a single decimal point
     spotJson.avgStarRating = spotJson.avgStarRating
-      ? parseFloat(spotJson.avgStarRating)
+      ? parseFloat(spotJson.avgStarRating).toFixed(1)
       : null;
     spotJson.numReviews = spotJson.numReviews || 0;
 
@@ -214,6 +225,7 @@ router.get('/:spotId', async (req, res, next) => {
     next(error);
   }
 });
+
 
 // Create a new spot
 router.post('/', requireAuth, validateSpotCreation, async (req, res, next) => {
