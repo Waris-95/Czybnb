@@ -77,15 +77,25 @@ router.get('/', validateQueryParams, async (req, res, next) => {
     });
 
     const spots = spotsData.rows.map((spot) => {
-      const spotJSON = spot.toJSON();
-      const previewImage = spotJSON.SpotImages.length
-        ? spotJSON.SpotImages[0].url
-        : null;
-      delete spotJSON.SpotImages;
+      const previewImage =
+        spot.SpotImages && spot.SpotImages.length > 0
+          ? spot.SpotImages[0].url
+          : null;
+      // delete spotJSON.SpotImages;
+      // Cast the avgRating to a float
       return {
-        ...spotJSON,
-        avgRating: spotJSON.avgRating || null,
-        previewImage,
+        id: spot.id,
+        ownerId: spot.ownerId,
+        address: spot.address,
+        city: spot.city,
+        state: spot.state,
+        country: spot.country,
+        lat: parseFloat(spot.lat),
+        lng: parseFloat(spot.lng),
+        name: spot.name,
+        price: parseFloat(spot.price),
+        avgRating: parseFloat(spot.dataValues.avgRating) || null,
+        previewImage: previewImage,
       };
     });
 
@@ -102,54 +112,61 @@ router.get('/', validateQueryParams, async (req, res, next) => {
 // Get spots by current user
 router.get('/current', requireAuth, async (req, res, next) => {
   try {
-    const curUserId = req.user.id;
-    const spotsCurUser = await Spot.findAll({
-      where: { ownerId: curUserId },
-      attributes: {
-        include: [
-          [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgRating'],
-        ],
-      },
+    const userId = req.user.id;
+    const spots = await Spot.findAll({
+      where: { ownerId: userId },
       include: [
-        {
-          model: Review,
-          attributes: [],
-          required: false,
-        },
         {
           model: SpotImage,
           as: 'SpotImages',
           attributes: ['url'],
-          where: {
-            preview: true,
-          },
+          where: { preview: true },
           required: false,
-          limit: 1,
+        },
+        {
+          model: Review,
+          attributes: [],
         },
       ],
-      group: ['Spot.id'],
-      subQuery: false,
+      attributes: {
+        include: [
+          [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgRating'],
+        ],
+        exclude: ['Reviews.stars'],
+      },
+      group: ['Spot.id', 'SpotImages.id'],
     });
 
-    const spots = spotsCurUser.map((spot) => {
-      const spotJson = spot.toJSON(); // Convert to a plain JSON object
-      const previewImage =
-        spotJson.SpotImages && spotJson.SpotImages.length > 0
-          ? spotJson.SpotImages[0].url
-          : null;
-      delete spotJson.SpotImages;
+    const formattedSpots = spots.map((spot) => {
+      const spotPlain = spot.get({ plain: true });
+      //delete spotPlain.SpotImages;
+      // Cast the avgRating to a float
       return {
-        ...spotJson,
-        avgRating: spotJson.avgRating ? parseFloat(spotJson.avgRating) : null,
-        previewImage,
+        id: spotPlain.id,
+        ownerId: spotPlain.ownerId,
+        address: spotPlain.address,
+        city: spotPlain.city,
+        state: spotPlain.state,
+        country: spotPlain.country,
+        lat: parseFloat(spotPlain.lat),
+        lng: parseFloat(spotPlain.lng),
+        name: spotPlain.name,
+        description: spotPlain.description,
+        price: parseFloat(spotPlain.price),
+        avgRating: parseFloat(spotPlain.avgRating), // Format avgRating
+        previewImage:
+          spot.SpotImages && spot.SpotImages.length > 0
+            ? spot.SpotImages[0].url
+            : null,
       };
     });
 
-    res.status(200).json({ Spots: spots });
+    res.json({ Spots: formattedSpots });
   } catch (error) {
     next(error);
   }
 });
+
 
 // Spot by id
 router.get('/:spotId', async (req, res, next) => {
@@ -198,7 +215,7 @@ router.get('/:spotId', async (req, res, next) => {
   }
 });
 
-// create spot
+// Create a new spot
 router.post('/', requireAuth, validateSpotCreation, async (req, res, next) => {
   try {
     // Extract spot details from the request body
@@ -217,17 +234,17 @@ router.post('/', requireAuth, validateSpotCreation, async (req, res, next) => {
 
     // Validate the required fields
     const errors = {};
-    if (!address) errors.address = "Address is required";
+    if (!address) errors.address = "Street address is required";
     if (!city) errors.city = "City is required";
     if (!state) errors.state = "State is required";
     if (!country) errors.country = "Country is required";
     if (!lat || typeof lat !== "number")
-      errors.lat = "Latitude is required and must be a number";
+      errors.lat = "Latitude must be within -90 and 90";
     if (!lng || typeof lng !== "number")
-      errors.lng = "Longitude is required and must be a number";
+      errors.lng = "Longitude must be within -180 and 180";
     if (!name) errors.name = "Name must be less than 50 characters";
     if (!description) errors.description = "Description is required";
-    if (!price) errors.price = "Price is required";
+    if (!price) errors.price = "Price per day must be a positive number";
 
     // Check if there are any validation errors
     if (Object.keys(errors).length > 0) {
