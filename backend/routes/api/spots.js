@@ -318,55 +318,6 @@ router.post('/:spotId/images', requireAuth, async (req, res, next) => {
   }
 });
 
-// // Edit a Spot
-// router.put("/:spotId", requireAuth, async (req, res) => {
-//   try {
-//     const spotId = req.params.spotId;
-//     const userId = req.user.id;
-//     const {
-//       address,
-//       city,
-//       state,
-//       country,
-//       lat,
-//       lng,
-//       name,
-//       description,
-//       price,
-//     } = req.body;
-
-//     // Check if the spot exists and belongs to the current user
-//     const spot = await Spot.findOne({
-//       where: {
-//         id: spotId,
-//         ownerId: userId,
-//       },
-//     });
-
-//     // If the spot is not found, return a 404 Not Found response
-//     if (!spot) {
-//       return res.status(404).json({ message: "Spot couldn't be found" });
-//     }
-
-//     // Update the spot
-//     spot.address = address;
-//     spot.city = city;
-//     spot.state = state;
-//     spot.country = country;
-//     spot.lat = lat;
-//     spot.lng = lng;
-//     spot.name = name;
-//     spot.description = description;
-//     spot.price = price;
-
-//     await spot.save();
-
-//     res.status(200).json(spot);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// });
 
 router.put(
   '/:spotId',
@@ -499,6 +450,7 @@ router.post(
 // Get all Bookings for a Spot based on the Spot's id
 router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {
   try {
+    // Get the spot based on the id
     const spotId = req.params.spotId;
     const spot = await Spot.findByPk(spotId);
     if (!spot) {
@@ -513,6 +465,7 @@ router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {
         },
       ],
     });
+    // Format the bookings
     const resBookings = bookings.map((booking) => {
       return {
         User: booking.User,
@@ -625,5 +578,6 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
     next(error);
   }
 });
+
 
 module.exports = router;

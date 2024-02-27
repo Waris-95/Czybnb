@@ -155,11 +155,9 @@ router.put("/:bookingId", validateBooking, async (req, res, next) => {
 
           const currTime = Date.now();
           if (currTime > endValue) {
-              const err = new Error("Past bookings can't be modified");
-              err.title = "Past bookings can't be modified";
-              err.errors = { message: "Past bookings can't be modified" };
-              err.status = 403;
-              return next(err);
+            return res
+            .status(403)
+            .json({ message: "Past bookings can't be modified" });
           }
 
           booking.startDate = startDate;
