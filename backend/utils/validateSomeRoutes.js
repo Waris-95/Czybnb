@@ -26,7 +26,7 @@ const validateQueryParams = [
   query('size')
     .optional()
     .isInt({ min: 1, max: 20 })
-    .withMessage('Size must be between 1 and 20'),
+    .withMessage('Size must be greater than or equal to 1'),
   query('maxLat')
     .optional()
     .isFloat({ min: -90, max: 90 })
@@ -65,10 +65,10 @@ const validateSpotCreation = [
     .withMessage('Country is required'),
   check('lat')
     .isFloat({ min: -90, max: 90 })
-    .withMessage('Latitude is not valid'),
+    .withMessage('Latitude must be within -180 and 180'),
   check('lng')
     .isFloat({ min: -180, max: 180 })
-    .withMessage('Longitude is not valid'),
+    .withMessage('Longitude must be within -180 and 180'),
   check('name')
     .isLength({ max: 50 })
     .withMessage('Name must be less than 50 characters'),
@@ -90,10 +90,10 @@ const validateSpotEdit = [
     .withMessage('Country is required'),
   check('lat')
     .isFloat({ min: -90, max: 90 })
-    .withMessage('Latitude is not valid'),
+    .withMessage('Latitude must be within -90 and 90'),
   check('lng')
     .isFloat({ min: -180, max: 180 })
-    .withMessage('Longitude is not valid'),
+    .withMessage('Longitude must be within -180 and 180'),
   check('name')
     .isLength({ max: 50 })
     .withMessage('Name must be less than 50 characters'),

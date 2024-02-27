@@ -5,6 +5,7 @@ const { Op } = require('sequelize');
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 const { validateBookingDates } = require('../../utils/validateSomeRoutes');
+const moment = require('moment');
 
 const router = express.Router();
 
@@ -43,34 +44,32 @@ router.get('/current', requireAuth, async (req, res, next) => {
       
     // Format the bookings to be returned to the client
     const formattedBookings = bookings.map((booking) => {
-      const spotDetails = booking.Spot
-        ? {
-            id: booking.Spot.id,
-            ownerId: booking.Spot.ownerId,
-            address: booking.Spot.address,
-            city: booking.Spot.city,
-            state: booking.Spot.state,
-            country: booking.Spot.country,
-            lat: booking.Spot.lat,
-            lng: booking.Spot.lng,
-            name: booking.Spot.name,
-            price: booking.Spot.price,
-            previewImage:
-              booking.Spot.SpotImages && booking.Spot.SpotImages[0]
-                ? booking.Spot.SpotImages[0].url
-                : null,
-          }
-        : {}; //if there are no spot
+      const spotDetails = booking.Spot ? {
+        id: booking.Spot.id,
+        ownerId: booking.Spot.ownerId,
+        address: booking.Spot.address,
+        city: booking.Spot.city,
+        state: booking.Spot.state,
+        country: booking.Spot.country,
+        lat: booking.Spot.lat,
+        lng: booking.Spot.lng,
+        name: booking.Spot.name,
+        price: booking.Spot.price,
+        previewImage:
+          booking.Spot.SpotImages && booking.Spot.SpotImages[0]
+            ? booking.Spot.SpotImages[0].url
+            : null,
+      } : {};
 
       return {
         id: booking.id,
         spotId: booking.spotId,
         Spot: spotDetails,
         userId: booking.userId,
-        startDate: booking.startDate,
-        endDate: booking.endDate,
-        createdAt: booking.createdAt,
-        updatedAt: booking.updatedAt,
+        startDate: moment(booking.startDate).format('YYYY-MM-DD HH:mm:ss'),
+        endDate: moment(booking.endDate).format('YYYY-MM-DD HH:mm:ss'),
+        createdAt: moment(booking.createdAt).format('YYYY-MM-DD HH:mm:ss'),
+        updatedAt: moment(booking.updatedAt).format('YYYY-MM-DD HH:mm:ss'),
       };
     });
 
@@ -79,6 +78,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
     next(error);
   }
 });
+
 
   
 // Get all bookings by a specific spot
@@ -155,11 +155,9 @@ router.put("/:bookingId", validateBooking, async (req, res, next) => {
 
           const currTime = Date.now();
           if (currTime > endValue) {
-              const err = new Error("Past bookings can't be modified");
-              err.title = "Past bookings can't be modified";
-              err.errors = { message: "Past bookings can't be modified" };
-              err.status = 403;
-              return next(err);
+            return res
+            .status(403)
+            .json({ message: "Past bookings can't be modified" });
           }
 
           booking.startDate = startDate;

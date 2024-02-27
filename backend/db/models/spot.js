@@ -52,14 +52,14 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       lat: {
-        type: DataTypes.DECIMAL,
+        type: DataTypes.FLOAT, // changed to float to allow for decimal places
         allowNull: false,
         validate: {
           isDecimal: true,
         },
       },
       lng: {
-        type: DataTypes.DECIMAL,
+        type: DataTypes.FLOAT, // changed to float to allow for decimal places
         allowNull: false,
         validate: {
           isDecimal: true,
@@ -81,14 +81,29 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       price: {
-        type: DataTypes.DECIMAL,
+        type: DataTypes.FLOAT, // changed to float to allow for decimal places
         allowNull: false,
         validate: {
           isDecimal: true,
           min: 0,
         },
       },
-    },
+      // avgRating: {
+      //   type: DataTypes.FLOAT, // changed to float to allow for decimal places
+      //   allowNull: false,
+      //   validate: {
+      //     isDecimal: true,
+      //     min: 0,
+      //     max: 5,
+      //   },
+        
+        // set(val) {
+        //   // Round the average rating to 1 decimal place
+        //   const roundedRating = Math.min(5, Math.max(0, parseFloat(val).toFixed(1)));
+        //   this.setDataValue('avgRating', roundedRating);
+        // },
+      },
+    // },
     {
       sequelize,
       modelName: 'Spot',
