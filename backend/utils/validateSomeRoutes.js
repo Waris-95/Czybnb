@@ -26,7 +26,7 @@ const validateQueryParams = [
   query('size')
     .optional()
     .isInt({ min: 1, max: 20 })
-    .withMessage('Size must be between 1 and 20'),
+    .withMessage('Size must be greater than or equal to 1'),
   query('maxLat')
     .optional()
     .isFloat({ min: -90, max: 90 })

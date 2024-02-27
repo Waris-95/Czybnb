@@ -1,5 +1,6 @@
 const express = require('express');
 const { requireAuth } = require('../../utils/auth');
+const moment = require('moment'); // Import the moment library for date formatting
 
 const {
   validateQueryParams,
@@ -87,23 +88,23 @@ router.get('/', validateQueryParams, async (req, res, next) => {
           : null;
       // Cast the avgRating to a float and round to a single decimal point
       const avgRating = spot.dataValues.avgRating
-        ? parseFloat(spot.dataValues.avgRating).toFixed(1)
-        : null;
-        // Return the formatted spot
-      return {
-        id: spot.id,
-        ownerId: spot.ownerId,
-        address: spot.address,
-        city: spot.city,
-        state: spot.state,
-        country: spot.country,
-        lat: parseFloat(spot.lat),
-        lng: parseFloat(spot.lng),
-        name: spot.name,
-        price: parseFloat(spot.price),
-        avgRating: avgRating, // Update to use the rounded avgRating
-        previewImage: previewImage,
-      };
+      ? parseFloat(spot.dataValues.avgRating).toFixed(1)
+      : null;
+    return {
+      id: spot.id,
+      ownerId: spot.ownerId,
+      address: spot.address,
+      city: spot.city,
+      state: spot.state,
+      country: spot.country,
+      lat: parseFloat(spot.lat),
+      lng: parseFloat(spot.lng),
+      name: spot.name,
+      price: parseFloat(spot.price),
+      avgRating: avgRating !== null ? parseFloat(avgRating) : null, // Ensure avgRating is not returned as a string
+      previewImage: previewImage,
+    };
+
     });
 
     res.status(200).json({
@@ -164,7 +165,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
         name: spotPlain.name,
         description: spotPlain.description,
         price: parseFloat(spotPlain.price),
-        avgRating: avgRating, // Update to use the rounded avgRating
+        avgRating: avgRating !== null ? parseFloat(avgRating) : null, // Ensure avgRating is not returned as a string
         previewImage:
           spot.SpotImages && spot.SpotImages.length > 0
             ? spot.SpotImages[0].url
@@ -414,63 +415,6 @@ router.put(
 );
 
 
-// // Delete a spot *
-// router.delete("/:spotId", requireAuth, async (req, res, next) => {
-//   try {
-//     // Extract user ID and spot ID from the request
-//     const userId = req.user.id;
-//     const spotId = req.params.spotId;
-//     const spot = await Spot.findByPk(spotId);
-
-//     if (!spot) {
-//       return res.status(404).json({ message: "Spot couldn't be found" });
-//     }
-
-//     if (spot.ownerId !== req.user.id) {
-//       return res.status(403).json({ message: 'Forbidden' });
-//     }
-
-//     const bookings = await Booking.findAll({
-//       where: { spotId },
-//       include: [
-//         {
-//           model: User,
-//           attributes: ['id', 'firstName', 'lastName'],
-//         },
-//       ],
-//     });
-
-//     const resBookings = bookings.map((booking) => {
-//       return {
-//         User: booking.User,
-//         id: booking.id,
-//         spotId: booking.spotId,
-//         userId: booking.userId,
-//         startDate: booking.startDate,
-//         endDate: booking.endDate,
-//         createdAt: booking.createdAt,
-//         updatedAt: booking.updatedAt,
-//       };
-//     });
-
-//     if (req.user.id === spot.ownerId) {
-//       res.json({ Bookings: resBookings });
-//     } else {
-//       const bookingsWithoutUser = resBookings.map(
-//         ({ spotId, startDate, endDate }) => ({
-//           spotId,
-//           startDate,
-//           endDate,
-//         })
-//       );
-//       res.json({ Bookings: bookingsWithoutUser });
-//     }
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
-
 router.delete('/:spotId', requireAuth, async (req, res, next) => {
   try {
     const spotId = req.params.spotId;
@@ -553,7 +497,6 @@ router.post(
 );
 
 // Get all Bookings for a Spot based on the Spot's id
-
 router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {
   try {
     const spotId = req.params.spotId;
@@ -578,18 +521,20 @@ router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {
         userId: booking.userId,
         startDate: booking.startDate,
         endDate: booking.endDate,
-        createdAt: booking.createdAt,
-        updatedAt: booking.updatedAt,
+        createdAt: moment(booking.createdAt).format('YYYY-MM-DD HH:mm:ss'), // Format createdAt
+        updatedAt: moment(booking.updatedAt).format('YYYY-MM-DD HH:mm:ss'), // Format updatedAt
       };
     });
     if (req.user.id === spot.ownerId) {
       res.json({ Bookings: resBookings });
     } else {
       const bookingsWithoutUser = resBookings.map(
-        ({ spotId, startDate, endDate }) => ({
+        ({ spotId, startDate, endDate, createdAt, updatedAt }) => ({
           spotId,
           startDate,
           endDate,
+          createdAt,
+          updatedAt,
         })
       );
       res.json({ Bookings: bookingsWithoutUser });
@@ -612,6 +557,15 @@ router.post("/:spotId/bookings", requireAuth, validateBooking, async (req, res, 
     }
 
     const { startDate, endDate } = req.body;
+
+    // Check if the dates are in the past
+    const currentDate = new Date();
+    if (new Date(startDate) < currentDate || new Date(endDate) < currentDate) {
+      return res.status(403).json({
+        message: "Dates in the past are not allowed",
+      });
+    }
+
     const bookings = await spot.getBookings();
 
     if (bookings.length > 0) {
