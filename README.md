@@ -3,7 +3,7 @@
 ## Database Schema Design
 ![schema](https://github.com/Waris-95/Airbnb-project/assets/124799691/bf897457-6724-4233-9e71-178a1046e930)
 
-[schema]: .images/schema.png
+<!-- [schema]: .images/schema.png -->
 
 
 
