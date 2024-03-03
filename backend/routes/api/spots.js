@@ -100,7 +100,10 @@ router.get('/', validateQueryParams, async (req, res, next) => {
       lat: parseFloat(spot.lat),
       lng: parseFloat(spot.lng),
       name: spot.name,
+      description: spot.description,
       price: parseFloat(spot.price),
+      createdAt: spot.createdAt.toISOString(), // Add createdAt field in ISO string format
+      updatedAt: spot.updatedAt.toISOString(), // Add updatedAt field in ISO string format
       avgRating: avgRating !== null ? parseFloat(avgRating) : null, // Ensure avgRating is not returned as a string
       previewImage: previewImage,
     };
@@ -109,7 +112,7 @@ router.get('/', validateQueryParams, async (req, res, next) => {
 
     res.status(200).json({
       Spots: spots,
-      page,
+      page, 
       size,
     });
   } catch (error) {
@@ -165,6 +168,8 @@ router.get('/current', requireAuth, async (req, res, next) => {
         name: spotPlain.name,
         description: spotPlain.description,
         price: parseFloat(spotPlain.price),
+        createdAt: spot.createdAt.toISOString(), // Add createdAt field in ISO string format
+        updatedAt: spot.updatedAt.toISOString(), // Add updatedAt field in ISO string format
         avgRating: avgRating !== null ? parseFloat(avgRating) : null, // Ensure avgRating is not returned as a string
         previewImage:
           spot.SpotImages && spot.SpotImages.length > 0
@@ -276,6 +281,8 @@ router.post('/', requireAuth, validateSpotCreation, async (req, res, next) => {
       name,
       description,
       price,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
 
     return res.status(201).json(newSpot);
