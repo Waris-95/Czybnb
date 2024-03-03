@@ -88,22 +88,17 @@ module.exports = (sequelize, DataTypes) => {
           min: 0,
         },
       },
-      // avgRating: {
-      //   type: DataTypes.FLOAT, // changed to float to allow for decimal places
+      // createdAt: {
+      //   type: DataTypes.DATE,
       //   allowNull: false,
-      //   validate: {
-      //     isDecimal: true,
-      //     min: 0,
-      //     max: 5,
-      //   },
-        
-        // set(val) {
-        //   // Round the average rating to 1 decimal place
-        //   const roundedRating = Math.min(5, Math.max(0, parseFloat(val).toFixed(1)));
-        //   this.setDataValue('avgRating', roundedRating);
-        // },
-      },
-    // },
+      //   defaultValue: DataTypes.NOW,
+      // },
+      // updatedAt: {
+      //   type: DataTypes.DATE,
+      //   allowNull: false,
+      //   defaultValue: DataTypes.NOW,
+      // },
+    },
     {
       sequelize,
       modelName: 'Spot',
