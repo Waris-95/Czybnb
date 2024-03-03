@@ -281,8 +281,8 @@ router.post('/', requireAuth, validateSpotCreation, async (req, res, next) => {
       name,
       description,
       price,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      // createdAt: new Date(),
+      // updatedAt: new Date(),
     });
 
     return res.status(201).json(newSpot);
