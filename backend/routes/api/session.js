@@ -16,10 +16,10 @@ const router = express.Router();
     check('credential')
       .exists({ checkFalsy: true })
       .notEmpty()
-      .withMessage('Please provide a valid email or username.'),
+      .withMessage('Email or username is required'), // changes added 
     check('password')
       .exists({ checkFalsy: true })
-      .withMessage('Please provide a password.'),
+      .withMessage('Password is required'), // changes added 
     handleValidationErrors
   ];
 
