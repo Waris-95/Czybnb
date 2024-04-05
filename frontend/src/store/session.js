@@ -33,6 +33,14 @@ export const login = (user) => async (dispatch) => {
   return response;
 };
 
+// async action creator for user logout
+export const restoreUser = () => async (dispatch) => {
+    const response = await csrfFetch("/api/session");
+    const data = await response.json();
+    dispatch(setUser(data.user));
+    return response;
+}
+
 // initial state for the session slice of the redux store
 const initialState = { user: null };
 

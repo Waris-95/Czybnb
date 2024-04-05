@@ -1,3 +1,4 @@
+import './LoginForm.css'
 import { useState } from 'react'; // Import useState hook from React
 import * as sessionActions from '../../store/session'; // Import session-related action creators
 import { useDispatch, useSelector } from 'react-redux'; // Import useDispatch and useSelector hooks from react-redux
@@ -26,6 +27,7 @@ function LoginFormPage() {
   };
 
   return (
+    <div className="login-form-container">
     <>
       <h1>Log In</h1>
       <form onSubmit={handleSubmit}>
@@ -51,6 +53,7 @@ function LoginFormPage() {
         <button type="submit">Log In</button> 
       </form>
     </>
+    </div>
   );
 }
 
