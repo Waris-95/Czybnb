@@ -41,6 +41,29 @@ export const restoreUser = () => async (dispatch) => {
     return response;
 }
 
+// async action creator for user signup
+export const signup = (user) => async (dispatch) => {
+  try {
+    const { username, firstName, lastName, email, password } = user;
+    const response = await csrfFetch("/api/users", {
+      method: "POST",
+      body: JSON.stringify({
+        username,
+        firstName,
+        lastName,
+        email,
+        password
+      })
+    });
+    const data = await response.json();
+    dispatch(setUser(data.user));
+    return response;
+  } catch (err) {
+    const dataErr = await err.json()
+    console.log(dataErr)
+  }
+}
+
 // initial state for the session slice of the redux store
 const initialState = { user: null };
 
