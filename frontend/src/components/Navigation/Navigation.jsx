@@ -1,3 +1,4 @@
+import './Navigation.css';
 import { NavLink } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import ProfileButton from './ProfileButton';
@@ -33,12 +34,14 @@ function Navigation({ isLoaded }) {
   );
 
   return (
-    <ul>
-      <li>
-        <NavLink to="/">Home</NavLink>
-      </li>
-      {isLoaded && sessionLinks}
-    </ul>
+    <div className="navigation-container"> {/* Wrap in a container */}
+      <ul className="navigation-menu">
+        <li>
+          <NavLink to="/">Home</NavLink>
+        </li>
+        {isLoaded && sessionLinks}
+      </ul>
+    </div>
   );
 }
 

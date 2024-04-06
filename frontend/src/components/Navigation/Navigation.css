@@ -1,0 +1,41 @@
+.navigation-container {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .navigation-menu {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .navigation-menu li {
+    display: inline;
+    margin-right: 20px;
+  }
+  
+  .navigation-menu li:last-child {
+    margin-right: 0;
+  }
+  
+  .navigation-menu li a {
+    text-decoration: none;
+    color: #333; 
+    font-weight: bold;
+  }
+  
+  .navigation-menu li a:hover {
+    color: #555; 
+  }
+  
+  .navigation-menu li button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: #333; 
+    font-weight: bold;
+  }
+  
+  .navigation-menu li button:hover {
+    color: #555; 
+  }
+  
