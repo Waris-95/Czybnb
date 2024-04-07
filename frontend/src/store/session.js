@@ -64,6 +64,15 @@ export const signup = (user) => async (dispatch) => {
   }
 }
 
+// async action creator for logout
+export const logout = () => async (dispatch) => {
+  const response = await csrfFetch('/api/session', {
+    method: 'DELETE'
+  });
+  dispatch(removeUser());
+  return response;
+}
+
 // initial state for the session slice of the redux store
 const initialState = { user: null };
 

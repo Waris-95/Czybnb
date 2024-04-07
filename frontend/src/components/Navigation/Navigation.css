@@ -1,41 +1,73 @@
-.navigation-container {
-    display: flex;
-    justify-content: center;
-  }
-  
-  .navigation-menu, .ulClassName {
-    list-style-type: none;
+ul {
+    list-style: none;
     padding: 0;
+    margin: 0;
   }
   
-  .navigation-menu li, .ulClassName li {
-    display: inline;
+  ul li {
     margin-right: 20px;
   }
   
-  .navigation-menu li:last-child, .ulClassName li:last-child {
+  ul li:last-child {
     margin-right: 0;
   }
   
-  .navigation-menu li a, .ulClassName li {
+  ul li a {
     text-decoration: none;
-    color: #333; 
+    color: #333;
     font-weight: bold;
+    transition: color 0.3s ease;
   }
   
-  .navigation-menu li a:hover, .ulClassName li a:hover {
-    color: #555; 
+  ul li a:hover {
+    color: #ff0055;
+  }
+
+  .profile-dropdown {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    list-style: none;
+    margin: 0;
+    display: none;
   }
   
-  .navigation-menu li button, .ulClassName button {
-    background-color: transparent;
+  .profile-dropdown.hidden {
+    display: none;
+  }
+  
+  .profile-dropdown li {
+    padding: 8px 0;
+  }
+  
+  .profile-dropdown button {
+    background-color: #fff;
     border: none;
+    color: #007bff;
     cursor: pointer;
-    color: #333; 
     font-weight: bold;
   }
   
-  .navigation-menu li button:hover, .ulClassName button:hover {
-    color: #555; 
+  .profile-dropdown button:hover {
+    color: #0056b3;
   }
   
+  .profile-dropdown button:focus {
+    outline: none;
+  }
+
+  button svg {
+    width: 30px;
+    height: 30px;
+    fill: #333;
+    transition: fill 0.3s ease;
+  }
+  
+  button:hover svg {
+    fill: #007bff;
+  }
