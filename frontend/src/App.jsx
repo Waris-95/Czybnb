@@ -1,48 +1,41 @@
-import { NavLink } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import ProfileButton from './components/Navigation/ProfileButton';
-import OpenModalButton from './components/OpenModalButton/OpenModalButton';
-import LoginFormModal from './components/LoginFormModal/LoginFormModal';
-import SignupFormModal from './components/SignupFormModal/SignupFormModal';
-import './Navigation.css';
+import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import Navigation from "./components/Navigation";
+import * as sessionActions from "./store/session";
 
-function Navigation({ isLoaded }) {
-  const sessionUser = useSelector((state) => state.session.user);
+function Layout() {
+  const dispatch = useDispatch();
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  let sessionLinks;
-  if (sessionUser) {
-    sessionLinks = (
-      <li>
-        <ProfileButton user={sessionUser} />
-      </li>
-    );
-  } else {
-    sessionLinks = (
-      <>
-        <li>
-          <OpenModalButton
-            buttonText="Log In"
-            modalComponent={<LoginFormModal />}
-          />
-        </li>
-        <li>
-          <OpenModalButton
-            buttonText="Sign Up"
-            modalComponent={<SignupFormModal />}
-          />
-        </li>
-      </>
-    );
-  }
+  useEffect(() => {
+    dispatch(sessionActions.restoreUser()).then(() => {
+      setIsLoaded(true);
+    });
+  }, [dispatch]);
 
   return (
-    <ul>
-      <li>
-        <NavLink to="/">Home</NavLink>
-      </li>
-      {isLoaded && sessionLinks}
-    </ul>
+    <>
+      <Navigation isLoaded={isLoaded} />
+      {isLoaded && <Outlet />}
+    </>
   );
 }
 
-export default Navigation;
+const router = createBrowserRouter([
+  {
+    element: <Layout />,
+    children: [
+      {
+        path: "/",
+        element: <h1>Welcome!</h1>,
+      },
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
