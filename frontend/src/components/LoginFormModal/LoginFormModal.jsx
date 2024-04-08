@@ -1,56 +1,91 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as sessionActions from "../../store/session";
 import { useDispatch } from "react-redux";
 import { useModal } from "../../context/Modal";
 import "./LoginForm.css";
 
 function LoginFormModal() {
-  const dispatch = useDispatch();
-  const [credential, setCredential] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
-  const { closeModal } = useModal();
+	const dispatch = useDispatch();
+	const [credential, setCredential] = useState("");
+	const [password, setPassword] = useState("");
+	const [errors, setErrors] = useState("");
+	const { closeModal } = useModal();
+	const [disabled, setDisabled] = useState(true);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setErrors({});
-    return dispatch(sessionActions.login({ credential, password }))
-      .then(closeModal)
-      .catch(async (res) => {
-        const data = await res.json();
-        if (data && data.errors) {
-          setErrors(data.errors);
-        }
-      });
-  };
+	useEffect(() => {
+		if (credential.length > 3 && password.length > 5) {
+			setDisabled(false);
+		}
+	}, [credential, password]);
 
-  return (
-    <>
-      <h1>Log In</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Username or Email
-          <input
-            type="text"
-            value={credential}
-            onChange={(e) => setCredential(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </label>
-        {errors.credential && <p>{errors.credential}</p>}
-        <button type="submit">Log In</button>
-      </form>
-    </>
-  );
+	const handleSubmit = (e) => {
+		e.preventDefault();
+
+		setErrors();
+		return dispatch(sessionActions.login({ credential, password }))
+			.then(closeModal)
+			.catch(async (res) => {
+				const data = await res.json();
+				if (data && data.message) {
+					setErrors(data.message);
+				}
+			});
+	};
+
+	const demoSignIn = () => {
+		return dispatch(
+			sessionActions.login({
+				credential: "Demo-lition",
+				password: "password",
+			})
+		)
+			.then(closeModal)
+			.catch(async (res) => {
+				const data = await res.json();
+				if (data && data.message) {
+					setErrors(data.message);
+				}
+			});
+	};
+
+	return (
+		<div className="log-in-container">
+			<div className="log-in">
+				<h1>Log In</h1>
+			</div>
+			<form className="log-in-form" onSubmit={handleSubmit}>
+				<input
+					className="username"
+					type="text"
+					placeholder="Username or Email"
+					value={credential}
+					onChange={(e) => setCredential(e.target.value)}
+					required
+				/>
+				<input
+					className="password"
+					type="password"
+					placeholder="Password"
+					value={password}
+					onChange={(e) => setPassword(e.target.value)}
+					required
+				/>
+				{errors && <p>{errors}</p>}
+				<div className="submit-log-in">
+					<button className="log-in-button" disabled={disabled} type="submit">
+						Log In
+					</button>
+				</div>
+			</form>
+			<div className="demo-user">
+				<div className="demo-button">
+					<button className="demo-underline" onClick={demoSignIn}>
+						Demo user
+					</button>
+				</div>
+			</div>
+		</div>
+	);
 }
 
 export default LoginFormModal;

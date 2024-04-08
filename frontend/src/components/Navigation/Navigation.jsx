@@ -1,20 +1,41 @@
-import { NavLink } from "react-router-dom";
-import { useSelector } from "react-redux";
-import ProfileButton from "./ProfileButton";
-import "./Navigation.css";
+import { /*useEffect, useState */ } from 'react';
+import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import ProfileButton from './ProfileButton';
+import './Navigation.css';
 
 function Navigation({ isLoaded }) {
-  const sessionUser = useSelector((state) => state.session.user);
+
+  const sessionUser = useSelector(state => state.session.user);
 
   return (
-    <ul>
-      <li>
-        <NavLink to="/">Home</NavLink>
-      </li>
-      {isLoaded && (
-        <li>
-          <ProfileButton user={sessionUser} />
+
+    <ul className='nav'>
+      <div className='pawbnb'>
+        <li >
+          <NavLink exact to="/" style={{ textDecoration: "none" }}>
+            <div className='logo-name'>
+              <img src="https://www.pinclipart.com/picdir/big/58-581778_home-icon-clip-art-interior-design-logo-png.png" alt="logo" style={{ height: '28px', marginRight: '10px' }} />
+              <span>SnoreBnb</span>
+            </div>
+          </NavLink>
         </li>
+      </div>
+      {isLoaded && (
+        <>
+          {sessionUser && (
+            <div className='createspot'>
+              <li className='create-spot-container-main'>
+                <NavLink exact to="/spots/new" className="create-new-spot-main">Create a New Spot</NavLink>
+              </li>
+            </div>
+          )}
+          <div className='profilelogo'>
+            <li>
+              <ProfileButton user={sessionUser} />
+            </li>
+          </div>
+        </>
       )}
     </ul>
   );

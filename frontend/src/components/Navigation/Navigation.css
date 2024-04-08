@@ -1,30 +1,124 @@
-/* Navigation.css */
-.navigation {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
+.nav {
+  border-bottom: solid lightgray 1px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 0px 0px;
+  grid-template-areas:
+    "pawbnb createspot profilelogo";
+}
+.pawbnb {
+  grid-area: pawbnb;
+  /* font-weight: bold; */
+  font-size: 28px;
+  height: 55px;
+
+}
+.createspot {
+  grid-area: createspot;
+  display: flex;
+  justify-content: end;
+
+}
+.profilelogo {
+  grid-area: profilelogo;
+  display: flex;
+  display: flex;
+  justify-content: end;
+  margin-right: 100px;
+  font-size: 30px;
+  /* background-color: green; */
+
 }
 
-.navigation li {
-  display: inline-block;
-  margin-right: 10px;
+
+.logo-name {
+  color: red;
+  font-family: "amaranth bold";
+  margin-left: 100px;
+  cursor: pointer;
 }
 
-.navigation li:last-child {
-  margin-right: 0;
+ul {
+  list-style: none;
 }
 
-.navigation li a {
-  text-decoration: none;
-  color: #333; /* Change color as needed */
-  padding: 5px 10px;
+.hover-options:hover {
+  background-color: lightgrey;
+  cursor: pointer;
 }
 
-.navigation li a:hover {
-  color: #555; /* Change color as needed */
-}
+.profile-dropdown {
+    position: absolute;
+    /* background: rgb(227, 227, 227); */
+    background-color: white;
+    border: 10px black;
+    box-shadow: 0px 6px 12px 0px rgba(0,0,0,0.2);
+    right: 60px;
+    left: auto;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-begin;
+    width: 140px;
+    font-size: 18px;
+    border-radius: 10px;
+    gap: 8px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1;
+    cursor: pointer;
 
-/* Optional: Style for active link */
-.navigation li a.active {
-  font-weight: bold;
-}
+  }
+
+  .profile-list-button {
+    font-size: 18px;
+    padding: 5px;
+  }
+
+  .manage-spot-link {
+    text-decoration: none;
+    color: black;
+  }
+
+  .log-out-button {
+    margin: -8px;
+    font-family: amaranth;
+    font-size: 17px;
+    margin-left: -5px;
+
+  }
+
+  .create-spot-container-main {
+    /* background-color: orange; */
+    height: 20px;
+    padding-top: 20px;
+  }
+
+  .create-spot-container-main:hover {
+    border-bottom: solid thin teal;
+  }
+
+  .create-new-spot-main {
+    /* background-color: yellow; */
+    height: 20px;
+    color: teal;
+    text-decoration: none;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .modal-button-li {
+    cursor: pointer;
+  }
+
+  .log-in-hover:hover, .sign-up-hover:hover{
+    /* font-size: larger; */
+    background-color: lightgrey;
+    /* padding-left: -5px; */
+
+  }

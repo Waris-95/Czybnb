@@ -1,0 +1,72 @@
+.log-in-container {
+    display: grid;
+    grid-template-columns: 300px;
+    grid-template-rows: 50px 110px 50px;
+    grid-template-areas:
+    "log-in"
+    "log-in-form"
+    "demo-user";
+    gap: 10px;
+}
+
+.log-in {
+    grid-area: log-in;
+    /* background-color: blue; */
+    font-size: 12px;
+    display: grid;
+    justify-items: center;
+
+}
+
+.log-in-form {
+    display: grid;
+    grid-area: log-in-form;
+    /* background-color: pink; */
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 2fr;
+    grid-template-areas:
+    "username"
+    "password"
+    "submit-log-in";
+    gap: 10px;
+    justify-items: center;
+}
+
+.username {
+    grid-area: username;
+    width: 250px;
+    height: 20px;;
+    border: solid
+}
+
+.password {
+    grid-area: password;
+    width: 250px;
+    height: 20px;;
+    border: solid;
+}
+
+.submit-log-in{
+    grid-area: submit-log-in;
+}
+
+.log-in-button {
+    width: 250px;
+    height: 35px;
+    box-shadow: 5px 5px 5px grey;
+    background-color: lightgray;
+    color: black;
+}
+
+
+.demo-user {
+    grid-area: demo-user;
+    display: grid;
+    justify-items: center;
+}
+
+.demo-underline {
+    text-decoration: underline;
+    border: none;
+    /* border-radius: 17%; */
+}
