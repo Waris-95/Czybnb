@@ -13,39 +13,38 @@ function LoginFormModal() {
 	const [disabled, setDisabled] = useState(true);
 
 	useEffect(() => {
-		if (credential.length > 3 && password.length > 5) {
-			setDisabled(false);
-		}
+		setDisabled(credential.length <= 3 || password.length <= 5);
 	}, [credential, password]);
 
-	const handleSubmit = (e) => {
-		e.preventDefault();
+	const handleSubmit = async (e) => {
+    e.preventDefault();
 
-		setErrors();
-		return dispatch(sessionActions.login({ credential, password }))
-			.then(closeModal)
-			.catch(async (res) => {
-				const data = await res.json();
-				if (data && data.message) {
-					setErrors(data.message);
-				}
-			});
-	};
+    setErrors(""); // Clear any previous errors
+    try {
+        await dispatch(sessionActions.login({ credential, password }));
+        closeModal();
+    } catch (err) {
+        if (err.response && err.response.data && err.response.data.message) {
+            setErrors(err.response.data.message);
+        } else {
+            setErrors("The provided credentials were invalid.");
+        }
+    }
+};
 
-	const demoSignIn = () => {
-		return dispatch(
-			sessionActions.login({
-				credential: "Demo-lition",
-				password: "password",
-			})
-		)
-			.then(closeModal)
-			.catch(async (res) => {
-				const data = await res.json();
-				if (data && data.message) {
-					setErrors(data.message);
-				}
-			});
+
+
+	const demoSignIn = async () => {
+		try {
+			await dispatch(sessionActions.login({ credential: "Demo-lition", password: "password" }));
+			closeModal();
+		} catch (err) {
+			if (err.response && err.response.data && err.response.data.message) {
+				setErrors(err.response.data.message);
+			} else {
+				setErrors("The provided credentials were invalid.");
+			}
+		}
 	};
 
 	return (
@@ -70,7 +69,7 @@ function LoginFormModal() {
 					onChange={(e) => setPassword(e.target.value)}
 					required
 				/>
-				{errors && <p>{errors}</p>}
+				{errors && <p className="error-message">{errors}</p>}
 				<div className="submit-log-in">
 					<button className="log-in-button" disabled={disabled} type="submit">
 						Log In
@@ -89,3 +88,4 @@ function LoginFormModal() {
 }
 
 export default LoginFormModal;
+

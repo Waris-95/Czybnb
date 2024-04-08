@@ -7,7 +7,7 @@
   grid-template-areas:
     "pawbnb createspot profilelogo";
 }
-.pawbnb {
+.snorebnb {
   grid-area: pawbnb;
   /* font-weight: bold; */
   font-size: 28px;
