@@ -23,7 +23,7 @@ module.exports = {
               lng: -120.987654,
               name: "New Home",
               description: "A modern space for a delightful stay.",
-              price: 88.5,
+              price: 88,
             },
             {
               ownerId: 2,
@@ -35,7 +35,7 @@ module.exports = {
               lng: -109.876543,
               name: "Mountain Retreat",
               description: "Escape to nature in this peaceful retreat.",
-              price: 45.75,
+              price: 45,
             },
             {
               ownerId: 3,
@@ -47,7 +47,7 @@ module.exports = {
               lng: -81.234567,
               name: "Lakeside Haven",
               description: "Enjoy the serenity by the lake.",
-              price: 64.2,
+              price: 64,
             },
             {
               ownerId: 2,
@@ -59,7 +59,7 @@ module.exports = {
               lng: -122.345678,
               name: "Tech Oasis",
               description: "An inspiring space for innovation.",
-              price: 120.9,
+              price: 120,
             },
           ],
             { validate: true }

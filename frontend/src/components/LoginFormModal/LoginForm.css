@@ -58,14 +58,15 @@
     color: black;
 }
 
+
 .demo-user {
     grid-area: demo-user;
     display: grid;
     justify-items: center;
+    border: none;
 }
 
 .demo-underline {
     text-decoration: underline;
     border: none;
-    /* border-radius: 17%; */
 }

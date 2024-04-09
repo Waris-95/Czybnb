@@ -130,17 +130,6 @@ router.put("/:bookingId", validateBooking, async (req, res, next) => {
                           (endValue >= bookingStart && endValue <= bookingEnd) ||
                           (startValue <= bookingStart && endValue >= bookingEnd)
                       ) {
-                          // const err = new Error(
-                          //     "Sorry, this spot is already booked for the specified dates"
-                          // );
-                          // err.title = "Booking error";
-                          // // Structured the error object with startDate and endDate errors
-                          // err.errors = {
-                          //     startDate: "Start date conflicts with an existing booking",
-                          //     endDate: "End date conflicts with an existing booking"
-                          // };
-                          // err.status = 403;
-                          // return next(err);
                           
                             return res.status(403).json({
                               message: 'Sorry, this spot is already booked for the specified dates',

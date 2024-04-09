@@ -1,0 +1,35 @@
+.sign-up-container {
+    /* background-color: yellow; */  /* removed */
+    width: 600px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border-radius: 10px;
+    padding-bottom: 30px;
+  }
+
+.sign-up-form-box {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+}
+
+.sign-up-input {
+    margin-left: 10px;
+    width: 200px;
+}
+
+.p {
+    color: red;
+    height: 5px;
+}
+
+.sign-up-but {
+    border: thin solid lightgrey;
+    padding: 5px;
+    background-color: lightgray;
+}
