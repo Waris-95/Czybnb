@@ -1,83 +1,66 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import * as sessionActions from "../../store/session";
 import { useDispatch } from "react-redux";
 import { useModal } from "../../context/Modal";
-import * as sessionActions from "../../store/session";
 import "./LoginForm.css";
 
 function LoginFormModal() {
   const dispatch = useDispatch();
   const [credential, setCredential] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState("");
+  const [errors, setErrors] = useState({});
   const { closeModal } = useModal();
-  const [disabled, setDisabled] = useState(true);
-
-  useEffect(() => {
-    if (credential.length > 3 && password.length > 5) {
-      setDisabled(false);
-    }
-  }, [credential, password]);
+  const disabled = credential.length < 4 || password.length < 6;
+  const loginButton = disabled ? 'login-button-on' : "login-button-off"
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    setErrors();
+    setErrors({});
     return dispatch(sessionActions.login({ credential, password }))
       .then(closeModal)
       .catch(async (res) => {
         const data = await res.json();
-        if (data && data.message) {
-          setErrors(data.message);
+        if (data && data.errors) {
+          setErrors(data.errors);
         }
       });
   };
 
-  const demoSignIn = () => {
-    return dispatch(sessionActions.login({
-      credential: "Demo-lition",
-      password: "password"
-    }))
-      .then(closeModal)
-      .catch(async (res) => {
-        const data = await res.json();
-        if (data && data.message) {
-          setErrors(data.message);
-        }
-      });
+  const demoLogin = () => {
+    setCredential("demo@user.io");
+    setPassword("password");
   }
 
   return (
-    <div className="log-in-container">
-      <div className="log-in">
-        <h1 >Log In</h1>
-      </div>
-      <form className="log-in-form" onSubmit={handleSubmit}>
-        <input
-          className="username"
-          type="text"
-          placeholder="Username or Email"
-          value={credential}
-          onChange={(e) => setCredential(e.target.value)}
-          required
-        />
-        <input
-          className="password"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {errors && (<p>{errors}</p>)}
-        <div className="submit-log-in">
-          <button className="log-in-button" disabled={disabled} type="submit">Log In</button>
-        </div>
+    <div className="login-modal">
+      <h1>Log In</h1>
+      {errors.credential && <p style={{marginTop: "0", fontSize: "15px", color: "red"}}>{errors.credential}</p>}
+      <form className="login-form" onSubmit={handleSubmit}>
+        <label>
+          Username or Email
+          <input
+            type="text"
+            value={credential}
+            onChange={(e) => setCredential(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Password
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </label>
+        <button id={loginButton} type="submit" disabled={disabled}>
+          Log In
+        </button>
+        <button id="demo-login-button" type="submit" onClick={demoLogin}>
+          Demo Login
+        </button>
       </form>
-      <div className="demo-user">
-        <div className="demo-button">
-          <button className="demo-underline" onClick={demoSignIn}>Demo user</button>
-        </div>
-      </div>
     </div>
   );
 }
