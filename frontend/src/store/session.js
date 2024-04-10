@@ -30,9 +30,14 @@ export const login = (user) => async (dispatch) => {
       password
     })
   });
-  const data = await response.json();
-  dispatch(setUser(data.user));
-  return response;
+  if (response.ok) {
+    const data = await response.json();
+    dispatch(setUser(data.user));
+    return response;
+  } else {
+   const err = await response.json() 
+   throw err
+  }
 };
 
 // async action creator for user logout
