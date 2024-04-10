@@ -52,7 +52,6 @@ router.post('/', validateLogin, async (req, res, next) => {
 );
 
 
-
   // Log out
 router.delete(
     '/',

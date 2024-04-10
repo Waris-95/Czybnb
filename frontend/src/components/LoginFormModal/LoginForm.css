@@ -6,6 +6,7 @@
     padding: 25px;
     width: 250px;
     font-family: "Avenir";
+    border-radius: 40px;
 }
 
 .login-modal > h1 {
