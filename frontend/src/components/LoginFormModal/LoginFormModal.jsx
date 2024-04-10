@@ -19,28 +19,23 @@ function LoginFormModal() {
   
     // Attempt login
     dispatch(sessionActions.login({ credential, password }))
-      .then((res) => {
-        if (!res.ok) {
-          // If response is not ok, handle error
-          throw new Error('Invalid credentials');
-        }
-        return res.json(); // Convert response to JSON
+      .then(() => {
+        // Close modal on successful login
+        closeModal();
       })
-      .then((data) => {
-        // Handle successful login
-        if (data && data.user) {
-          closeModal(); // Close modal if user object is present
+      .catch(async (res) => {
+        // Handle errors
+        if (res instanceof Error && res.message === 'Invalid credentials') {
+          // Handle invalid credentials error
+          setErrors({ credential: "The provided credentials were invalid" });
         } else {
-          // If response does not contain user object, treat as error
-          throw new Error('Invalid credentials');
+          // Handle other errors
+          console.error("An error occurred during login:", res);
+          // You can add additional error handling logic here
         }
-      })
-      .catch((error) => {
-        // Handle errors, including invalid credentials
-        console.error("An error occurred during login:", error);
-        setErrors({ credential: "The provided credentials were invalid" });
       });
   };
+  
   
   const demoLogin = () => {
     setCredential("demo@user.io");
