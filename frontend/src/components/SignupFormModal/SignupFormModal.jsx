@@ -34,14 +34,21 @@ function SignupFormModal() {
         .catch(async (res) => {
           const data = await res.json();
           if (data && data.errors) {
-            setErrors(data.errors);
+            setErrors((prevErrors) => ({ ...prevErrors, ...data.errors }));
+          }
+          if (!email.includes("@")) {
+            setErrors((prevErrors) => ({
+              ...prevErrors,
+              email: "Invalid email",
+            }));
           }
         });
+    } else {
+      setErrors({
+        confirmPassword:
+          "Confirm Password field must be the same as the Password field",
+      });
     }
-    return setErrors({
-      confirmPassword:
-        "Confirm Password field must be the same as the Password field",
-    });
   };
 
 
