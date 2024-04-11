@@ -1,94 +1,51 @@
-.create-spot-container {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: #f0f0f0; /* Added a subtle background color */
-    padding: 20px; /* Added padding for better spacing */
-    border-radius: 12px; /* Increased border radius for a softer look */
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Increased box shadow for depth */
-}
-
-.create-spot-wrapper {
-    background-color: #f7f7f7;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.create-spot-location {
-    margin-bottom: 20px;
-}
-
-.create-spot-location label {
-    font-weight: bold;
-    color: #555; /* Changed label color to a darker shade */
-}
-
-.create-spot-location input {
-    width: 100%;
-    padding: 10px; /* Increased padding for better input field appearance */
-    margin-top: 8px; /* Increased top margin for better spacing */
-    border: 1px solid #ccc;
-    border-radius: 6px; /* Slightly increased border radius */
-    transition: border-color 0.3s ease; /* Added transition effect */
-}
-
-.create-spot-location input:focus {
-    outline: none; /* Removed default outline */
-    border-color: #007bff; /* Changed border color on focus */
-}
-
-.city-state {
+.create-a-spot-div {
     display: flex;
-    align-items: center;
-    margin-top: 10px; /* Increased top margin for better spacing */
+    flex-direction: column;
+    width: 400px;
+    justify-content: center;
 }
 
-.city-state input {
-    flex: 1;
-    margin-right: 10px; /* Added right margin for spacing between inputs */
-}
-
-.long-lat {
+.create-a-spot-form {
     display: flex;
-    align-items: center;
-    margin-top: 10px; /* Increased top margin for better spacing */
+    flex-direction: column;
+    justify-content: center;
+    font-family: "Avenir";
 }
 
-.long-lat input {
-    flex: 1;
-    margin-right: 10px; /* Added right margin for spacing between inputs */
+
+.create-form-container {
+    display: flex;
+    justify-content: center;
 }
 
-.create-spot-images input {
-    width: calc(100% - 20px);
-    padding: 10px; /* Increased padding for better appearance */
-    margin-top: 8px; /* Increased top margin for better spacing */
-    border: 1px solid #ccc;
-    border-radius: 6px; /* Slightly increased border radius */
-    transition: border-color 0.3s ease; /* Added transition effect */
+.form-labels {
+    margin: 7px 0 0 0;
+    font-size: 13px;
+    font-weight: 700;
 }
 
-.create-spot-images input:focus {
-    outline: none; /* Removed default outline */
-    border-color: #007bff; /* Changed border color on focus */
+
+#form-split-one {
+    margin: 20px 0px;
+    border: 1px solid black;
 }
 
-.create-spot-button {
-    text-align: center;
-    margin-top: 20px;
+#spot-description {
+    resize: none;
 }
 
-.create-spot-button button {
-    padding: 12px 24px; /* Increased padding for better button appearance */
-    background-color: #007bff;
+.spot-img-urls {
+    margin: 8px 0px;
+}
+
+#create-spot-submit-button {
+    align-self: center;
+    width: 100px;
+    background-color: red;
     color: white;
-    border: none;
-    border-radius: 6px; /* Slightly increased border radius */
-    cursor: pointer;
-    transition: background-color 0.3s ease; /* Added transition effect */
+    padding: 10px 0px;
 }
 
-.create-spot-button button:hover {
-    background-color: #0056b3;
+#create-spot-submit-button:hover {
+    background-color: rgb(157, 0, 0);
 }
