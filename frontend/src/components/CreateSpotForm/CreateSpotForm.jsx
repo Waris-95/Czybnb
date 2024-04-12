@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import "./CreateSpotForm.css";
 import { useNavigate } from "react-router-dom";
-import { createASpotThunk } from "../../store/spots";
-import { addSpotImagesThunk } from "../../store/spots";
-import { editASpotAThunk } from "../../store/spots";
+import "./CreateSpotForm.css";
+import { createASpotThunk, addSpotImagesThunk, editASpotAThunk } from "../../store/spots";
 
 function CreateSpotForm({ formType = "Create A Spot", spot }) {
   const dispatch = useDispatch();
@@ -42,16 +40,16 @@ function CreateSpotForm({ formType = "Create A Spot", spot }) {
   const [errors, setErrors] = useState({});
 
   if (!user) {
-    navigate.replace("/");
-    return;
+    navigate('/', { replace: true });
+    return null; // or any other content you want to render when redirecting
   }
 
-  if (formType === "Update Spot") {
-    if (user.id !== spot.ownerId) navigate.replace("/");
+  if (formType === "Update Spot" && user.id !== spot.ownerId) {
+    navigate('/', { replace: true });
+    return null; // or any other content you want to render when redirecting
   }
 
   const handleSubmit = async (e) => {
-    // console.log(formType === "Update Spot");
     e.preventDefault();
     const errors = {};
     const spotImgs = [
@@ -192,6 +190,7 @@ function CreateSpotForm({ formType = "Create A Spot", spot }) {
     setErrors(errors);
   };
 
+
   return (
     <div className="create-form-container">
       <div className="create-a-spot-div">
@@ -201,7 +200,7 @@ function CreateSpotForm({ formType = "Create A Spot", spot }) {
           ) : (
             <h2 style={{ margin: "0" }}>Update your Spot</h2>
           )}
-          <h3 style={{ margin: "10px 0 0 0" }}>Where's your place located?</h3>
+         <h3 style={{ margin: "10px 0 0 0" }}>Where&apos;s your place located?</h3>
           <span style={{ marginBottom: "30px" }}>
             Guest will only get your exact address once they booked a
             reservation.
@@ -313,10 +312,10 @@ function CreateSpotForm({ formType = "Create A Spot", spot }) {
           </span>
           <span
             style={{ fontSize: "12px", fontWeight: "200", margin: "10px 0" }}
-          >
-            Catch guests' attention with a spot title that highlights what makes
+            >
+            Catch guests&apos; attention with a spot title that highlights what makes
             your place special.
-          </span>
+            </span>
           <input
             type="text"
             name="title"

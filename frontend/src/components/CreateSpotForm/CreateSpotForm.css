@@ -3,6 +3,10 @@
     flex-direction: column;
     width: 400px;
     justify-content: center;
+    background-color: #f7f7f7;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .create-a-spot-form {
@@ -12,7 +16,6 @@
     font-family: "Avenir";
 }
 
-
 .create-form-container {
     display: flex;
     justify-content: center;
@@ -20,18 +23,21 @@
 
 .form-labels {
     margin: 7px 0 0 0;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
+    color: #333;
 }
-
 
 #form-split-one {
     margin: 20px 0px;
-    border: 1px solid black;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
 }
 
 #spot-description {
     resize: none;
+    font-family: "Avenir";
 }
 
 .spot-img-urls {
@@ -40,12 +46,20 @@
 
 #create-spot-submit-button {
     align-self: center;
-    width: 100px;
-    background-color: red;
+    width: 150px;
+    background-color: #ff0000;
     color: white;
-    padding: 10px 0px;
+    padding: 12px 0px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-family: "Avenir";
+    font-size: 16px;
+    font-weight: 700;
 }
 
 #create-spot-submit-button:hover {
-    background-color: rgb(157, 0, 0);
+    background-color: #b30000;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
