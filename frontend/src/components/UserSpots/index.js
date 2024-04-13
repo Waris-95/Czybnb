@@ -1,3 +1,4 @@
-import UserSpot from "./UserSpots.js";
+import UserSpot from "./UserSpots";
+
 
 export default UserSpot;

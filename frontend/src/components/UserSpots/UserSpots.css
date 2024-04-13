@@ -1,0 +1,19 @@
+.manage-spots-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 1000px;
+    margin: auto;
+    font-family: "Avenir";
+}
+
+
+.manage-spots-tiles-contaier {
+    display: flex;
+    flex-direction: row;
+    margin-top: 25px;
+}
+
+.manage-spot-tiles {
+    display: flex;
+    flex-flow: wrap;
+}
