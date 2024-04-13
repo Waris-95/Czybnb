@@ -1,17 +1,18 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUsersSpotsThunk } from '../../store/spots';
-import SpotTile from '../SpotTile/SpotTile'
+import SpotTile from '../SpotTile/SpotTile';
 import './UserSpots.css';
 import { useNavigate } from 'react-router-dom';
-import DeleteASpotModal from '../DeleteASpotModal';
+import DeleteASpotModal from '../DeleteASpotModal/DeleteASpotModal';
 import OpenModalButton from '../OpenModalButton';
 
 function UserSpot() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.session.user);
-  const spots = useSelector((state) => Object.values(state.spots));
+  const spotObj = useSelector((state) => state.spots); // Get the entire spots object
+  const spots = spotObj ? Object.values(spotObj) : []; // Extract values only if spotObj is defined
 
   useEffect(() => {
     if (user) dispatch(getUsersSpotsThunk());
@@ -58,7 +59,7 @@ function UserSpot() {
             <div className="manage-spot-tiles">
               {spots.map((spot) => (
                 <div className="individual-tiles" key={spot.id}>
-                  <SpotTile spot={spot} /> {/* Uncommented SpotTile */}
+                  <SpotTile spot={spot} />
                   <button
                     style={{
                       cursor: 'pointer',
@@ -73,7 +74,7 @@ function UserSpot() {
                   </button>
                   <OpenModalButton
                     buttonText="Delete"
-                    modalComponent={<DeleteASpotModal spot={spot} />} 
+                    modalComponent={<DeleteASpotModal spot={spot} />}
                   />
                 </div>
               ))}

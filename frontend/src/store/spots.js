@@ -1,11 +1,13 @@
 import { csrfFetch } from "./csrf";
 
+// action types as constants
 const ALL_SPOTS = "spots/ALL_SPOTS";
 const SPOT_DETAILS = "spots/SPOT_DETAILS";
 const CREATE_SPOT = "spots/CREATE_SPOT";
-const USERS_SPOTS = "spots/USERS_SPOTS";
+// const USERS_SPOTS = "spots/USERS_SPOTS";
 const DELETE_SPOT = "spots/DELETE_SPOT";
 
+// action creator function to set user in the state
 const getAllSpots = (spots) => {
   return {
     type: ALL_SPOTS,
@@ -34,6 +36,7 @@ const deleteASpot = (spotId) => {
   };
 };
 
+// async action creator for user login
 export const deleteASpotThunk = (spotId) => async (dispatch) => {
   const res = await csrfFetch(`/api/spots/${spotId}`, {
     method: "DELETE",
@@ -115,7 +118,7 @@ export const createASpotThunk = (payload) => async (dispatch) => {
   }
 };
 
-export const addSpotImagesThunk = (spotId, spotImages) => async (dispatch) => {
+export const addSpotImagesThunk = (spotId, spotImages) => async () => {
   // console.log('in thunk', spotImages);
   spotImages.forEach(async (img) => {
     await csrfFetch(`/api/spots/${spotId}/images`, {
@@ -125,6 +128,8 @@ export const addSpotImagesThunk = (spotId, spotImages) => async (dispatch) => {
   });
 };
 
+
+// spots reducer
 const spotsReducer = (state = {}, action) => {
   switch (action.type) {
     case ALL_SPOTS: {

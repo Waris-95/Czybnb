@@ -3,8 +3,11 @@ import { useDispatch } from "react-redux";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import Navigation from "./components/Navigation";
 import * as sessionActions from "./store/session";
-import CreateSpotForm from "./components/CreateSpotForm";
-import UserSpot from './components/UserSpots' // Updated import
+import CreateSpotForm from "./components/CreateSpotForm/CreateSpotForm";
+import UserSpot from './components/UserSpots/UserSpots';
+import EditASpot from "./components/EditASpot/EditASpot";
+import SpotDetailPage from "./components/SpotDetailPage/SpotDetailPage";
+import AllSpot from "./components/AllSpot/AllSpot";
 
 function Layout() {
   const dispatch = useDispatch();
@@ -29,16 +32,32 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        path: "/",
-        element: <h1>Welcome!</h1>,
+        index: true,
+        element: <AllSpot />,
       },
       {
-        path: "/spots/new",
-        element: <CreateSpotForm />
+        path: "spots/new",
+        element: <CreateSpotForm />,
       },
       {
-        path: "/spots/current",
-        element: <UserSpot />
+        path: "spots/current",
+        element: <UserSpot />,
+      },
+      {
+        path: "spots/:spotId/edit",
+        element: <EditASpot />,
+      },
+      {
+        path: "spots/:spotId",
+        element: <SpotDetailPage />,
+      },
+      {
+        path: "*",
+        element: (
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <h1 style={{ fontFamily: "Avenir" }}>404 Does Not Exist</h1>
+          </div>
+        ),
       },
     ],
   },

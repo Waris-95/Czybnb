@@ -1,0 +1,110 @@
+.spot-details {
+    max-width: 1000px;
+    margin: auto
+}
+
+.small-image {
+    object-fit: cover;
+}
+
+.spot-details-header {
+    font-family: "Avenir";
+    margin-bottom: 25px;
+}
+
+.spot-details-images {
+    margin: auto;
+    display: grid;
+    grid-template-areas:
+    "bigImg secondImg fourthImg"
+    "bigImg thirdImg fifthImg";
+    max-width: 1000px;
+    min-width: 1000px;
+    grid-template-columns: 50% 25% 25%;
+    grid-template-rows: 50% 50%;
+    height: 365px;
+}
+
+
+.first-img {
+    width: 100%;
+    height: 100%;
+    grid-area: bigImg;
+}
+
+.second-img {
+    width: 100%;
+    height: 100%;
+    grid-area: secondImg;
+}
+
+.third-img {
+    grid-area: thirdImg;
+    width: 100%;
+    height: 100%;
+}
+
+.fourth-img {
+    grid-area: fourthImg;
+    width: 100%;
+    height: 100%;
+}
+
+.fifth-img {
+    grid-area: fifthImg;
+    width: 100%;
+    height: 100%;
+}
+
+.spot-booking-tile {
+    width: 350px;
+    height: 80px;
+    padding: 5px 20px 35px 20px;
+    border: 3px solid black;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.spot-price-review {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.spot-details-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    font-family: "Avenir";
+}
+
+.spot-owner-description {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    margin-right: 15px;
+}
+
+.reserve-spot {
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+#reserve-button {
+    padding: 10px 150px;
+    color: white;
+    background-color: red;
+}
+
+#reserve-button:hover {
+    background-color: rgb(161, 0, 0);
+}
+
+#spot-price > i {
+    font-size: 25px;
+    font-style: normal;
+}

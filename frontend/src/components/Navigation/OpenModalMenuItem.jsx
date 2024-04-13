@@ -1,4 +1,3 @@
-// import React from "react";
 import { useModal } from "../../context/Modal";
 
 function OpenModalMenuItem({
@@ -12,10 +11,18 @@ function OpenModalMenuItem({
   const onClick = () => {
     if (onModalClose) setOnModalClose(onModalClose);
     setModalContent(modalComponent);
-    if (typeof onItemClick === "function") onItemClick();
+    if (onItemClick) onItemClick();
   };
 
-  return <li onClick={onClick}>{itemText}</li>;
+  return (
+    <li
+      onClick={onClick}
+      style={{ fontFamily: "Avenir", fontWeight: "500" }}
+      className="profile-elements"
+    >
+      {itemText}
+    </li>
+  );
 }
 
 export default OpenModalMenuItem;

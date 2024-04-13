@@ -1,0 +1,58 @@
+.spot-tile {
+    display: flex;
+    flex-direction: column;
+    width: 225px;
+    height: 250px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+#spot-img {
+    width: 100%;
+    min-height: 90%;
+    max-height: 90%;
+    border-radius: 10px;
+}
+
+
+.spot-text {
+    display: flex;
+    flex-direction: column;
+    height: 50px;
+}
+
+#spot-reviews {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+}
+
+.spot-text-details {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0;
+    height: 100%;
+    font-family:"Avenir";
+    font-size: 15px;
+}
+
+
+.all-spots-container {
+    display: flex;
+    flex-flow: wrap;
+    max-width: 1000px;
+    margin: auto;
+}
+
+#spot-price {
+    margin: 0;
+    font-family: "Avenir";
+    font-size: 15px;
+}
+
+.single-spot-tile {
+    display: flex;
+    height: 310px;
+}
