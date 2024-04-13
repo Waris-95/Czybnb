@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function SpotTile({ spot }) {
 	const navigate = useNavigate();
-	// console.log(spot)
+	console.log(spot)
 
 	const handleClick = () => {
 		navigate(`/spots/${spot.id}`);

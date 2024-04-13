@@ -237,6 +237,7 @@ router.get('/:spotId', async (req, res, next) => {
 router.post('/', requireAuth, validateSpotCreation, async (req, res, next) => {
   try {
     // Extract spot details from the request body
+    console.log('a good spot works', req.body)
     const {
       address,
       city,
@@ -248,6 +249,7 @@ router.post('/', requireAuth, validateSpotCreation, async (req, res, next) => {
       description,
       price,
     } = req.body;
+    
     const ownerId = req.user.id;
 
     // Validate the required fields

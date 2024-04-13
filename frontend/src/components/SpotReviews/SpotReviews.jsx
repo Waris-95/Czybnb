@@ -37,7 +37,7 @@ function SpotReviews({ spot }) {
 
   useEffect(() => {
     dispatch(getReviewsForSpotThunk(spot.id));
-  }, [dispatch]);
+  }, [dispatch, spot.id]);
 
   let spotRating;
   if (reviews.length) {

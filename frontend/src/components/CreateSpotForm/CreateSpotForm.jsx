@@ -78,8 +78,8 @@ function CreateSpotForm({ formType = "Create A Spot", spot }) {
       address,
       country,
       city,
-      lat: latitude,
-      lng: longitude,
+      lat: parseInt(latitude),
+      lng: parseInt(longitude),
       state,
       description,
       name,
@@ -172,16 +172,19 @@ function CreateSpotForm({ formType = "Create A Spot", spot }) {
 
 
     if (!Object.keys(errors).length && formType === "Create A Spot") {
+      // console.log(spotDetails)
       const res = await dispatch(createASpotThunk(spotDetails));
+      // console.log("Spot ID after creation:", res.id);
       await dispatch(addSpotImagesThunk(res.id, spotImgs));
       navigate(`/spots/${res.id}`);
     }
+
 
     if (formType === "Update Spot") {
       delete errors.previewImageUrl;
       delete errors.urlEndsWith;
 
-      if (!Object.keys(errors).length) {
+        if (!Object.keys(errors).length) {
         const res = await dispatch(editASpotAThunk(spot.id, spotDetails));
         navigate(`/spots/${res.id}`);
       }

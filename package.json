@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/Waris-95/API-project/issues"
   },
-  "homepage": "https://github.com/Waris-95/API-project#readme"
+  "homepage": "https://github.com/Waris-95/API-project#readme",
+  "dependencies": {
+    "redux-thunk": "^3.1.0"
+  }
 }
