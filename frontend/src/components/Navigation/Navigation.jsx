@@ -15,7 +15,7 @@ function Navigation({ isLoaded }) {
 
             <div className='logo-name'>
               <img src="https://www.pinclipart.com/picdir/big/58-581778_home-icon-clip-art-interior-design-logo-png.png" alt="logo" style={{ height: '28px', marginRight: '10px' }} />
-              <span>SnoreBnb</span>
+              <span>CZYBNB</span>
             </div>
           </NavLink>
         </li>
