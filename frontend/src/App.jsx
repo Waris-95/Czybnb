@@ -8,6 +8,7 @@ import UserSpot from './components/UserSpots/UserSpots';
 import EditASpot from "./components/EditASpot/EditASpot";
 import SpotDetailPage from "./components/SpotDetailPage/SpotDetailPage";
 import AllSpot from "./components/AllSpot/AllSpot";
+import Footer from "./components/Footer/Footer"; 
 
 function Layout() {
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ function Layout() {
     <>
       <Navigation isLoaded={isLoaded} />
       {isLoaded && <Outlet />}
+      <Footer />
     </>
   );
 }
