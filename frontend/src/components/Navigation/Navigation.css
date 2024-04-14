@@ -9,7 +9,7 @@
 }
 .snorebnb {
   grid-area: pawbnb;
-  /* font-weight: bold; */
+  font-weight: bold;
   font-size: 28px;
   height: 55px;
 
@@ -34,7 +34,7 @@
 
 .logo-name {
   color: red;
-  font-family: "amaranth bold";
+  font-family: Arial, Helvetica, sans-serif;
   margin-left: 100px;
   cursor: pointer;
 }

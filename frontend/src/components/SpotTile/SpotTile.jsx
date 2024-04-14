@@ -22,10 +22,14 @@ export default function SpotTile({ spot }) {
 					<span
 						style={{ maxWidth: "100%" }}
 					>{`${spot.city}, ${spot.state}`}</span>
-					<p id="spot-reviews">
-						<i className="fa-solid fa-star"></i>
-						{spot.avgRating ? spot.avgRating.toFixed(1) : <p>New</p>}
-					</p>
+					{spot.avgRating ? (
+						<p id="spot-reviews">
+							<i className="fa-solid fa-star"></i>
+							{spot.avgRating.toFixed(1)}
+						</p>
+					) : (
+						<p id="spot-reviews">New</p>
+					)}
 				</div>
 				<p id="spot-price">
 					<span style={{ fontWeight: "900" }}>${price.toFixed(2)}</span> Night

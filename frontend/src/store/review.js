@@ -1,8 +1,11 @@
 import { csrfFetch } from "./csrf";
+
+// action types as constants
 const GET_REVIEWS_FOR_SPOT = "reviews/GET_REVIEWS_FOR_SPOT";
 const DELETE_REVIEW = "reviews/DELETE_REVIEW";
 const CREATE_REVIEW = "reviews/CREATE_REVIEW"
 
+// action creator function to set user in the state
 const getReviewsForSpot = (reviews) => {
     return {
         type: GET_REVIEWS_FOR_SPOT,
@@ -24,6 +27,7 @@ const createAReview = (review) => {
     }
 }
 
+// async action creator for user login
 export const createAReviewThunk = (spotId, review, user) => async (dispatch) => {
     const res = await csrfFetch(`/api/spots/${spotId}/reviews`, {
         method: "POST",
@@ -62,7 +66,7 @@ export const deleteAReviewThunk = (reviewId) => async (dispatch) => {
 };
 
 
-
+// reducer
 const reviewsReducer = (state = {}, action) => {
     switch (action.type) {
         case GET_REVIEWS_FOR_SPOT: {

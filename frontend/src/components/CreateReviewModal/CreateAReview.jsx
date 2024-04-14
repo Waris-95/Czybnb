@@ -34,7 +34,7 @@ function CreateAReviewModal({ spot }) {
     if (rating < 1 || rating > 5) errorsObj.stars = "Please select your stars"
 
     if (!Object.keys(errorsObj).length) {
-      dispatch(createAReviewThunk(spot.id, review, user)).then(closeModal());
+      dispatch(createAReviewThunk(spot.id, review, user)).then(() => closeModal());
     }
 
     setErrors(errorsObj);
