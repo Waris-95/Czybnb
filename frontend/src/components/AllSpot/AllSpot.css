@@ -5,54 +5,63 @@
     height: 250px;
     padding: 10px;
     cursor: pointer;
-}
-
-#spot-img {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+    /* Fancy enhancements */
+    transition: all 0.3s ease;
+  }
+  
+  .spot-tile:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px); /* Move up slightly on hover */
+  }
+  
+  #spot-img {
     width: 100%;
     min-height: 90%;
     max-height: 90%;
     border-radius: 10px;
-}
-
-
-.spot-text {
+  }
+  
+  .spot-text {
     display: flex;
     flex-direction: column;
     height: 50px;
-}
-
-#spot-reviews {
+  }
+  
+  #spot-reviews {
     display: flex;
     gap: 3px;
     align-items: center;
-}
-
-.spot-text-details {
+  }
+  
+  .spot-text-details {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 0;
     height: 100%;
-    font-family:"Avenir";
+    font-family: "Avenir";
     font-size: 15px;
-}
-
-
-.all-spots-container {
+  }
+  
+  .all-spots-container {
     display: flex;
     flex-flow: wrap;
     max-width: 1000px;
-    margin: auto;
-}
-
-#spot-price {
+    margin: 50px auto 0; /* Adjust the margin-top value as needed */
+  }
+  
+  #spot-price {
     margin: 0;
     font-family: "Avenir";
     font-size: 15px;
-}
-
-.single-spot-tile {
+  }
+  
+  .single-spot-tile {
     display: flex;
     height: 310px;
-}
+  }
+  
