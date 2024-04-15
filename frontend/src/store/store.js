@@ -5,18 +5,18 @@ import { thunk } from "redux-thunk";
 import reviewsReducer from "./review";
 
 // Define a simple reducer
-const exampleReducer = (state = {}, action) => {
-  switch (action.type) {
-    case 'HELLO':
-      return { ...state, message: 'Hello, Redux!' };
-    default:
-      return state;
-  }
-};
+// const exampleReducer = (state = {}, action) => {
+//   switch (action.type) {
+//     case 'HELLO':
+//       return { ...state, message: 'Hello, Redux!' };
+//     default:
+//       return state;
+//   }
+// };
 
 // Combine reducers
 const rootReducer = combineReducers({
-  example: exampleReducer,
+  // example: exampleReducer,
   session: sessionReducer,
   spots: spotsReducer,
   reviews: reviewsReducer

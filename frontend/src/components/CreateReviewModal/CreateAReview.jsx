@@ -1,183 +1,86 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from 'react-redux'
+import { useEffect, useState } from "react";
 import { useModal } from "../../context/Modal";
-import { createAReviewThunk } from "../../store/review";
+import { useDispatch } from "react-redux";
+import { createAReviewThunk , getReviewsForSpotThunk } from "../../store/review";
 import "./CreateAReview.css";
+import { getASpotThunk } from "../../store/spots";
 
-function CreateAReviewModal({ spot }) {
+function CreateReviewForm({ spotId }) {
   const dispatch = useDispatch();
-  const user = useSelector(state => state.session.user);
+
+  const [review, setReview] = useState("");
+  const [stars, setStars] = useState(0);
+  const [hover, setHover] = useState(0)
+  const [disabled, setDisabled] = useState(true);
+  const [errors, setErrors] = useState({})
   const { closeModal } = useModal();
-  const [reviewText, setReviewText] = useState("");
-  const [activeRating, setActiveRating] = useState(0);
-  const [rating, setRating] = useState(0)
-  const disabled = reviewText.length < 10 || rating === 0;
-  const className = disabled ? "not-confirmed-review" : "confirm-review";
-  const [ errors, setErrors ] = useState({})
 
-  // console.log(user)
+  useEffect(() => {
+    if (review.length > 9 && stars > 0) setDisabled(false)
 
-  const onChange = (number) => {
-    setRating(parseInt(number));
-  };
+  }, [review, stars])
 
   const handleSubmit = (e) => {
+    console.log("spotId:", spotId); 
     e.preventDefault();
-    const errorsObj = {};
-
-    const review = {
-      review: reviewText,
-      stars: rating
-    }
-
-    if (reviewText.length > 255) errorsObj.review = "Review must be shorter than 255 characters"
-    if (rating < 1 || rating > 5) errorsObj.stars = "Please select your stars"
-
-    if (!Object.keys(errorsObj).length) {
-      dispatch(createAReviewThunk(spot.id, review, user)).then(() => closeModal());
-    }
-
-    setErrors(errorsObj);
-  };
-
-
-  // console.log(rating);
+    setErrors({});
+  
+    return dispatch(
+      createAReviewThunk(
+        spotId, // Pass spotId directly
+        { review, stars } // Pass review object containing review and stars
+      )
+    )
+      .then(closeModal)
+      .catch(async (res) => {
+        const data = await res.json();
+        if (data && data.message) {
+          setErrors(data.message);
+        }
+      });
+  }
+  
   return (
-    <div className="create-a-review-modal">
-      <h1 style={{ marginBottom: "5px" }}>How was your stay?</h1>
-      {errors.review && (
-        <p
-          style={{
-            fontSize: "12px",
-            color: "red",
-            marginTop: "0",
-          }}
-        >
-          *{errors.review}
-        </p>
-      )}
-      {errors.stars&& (
-        <p
-          style={{
-            fontSize: "12px",
-            color: "red",
-            marginTop: "0",
-          }}
-        >
-          *{errors.stars}
-        </p>
-      )}
-      <textarea
-        id="review-text"
-        rows="8"
-        name="review"
-        placeholder="Leave your review here..."
-        value={reviewText}
-        onChange={(e) => setReviewText(e.target.value)}
-      />
-      <div className="rating-input">
-        <div
-          onMouseEnter={() => {
-            setActiveRating(1);
-          }}
-          onMouseLeave={() => {
-            setActiveRating(rating);
-          }}
-          onClick={() => {
-            onChange(1);
-          }}
-        >
-          <i
-            className={
-              activeRating >= 1 || rating >= 1
-                ? "fa-solid fa-star"
-                : "fa-regular fa-star"
-            }
-          ></i>
+    <div className="create-review-cont">
+      <h1>How was your stay?</h1>
+      <form onSubmit={handleSubmit}>
+        <textarea
+          rows={3} cols={30}
+          minLength="30"
+          value={review}
+          placeholder="Leave your review here"
+          onChange={(e) => setReview(e.target.value)}
+          required
+        />
+        {errors.review && <p>{errors.review}</p>}
+
+        <div className="star-rating">
+          {[...Array(5)].map((star, index) => {
+            index += 1;
+            return (
+              <button
+                type="button"
+                key={index}
+                className={index <= (hover || stars) ? "on" : "off"}
+                onClick={() => setStars(index)}
+                onMouseEnter={() => setHover(index)}
+                onMouseLeave={() => setHover(stars)}
+              >
+                <span className="star">&#9733;</span>
+              </button>
+            );
+          })}
+          {errors.stars && <p>{errors.stars}</p>}
+          <span>Stars</span>
         </div>
-        <div
-          onMouseEnter={() => {
-            setActiveRating(2);
-          }}
-          onMouseLeave={() => {
-            setActiveRating(rating);
-          }}
-          onClick={() => {
-            onChange(2);
-          }}
-        >
-          <i
-            className={
-              activeRating >= 2 || rating >= 2
-                ? "fa-solid fa-star"
-                : "fa-regular fa-star"
-            }
-          ></i>
-        </div>
-        <div
-          onMouseEnter={() => {
-            setActiveRating(3);
-          }}
-          onMouseLeave={() => {
-            setActiveRating(rating);
-          }}
-          onClick={() => {
-            onChange(3);
-          }}
-        >
-          <i
-            className={
-              activeRating >= 3 || rating >= 3
-                ? "fa-solid fa-star"
-                : "fa-regular fa-star"
-            }
-          ></i>
-        </div>
-        <div
-          onMouseEnter={() => {
-            setActiveRating(4);
-          }}
-          onMouseLeave={() => {
-            setActiveRating(rating);
-          }}
-          onClick={() => {
-            onChange(4);
-          }}
-        >
-          <i
-            className={
-              activeRating >= 4 || rating >= 4
-                ? "fa-solid fa-star"
-                : "fa-regular fa-star"
-            }
-          ></i>
-        </div>
-        <div
-          onMouseEnter={() => {
-            setActiveRating(5);
-          }}
-          onMouseLeave={() => {
-            setActiveRating(rating);
-          }}
-          onClick={() => {
-            onChange(5);
-          }}
-        >
-          <i
-            className={
-              activeRating >= 5 || rating >= 5
-                ? "fa-solid fa-star"
-                : "fa-regular fa-star"
-            }
-          ></i>
-        </div>
-        <span style={{ fontSize: "15px", marginLeft: "5px" }}>Stars</span>
-      </div>
-      <button className={className} disabled={disabled} onClick={handleSubmit}>
-        Submit Your Review
-      </button>
+        {/* {errors && (
+          <p>{errors}</p>
+        )} */}
+        <button  className="submit-review-button" disabled={disabled} type="submit">Submit Your Review</button>
+      </form>
     </div>
-  );
+
+  )
 }
 
-export default CreateAReviewModal;
+export default CreateReviewForm;
