@@ -15,51 +15,67 @@ const router = express.Router();
 
 // Get all reviews by currently logged in user
 router.get("/current", requireAuth, async (req, res, next) => {
-  try {
-    const reviews = await Review.findAll({
-      where: { userId: req.user.id },
-      include: [
-          { 
-              model: User, 
-              as: 'User', // Specify the alias for the User model
-              attributes: ["id", "firstName", "lastName"] 
+    try {
+      const reviews = await Review.findAll({
+        where: { userId: req.user.id },
+        include: [
+          {
+            model: User,
+            as: "User",
+            attributes: ["id", "firstName", "lastName"], // Include first name of the reviewer
           },
           {
-              model: Spot,
-              as: 'Spot', // Specify the alias for the Spot model
-              attributes: {
-                  exclude: ["createdAt", "updatedAt", "description"],
-              },
-              include: [{ 
-                  model: SpotImage,
-                  as: 'SpotImages' // Specify the alias for the SpotImage model
-              }],
+            model: Spot,
+            as: "Spot",
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "description"],
+            },
+            include: [{ model: SpotImage, as: "SpotImages" }],
           },
           { model: ReviewImage, attributes: ["id", "url"] },
-      ],
+        ],
+      });
+  
+      const formattedReviews = reviews.map((review) => {
+        const formattedReview = review.toJSON();
+        formattedReview.Spot.SpotImages.forEach((spotImage) => {
+          if (spotImage.preview === true) {
+            formattedReview.Spot.previewImage = spotImage.url;
+          }
+        });
+        if (!formattedReview.Spot.previewImage) {
+          formattedReview.Spot.previewImage = "No preview image found";
+        }
+  
+        // Format review date (assuming review.createdAt is the date property)
+        const reviewDate = new Date(formattedReview.createdAt);
+        const monthYear = reviewDate.toLocaleString("en-US", {
+          month: "long",
+          year: "numeric",
+        });
+        formattedReview.reviewDate = monthYear;
+  
+        // Include reviewer's first name
+        formattedReview.reviewerFirstName = review.User.firstName;
+  
+        // Include review comment text
+        formattedReview.reviewText = formattedReview.review;
+  
+        // Remove unnecessary properties
+        delete formattedReview.createdAt;
+        delete formattedReview.updatedAt;
+        delete formattedReview.Spot.SpotImages;
+        delete formattedReview.review;
+  
+        return formattedReview;
+      });
+  
+      res.json({ Reviews: formattedReviews });
+    } catch (error) {
+      next(error);
+    }
   });
   
-
-      const formattedReviews = reviews.map((review) => {
-          const formattedReview = review.toJSON();
-          formattedReview.Spot.SpotImages.forEach((spotImage) => {
-              if (spotImage.preview === true) {
-                  formattedReview.Spot.previewImage = spotImage.url;
-              }
-          });
-          if (!formattedReview.Spot.previewImage) {
-              formattedReview.Spot.previewImage = "No preview image found";
-          }
-          delete formattedReview.Spot.SpotImages;
-          return formattedReview;
-      });
-
-      res.json({ Reviews: formattedReviews });
-  } catch (error) {
-      next(error);
-  }
-});
-
 
 
 // Add an image to a review based on review id

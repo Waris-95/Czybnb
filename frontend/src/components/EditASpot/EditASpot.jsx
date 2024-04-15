@@ -13,7 +13,7 @@ function EditASpot() {
 
     useEffect(() => {
 		dispatch(getASpotThunk(spotId)).catch(() => navigate("/"));
-    }, [dispatch, spotId]);
+    }, [dispatch, navigate, spotId]);
 
     if (!spot) {
         return null;

@@ -7,8 +7,6 @@ import SearchBox from "../Navigation/SearchBox/SearchBox";
 
 function AllSpots() {
 	const [searchField, setSearchField] = useState("");
-	const [filteredSpots, setFilteredSpots] = useState([]);
-
 	const dispatch = useDispatch();
 	const spotsObj = useSelector((state) => state.spots);
 	const spots = spotsObj ? Object.values(spotsObj) : [];
@@ -17,12 +15,13 @@ function AllSpots() {
 		dispatch(getAllSpotsThunk());
 	}, [dispatch]);
 
-	useEffect(() => {
-		const newFilteredSpots = spots.filter((spot) => {
-			return spot.name.toLowerCase().includes(searchField.toLowerCase());
-		});
-		setFilteredSpots(newFilteredSpots);
-	}, [spots, searchField]);
+	const filteredSpots = useSelector((state) =>
+		state.spots
+			? Object.values(state.spots).filter((spot) =>
+					spot.name.toLowerCase().includes(searchField.toLowerCase())
+			  )
+			: []
+	);
 
 	const onSearchChange = (event) => {
 		setSearchField(event.target.value);
@@ -37,7 +36,7 @@ function AllSpots() {
 			<SearchBox
 				className="search-box"
 				onChangeHandler={onSearchChange}
-				placeholder="Search Spots"
+				placeholder="Search Spots..."
 			/>
 			{filteredSpots.map((spot) => (
 				<div className="single-spot-tile" key={spot.id}>

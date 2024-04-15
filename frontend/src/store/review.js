@@ -29,12 +29,19 @@ const createAReview = (review) => {
 
 // async action creator for user login
 export const createAReviewThunk = (spotId, review, user) => async (dispatch) => {
+    const { reviewerFirstName, reviewDate, reviewText } = review;
+
     const res = await csrfFetch(`/api/spots/${spotId}/reviews`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(review)
+        body: JSON.stringify({
+            reviewerFirstName,
+            reviewDate,
+            reviewText,
+            stars: review.stars,
+        })
     });
 
     if (res.ok) {

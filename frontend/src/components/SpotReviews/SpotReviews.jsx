@@ -22,6 +22,13 @@ function SpotReviews({ spot }) {
     12: "Dec"
   }
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = months[date.getMonth() + 1]; // Adding 1 because months are zero-based
+    return `${month} ${year}`;
+  };
+
   const user = useSelector((state) => state.session.user);
   const reviewsObj = useSelector((state) => state.reviews);
   const reviews = Object.values(reviewsObj);
@@ -32,8 +39,6 @@ function SpotReviews({ spot }) {
     const date2 = new Date(b.createdAt);
     return date2 - date1;
   });
-
-  // console.log('after', reviews)
 
   useEffect(() => {
     dispatch(getReviewsForSpotThunk(spot.id));
@@ -49,10 +54,6 @@ function SpotReviews({ spot }) {
   if (user) {
     alreadyReviewed = reviews.find(review => review.userId === user.id)
   }
-
-  // console.log(spotRating)
-
-  // console.log(reviews)
 
   return (
     <div className="reviews-container">
@@ -82,30 +83,29 @@ function SpotReviews({ spot }) {
       <span style={{ marginTop: "7px" }}></span>
       {reviews.length > 0 ? (
         <div className="reviews">
-					{reviews.map((review) => (
-						<div className="individual-review" key={review.id}>
-							<span id="review-firstName">{review.User.firstName}</span>
-							<span id="review-date">
-								{review.createdAt.slice(0, 4)}{" "}
-								{months[review.createdAt.slice(5, 7)]}
-							</span>
-							<p
-								style={{
-									margin: "0",
-									marginBottom: "10px",
-									overflowWrap: "break-word",
-								}}
-							>
-								{review.review}
-							</p>
-							{user && user.id === review.userId && (
-								<OpenModalButton
-									buttonText={"Delete"}
-									modalComponent={<DeleteAReviewModal review={review} />}
-								/>
-							)}
-						</div>
-					))}
+          {reviews.map((review) => (
+            <div className="individual-review" key={review.id}>
+              <span id="review-firstName">{review.User.firstName}</span>
+              <span id="review-date">
+                {formatDate(review.createdAt)}
+              </span>
+              <p
+                style={{
+                  margin: "0",
+                  marginBottom: "10px",
+                  overflowWrap: "break-word",
+                }}
+              >
+                {review.review}
+              </p>
+              {user && user.id === review.userId && (
+                <OpenModalButton
+                  buttonText={"Delete"}
+                  modalComponent={<DeleteAReviewModal review={review} />}
+                />
+              )}
+            </div>
+          ))}
         </div>
       ) : (
         <span id="review-firstName">Be the first to post a review!</span>
