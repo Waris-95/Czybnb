@@ -115,4 +115,5 @@ function SpotReviews({ spot }) {
   );
 }
 
+
 export default SpotReviews;
