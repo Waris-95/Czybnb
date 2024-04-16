@@ -1,67 +1,97 @@
 .spot-tile {
-    display: flex;
-    flex-direction: column;
-    width: 225px;
-    height: 250px;
-    padding: 10px;
-    cursor: pointer;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease;
-    /* Fancy enhancements */
-    transition: all 0.3s ease;
-  }
-  
-  .spot-tile:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    transform: translateY(-5px); /* Move up slightly on hover */
-  }
-  
-  #spot-img {
-    width: 100%;
-    min-height: 90%;
-    max-height: 90%;
-    border-radius: 10px;
-  }
-  
-  .spot-text {
-    display: flex;
-    flex-direction: column;
-    height: 50px;
-  }
-  
-  #spot-reviews {
-    display: flex;
-    gap: 3px;
-    align-items: center;
-  }
-  
-  .spot-text-details {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0;
-    height: 100%;
-    font-family: "Avenir";
-    font-size: 15px;
+  display: flex;
+  flex-direction: column;
+  width: 225px;
+  height: 250px;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.3s ease; /* Combine transitions */
+}
+
+.spot-tile:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px); /* Move up slightly on hover */
+}
+
+#spot-img {
+  width: 100%;
+  min-height: 90%;
+  max-height: 90%;
+  border-radius: 10px;
+}
+
+.spot-text {
+  display: flex;
+  flex-direction: column;
+  height: 50px;
+}
+
+#spot-reviews {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.spot-text-details {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+  height: 100%;
+  font-family: "Avenir";
+  font-size: 15px;
+}
+
+.all-spots-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Center items horizontally */
+  max-width: 1000px;
+  margin: 50px auto 0; /* Adjust the margin-top value as needed */
+}
+
+#spot-price {
+  margin: 0;
+  font-family: "Avenir";
+  font-size: 15px;
+}
+
+.single-spot-tile {
+  display: flex;
+  height: 310px;
+}
+
+
+/* Media queries for tablets and phones */
+@media only screen and (max-width: 1024px) { /* Tablets and smaller screens */
+  .spot-tile {
+    width: 100%; /* Adjust width to fit smaller screens */
+    margin: 0 auto 20px; /* Center and add spacing between tiles */
   }
   
   .all-spots-container {
-    display: flex;
-    flex-flow: wrap;
-    max-width: 1000px;
-    margin: 50px auto 0; /* Adjust the margin-top value as needed */
+    padding: 0 20px; /* Add padding to the container for better spacing */
+  }
+}
+
+@media only screen and (max-width: 414px) { /* iPhone 12 and similar devices */
+  .spot-tile {
+    height: auto; /* Allow height to adjust based on content */
+    margin-bottom: 20px; /* Add bottom margin for spacing between spots */
+  }
+
+  .spot-text {
+    height: auto; /* Allow height to adjust based on content */
+  }
+
+  #spot-img {
+    height: 150px; /* Adjust image height for smaller screens */
   }
   
-  #spot-price {
-    margin: 0;
-    font-family: "Avenir";
-    font-size: 15px;
+  .all-spots-container {
+    padding: 0 20px; /* Add padding to the container for better spacing */
   }
-  
-  .single-spot-tile {
-    display: flex;
-    height: 310px;
-  }
-  
+}
