@@ -16,11 +16,11 @@ function AllSpots() {
 	}, [dispatch]);
 
 	const filteredSpots = useSelector((state) =>
-		state.spots
-			? Object.values(state.spots).filter((spot) =>
-					spot.name.toLowerCase().includes(searchField.toLowerCase())
-			  )
-			: []
+        state.spots
+            ? Object.values(state.spots).filter((spot) =>
+                    spot.name.toLowerCase().includes(searchField.toLowerCase())
+              )
+            : []
 	);
 
 	const onSearchChange = (event) => {

@@ -1,6 +1,6 @@
 import { useModal } from "../../context/Modal";
 import { useDispatch } from "react-redux";
-import { deleteASpotThunk } from "../../store/spots";
+// import { deleteASpotThunk } from "../../store/spots";
 // import { useNavigate } from "react-router-dom";
 import { deleteAReviewThunk } from "../../store/review";
 

@@ -12,7 +12,7 @@ function SpotDetailsPage() {
   const reviewsObj = useSelector((state) => state.reviews);
   const reviews = Object.values(reviewsObj);
   const [isLoaded, setIsLoaded] = useState(false)
-  const [errors, setErrors] = useState({});
+  const [setErrors] = useState({});
   const spot = spotObj[spotId]
   let previewImageUrl;
 
