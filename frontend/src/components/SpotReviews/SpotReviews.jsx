@@ -4,6 +4,7 @@ import { getReviewsForSpotThunk } from "../../store/review";
 import OpenModalButton from "../OpenModalButton/OpenModalButton";
 import DeleteAReviewModal from "../DeleteAReviewModal/DeleteAReview";
 import CreateAReviewModal from "../CreateReviewModal/CreateAReview";
+import { FaStar } from "react-icons/fa"; // Import FaStar icon
 import "./SpotReviews.css";
 
 function SpotReviews({ spot }) {
@@ -61,14 +62,12 @@ function SpotReviews({ spot }) {
       <div className="spot-reviews-header">
         {reviews.length > 0 ? (
           <span style={{ fontSize: "25px" }}>
-            <i className="fa-solid fa-star "></i>
-            {spotRating.toFixed(1)} · {reviews.length}{" "}
+            <FaStar /> {spotRating.toFixed(1)} · {reviews.length}{" "}
             {reviews.length === 1 ? "review" : "reviews"}
           </span>
         ) : (
           <span style={{ fontSize: "25px" }}>
-            <i className="fa-solid fa-star "></i>
-            New
+            <FaStar /> New
           </span>
         )}
       </div>
