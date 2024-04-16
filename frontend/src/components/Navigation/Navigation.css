@@ -136,3 +136,77 @@ ul {
   font-size: 24px;
   margin-top: 12px;
 }
+
+
+
+
+
+/* Media queries for tablet and phone screens */
+@media only screen and (max-width: 768px) {
+  .nav {
+    grid-template-columns: 1fr;
+    grid-template-areas: "pawbnb" "createspot" "profilelogo";
+  }
+  
+  .profilelogo {
+    margin-right: 20px;
+    font-size: 24px;
+  }
+  
+  .logo-name {
+    margin-left: 20px;
+  }
+  
+  .profile-dropdown {
+    right: 20px;
+  }
+}
+
+/* Media queries for tablet and phone screens */
+@media only screen and (max-width: 1024px) { /* Tablets and smaller screens */
+  .nav {
+    grid-template-columns: 1fr; /* Switch to single column layout */
+    grid-template-areas: "pawbnb" "createspot" "profilelogo";
+  }
+
+  .profilelogo {
+    justify-content: center; /* Center align profile logo */
+    margin-right: 0; /* Reset margin */
+  }
+
+  .logo-name {
+    margin-left: 0; /* Reset margin */
+    text-align: center; /* Center align logo name */
+  }
+
+  .snorebnb {
+    display: flex; /* Ensure snorebnb is displayed */
+    justify-content: center; /* Center align snorebnb */
+  }
+
+  .createspot {
+    display: flex; /* Ensure create spot is displayed */
+    justify-content: center; /* Center align create spot */
+    margin-top: 31px; /* Add space between elements */
+  }
+}
+
+@media only screen and (max-width: 375px) { /* iPhone 12 portrait mode and similar devices */
+  .profilelogo,
+  .createspot {
+    display: none; /* Hide profile logo and create spot for smaller screens */
+  }
+  
+  .snorebnb {
+    display: flex; /* Ensure snorebnb is displayed */
+    justify-content: center; /* Center align snorebnb */
+  }
+}
+
+@media only screen and (max-width: 414px) { /* iPhone 12 and similar devices */
+  .createspot {
+    display: flex; /* Ensure create spot is displayed */
+    justify-content: center; /* Center align create spot */
+    margin-top: 31px; /* Add space between elements */
+  }
+}
