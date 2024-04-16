@@ -28,6 +28,11 @@ function UserSpot() {
     navigate(`/spots/${spot.id}/edit`);
   };
 
+  const handleDeleteSuccess = () => {
+    // Optionally, you can perform any necessary actions after successful deletion
+    console.log('Spot deleted successfully');
+  };
+
   if (!user) {
     navigate('/');
     return null;
@@ -74,7 +79,7 @@ function UserSpot() {
                   </button>
                   <OpenModalButton
                     buttonText="Delete"
-                    modalComponent={<DeleteASpotModal spot={spot} />}
+                    modalComponent={<DeleteASpotModal spot={spot} onDeleteSuccess={handleDeleteSuccess} />}
                   />
                 </div>
               ))}

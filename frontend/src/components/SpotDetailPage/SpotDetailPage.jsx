@@ -92,12 +92,20 @@ console.log(spot) // LOG ADDED
           </span>
         </div>
         <div className="spot-details-images">
-          <img className="small-image first-img" src={previewImageUrl.url} />
-          <img className="small-image second-img" src={smallImages[0].url} />
-          <img className="small-image third-img" src={smallImages[1].url} />
-          <img className="small-image fourth-img" src={smallImages[2].url} />
-          <img className="small-image fifth-img" src={smallImages[3].url} />
-        </div>
+  {/* Add null check for previewImageUrl */}
+  {previewImageUrl && (
+    <img className="small-image first-img" src={previewImageUrl.url} />
+  )}
+  {/* Add null checks for smallImages */}
+  {smallImages.length > 0 && (
+    <>
+      <img className="small-image second-img" src={smallImages[0].url} />
+      <img className="small-image third-img" src={smallImages[1].url} />
+      <img className="small-image fourth-img" src={smallImages[2].url} />
+      <img className="small-image fifth-img" src={smallImages[3].url} />
+    </>
+  )}
+</div>
         <div className="spot-details-info">
           <div className="spot-owner-description">
             <h2 style={{ margin: "0" }}>

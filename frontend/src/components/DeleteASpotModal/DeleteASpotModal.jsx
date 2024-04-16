@@ -13,6 +13,7 @@ function DeleteASpotModal({ spot, onDeleteSuccess }) {
     try {
       await dispatch(deleteASpotThunk(spot.id));
       onDeleteSuccess(); // Call the callback function provided by the parent
+      closeModal();
     } catch (error) {
       console.error('Error deleting spot:', error);
     }
