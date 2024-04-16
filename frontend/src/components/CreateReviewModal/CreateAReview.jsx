@@ -1,39 +1,31 @@
 import { useEffect, useState } from "react";
 import { useModal } from "../../context/Modal";
 import { useDispatch } from "react-redux";
-import { createAReviewThunk , getReviewsForSpotThunk } from "../../store/review";
+import { createAReviewThunk } from "../../store/review"; // Import only the necessary action creator
 import "./CreateAReview.css";
-import { getASpotThunk } from "../../store/spots";
 
-function CreateReviewForm({ spotId }) {
+function CreateReviewForm({ spot }) { // Adjust prop name from spotId to spot
   const dispatch = useDispatch();
 
   const [review, setReview] = useState("");
   const [stars, setStars] = useState(0);
-  const [hover, setHover] = useState(0)
+  const [hover, setHover] = useState(0);
   const [disabled, setDisabled] = useState(true);
-  const [errors, setErrors] = useState({})
+  const [errors, setErrors] = useState({});
   const { closeModal } = useModal();
 
   useEffect(() => {
-    if (review.length > 9 && stars > 0) setDisabled(false)
-
-  }, [review, stars])
-
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long' };
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', options);
-  };
+    if (review.length > 9 && stars > 0) setDisabled(false);
+  }, [review, stars]);
 
   const handleSubmit = (e) => {
-    console.log("spotId:", spotId);
     e.preventDefault();
     setErrors({});
-  
-    return dispatch(
+    
+    console.log("spotId:", spot.id); // Ensure spotId is not undefined here
+    dispatch(
       createAReviewThunk(
-        spotId, // Pass spotId directly
+        spot.id, // Access spotId from spot object
         { review, stars } // Pass review object containing review and stars
       )
     )
@@ -79,14 +71,10 @@ function CreateReviewForm({ spotId }) {
           {errors.stars && <p>{errors.stars}</p>}
           <span>Stars</span>
         </div>
-        {/* {errors && (
-          <p>{errors}</p>
-        )} */}
-        <button  className="submit-review-button" disabled={disabled} type="submit">Submit Your Review</button>
+        <button className="submit-review-button" disabled={disabled} type="submit">Submit Your Review</button>
       </form>
     </div>
-
-  )
+  );
 }
 
 export default CreateReviewForm;
