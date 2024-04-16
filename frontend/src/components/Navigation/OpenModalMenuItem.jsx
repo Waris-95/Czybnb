@@ -1,10 +1,10 @@
 import { useModal } from "../../context/Modal";
 
 function OpenModalMenuItem({
-  modalComponent, // component to render inside the modal
-  itemText, // text of the menu item that opens the modal
-  onItemClick, // optional: callback function that will be called once the menu item that opens the modal is clicked
-  onModalClose, // optional: callback function that will be called once the modal is closed
+  modalComponent,
+  itemText,
+  onItemClick,
+  onModalClose,
 }) {
   const { setModalContent, setOnModalClose } = useModal();
 
@@ -17,8 +17,8 @@ function OpenModalMenuItem({
   return (
     <li
       onClick={onClick}
-      style={{ fontFamily: "Avenir", fontWeight: "500" }}
-      className="profile-elements"
+      className="open-modal-menu-item profile-elements"
+      style={styles.menuItem}
     >
       {itemText}
     </li>
@@ -26,3 +26,17 @@ function OpenModalMenuItem({
 }
 
 export default OpenModalMenuItem;
+
+const styles = {
+  menuItem: {
+    fontFamily: "Avenir, sans-serif",
+    fontWeight: 600,
+    cursor: "pointer",
+    transition: "transform 0.3s ease-in-out",
+    padding: "10px 20px",
+    borderRadius: "8px",
+    background: "linear-gradient(45deg, #ff8a00, #e52e71)",
+    color: "#fff",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+  },
+};

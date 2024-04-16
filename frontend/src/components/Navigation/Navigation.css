@@ -4,33 +4,29 @@
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr;
   gap: 0px 0px;
-  grid-template-areas:
-    "pawbnb createspot profilelogo";
+  grid-template-areas: "pawbnb createspot profilelogo";
 }
+
 .snorebnb {
   grid-area: pawbnb;
   font-weight: bold;
   font-size: 28px;
   height: 55px;
-
 }
+
 .createspot {
   grid-area: createspot;
   display: flex;
   justify-content: end;
-
 }
+
 .profilelogo {
   grid-area: profilelogo;
-  display: flex;
   display: flex;
   justify-content: end;
   margin-right: 100px;
   font-size: 30px;
-  /* background-color: green; */
-
 }
-
 
 .logo-name {
   color: red;
@@ -49,76 +45,168 @@ ul {
 }
 
 .profile-dropdown {
-    position: absolute;
-    /* background: rgb(227, 227, 227); */
-    background-color: white;
-    border: 10px black;
-    box-shadow: 0px 6px 12px 0px rgba(0,0,0,0.2);
-    right: 60px;
-    left: auto;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-begin;
-    width: 140px;
-    font-size: 18px;
-    border-radius: 10px;
-    gap: 8px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    cursor: pointer;
-    padding: 10px;
-    z-index: 1;
-    cursor: pointer;
+  position: absolute;
+  background-color: white;
+  border: 10px black;
+  box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.2);
+  right: 60px;
+  left: auto;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-begin;
+  width: 140px;
+  font-size: 18px;
+  border-radius: 10px;
+  gap: 8px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding: 10px;
+  z-index: 1;
+  cursor: pointer;
+}
 
+.profile-list-button {
+  font-size: 18px;
+  padding: 5px;
+}
+
+.manage-spot-link {
+  text-decoration: none;
+  color: black;
+}
+
+.log-out-button {
+  margin: -8px;
+  font-family: amaranth;
+  font-size: 17px;
+  margin-left: -5px;
+}
+
+.create-spot-container-main {
+  height: 20px;
+  padding-top: 20px;
+}
+
+.create-spot-container-main:hover {
+  border-bottom: solid thin teal;
+}
+
+.create-new-spot-main {
+  height: 20px;
+  color: teal;
+  text-decoration: none;
+}
+
+.hidden {
+  display: none;
+}
+
+.modal-button-li {
+  cursor: pointer;
+}
+
+.log-in-hover:hover,
+.sign-up-hover:hover {
+  background-color: lightgrey;
+}
+
+/* Fancy animations */
+.nav {
+  transition: border-bottom 0.3s ease-in-out;
+}
+
+.logo-name img {
+  transition: transform 0.3s ease-in-out;
+}
+
+.logo-name span {
+  transition: color 0.3s ease-in-out;
+}
+
+.logo-name:hover img {
+  transform: rotate(360deg);
+}
+
+.logo-name:hover span {
+  color: rgb(255, 123, 67);
+}
+
+.user-logo {
+  font-size: 24px;
+  margin-top: 12px;
+}
+
+
+
+
+
+/* Media queries for tablet and phone screens */
+@media only screen and (max-width: 768px) {
+  .nav {
+    grid-template-columns: 1fr;
+    grid-template-areas: "pawbnb" "createspot" "profilelogo";
+  }
+  
+  .profilelogo {
+    margin-right: 20px;
+    font-size: 24px;
+  }
+  
+  .logo-name {
+    margin-left: 20px;
+  }
+  
+  .profile-dropdown {
+    right: 20px;
+  }
+}
+
+/* Media queries for tablet and phone screens */
+@media only screen and (max-width: 1024px) { /* Tablets and smaller screens */
+  .nav {
+    grid-template-columns: 1fr; /* Switch to single column layout */
+    grid-template-areas: "pawbnb" "createspot" "profilelogo";
   }
 
-  .profile-list-button {
-    font-size: 18px;
-    padding: 5px;
+  .profilelogo {
+    justify-content: center; /* Center align profile logo */
+    margin-right: 0; /* Reset margin */
   }
 
-  .manage-spot-link {
-    text-decoration: none;
-    color: black;
+  .logo-name {
+    margin-left: 0; /* Reset margin */
+    text-align: center; /* Center align logo name */
   }
 
-  .log-out-button {
-    margin: -8px;
-    font-family: amaranth;
-    font-size: 17px;
-    margin-left: -5px;
-
+  .snorebnb {
+    display: flex; /* Ensure snorebnb is displayed */
+    justify-content: center; /* Center align snorebnb */
   }
 
-  .create-spot-container-main {
-    /* background-color: orange; */
-    height: 20px;
-    padding-top: 20px;
+  .createspot {
+    display: flex; /* Ensure create spot is displayed */
+    justify-content: center; /* Center align create spot */
+    margin-top: 31px; /* Add space between elements */
   }
+}
 
-  .create-spot-container-main:hover {
-    border-bottom: solid thin teal;
+@media only screen and (max-width: 375px) { /* iPhone 12 portrait mode and similar devices */
+  .profilelogo,
+  .createspot {
+    display: none; /* Hide profile logo and create spot for smaller screens */
   }
-
-  .create-new-spot-main {
-    /* background-color: yellow; */
-    height: 20px;
-    color: teal;
-    text-decoration: none;
+  
+  .snorebnb {
+    display: flex; /* Ensure snorebnb is displayed */
+    justify-content: center; /* Center align snorebnb */
   }
+}
 
-  .hidden {
-    display: none;
+@media only screen and (max-width: 414px) { /* iPhone 12 and similar devices */
+  .createspot {
+    display: flex; /* Ensure create spot is displayed */
+    justify-content: center; /* Center align create spot */
+    margin-top: 31px; /* Add space between elements */
   }
-
-  .modal-button-li {
-    cursor: pointer;
-  }
-
-  .log-in-hover:hover, .sign-up-hover:hover{
-    /* font-size: larger; */
-    background-color: lightgrey;
-    /* padding-left: -5px; */
-
-  }
+}
