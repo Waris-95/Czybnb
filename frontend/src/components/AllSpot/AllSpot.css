@@ -76,7 +76,6 @@
     padding: 0 20px; /* Add padding to the container for better spacing */
   }
 }
-
 @media only screen and (max-width: 414px) { /* iPhone 12 and similar devices */
   .spot-tile {
     height: auto; /* Allow height to adjust based on content */
