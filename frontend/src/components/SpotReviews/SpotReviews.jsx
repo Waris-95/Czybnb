@@ -22,6 +22,7 @@ function SpotReviews({ spot }) {
     12: "Dec"
   }
 
+  
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
