@@ -1,3 +1,4 @@
+// import { response } from "express";
 import { csrfFetch } from "./csrf";
 
 
@@ -5,8 +6,8 @@ import { csrfFetch } from "./csrf";
 const ALL_SPOTS = "spots/ALL_SPOTS";
 const SPOT_DETAILS = "spots/SPOT_DETAILS";
 const CREATE_SPOT = "spots/CREATE_SPOT";
-// const USERS_SPOTS = "spots/USERS_SPOTS";
 const DELETE_SPOT = "spots/DELETE_SPOT";
+const ADD_IMAGE_TO_SPOT = "spots/ADD_IMAGE_TO_SPOT";
 
 // action creator function to set user in the state
 const getAllSpots = (spots) => {
@@ -33,6 +34,14 @@ const createASpot = (spot) => {
 const deleteASpot = (spotId) => {
   return {
     type: DELETE_SPOT,
+    spotId,
+  };
+};
+
+const addImageToSpot = (image, spotId) => {
+  return {
+    type: ADD_IMAGE_TO_SPOT,
+    image,
     spotId,
   };
 };
@@ -119,15 +128,21 @@ export const createASpotThunk = (payload) => async (dispatch) => {
   }
 };
 
-export const addSpotImagesThunk = (spotId, spotImages) => async () => {
-  console.log('in thunk', spotImages);
-  spotImages.forEach(async (img) => {
-    await csrfFetch(`/api/spots/${spotId}/images`, {
+export const addSpotImagesThunk = (spotId, spotImages) => async (dispatch) => {
+  // Using Promise.all to await all fetch requests
+  await Promise.all(spotImages.map(async (img) => {
+    const response = await csrfFetch(`/api/spots/${spotId}/images`, {
       method: "POST",
       body: JSON.stringify(img),
     });
-  });
+    if (response.ok) {
+      const newImage = await response.json();
+      dispatch(addImageToSpot(newImage, spotId));
+      return newImage;
+    }
+  }));
 };
+
 
 // spots reducer
 const spotsReducer = (state = {}, action) => {
