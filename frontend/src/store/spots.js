@@ -143,6 +143,7 @@ export const addSpotImagesThunk = (spotId, spotImages) => async (dispatch) => {
   }));
 };
 
+
 // spots reducer
 const spotsReducer = (state = {}, action) => {
   switch (action.type) {
