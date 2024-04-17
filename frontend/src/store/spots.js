@@ -1,5 +1,6 @@
 import { csrfFetch } from "./csrf";
 
+
 // action types as constants
 const ALL_SPOTS = "spots/ALL_SPOTS";
 const SPOT_DETAILS = "spots/SPOT_DETAILS";
@@ -119,15 +120,21 @@ export const createASpotThunk = (payload) => async (dispatch) => {
 };
 
 export const addSpotImagesThunk = (spotId, spotImages) => async () => {
-  // console.log('in thunk', spotImages);
-  spotImages.forEach(async (img) => {
-    await csrfFetch(`/api/spots/${spotId}/images`, {
-      method: "POST",
-      body: JSON.stringify(img),
+  try {
+    const uploadPromises = spotImages.map(async (img) => {
+      await csrfFetch(`/api/spots/${spotId}/images`, {
+        method: "POST",
+        body: JSON.stringify(img),
+      });
     });
-  });
-};
 
+    await Promise.all(uploadPromises);
+  } catch (error) {
+    // Handle errors if any of the image uploads fail
+    console.error("Error uploading spot images:", error);
+    throw error; // Propagate the error back to the caller
+  }
+};
 
 // spots reducer
 const spotsReducer = (state = {}, action) => {
