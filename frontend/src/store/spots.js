@@ -120,20 +120,13 @@ export const createASpotThunk = (payload) => async (dispatch) => {
 };
 
 export const addSpotImagesThunk = (spotId, spotImages) => async () => {
-  try {
-    const uploadPromises = spotImages.map(async (img) => {
-      await csrfFetch(`/api/spots/${spotId}/images`, {
-        method: "POST",
-        body: JSON.stringify(img),
-      });
+  console.log('in thunk', spotImages);
+  spotImages.forEach(async (img) => {
+    await csrfFetch(`/api/spots/${spotId}/images`, {
+      method: "POST",
+      body: JSON.stringify(img),
     });
-
-    await Promise.all(uploadPromises);
-  } catch (error) {
-    // Handle errors if any of the image uploads fail
-    console.error("Error uploading spot images:", error);
-    throw error; // Propagate the error back to the caller
-  }
+  });
 };
 
 // spots reducer
