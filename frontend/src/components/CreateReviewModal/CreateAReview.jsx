@@ -26,7 +26,7 @@ function CreateReviewForm({ spot }) { // Adjust prop name from spotId to spot
     e.preventDefault();
     setErrors({});
     
-    console.log("spotId:", spot.id); // Ensure spotId is not undefined here
+    console.log("spotId:", spot.id); 
     dispatch(
       createAReviewThunk(
         spot.id, // Access spotId from spot object

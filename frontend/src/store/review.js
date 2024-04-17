@@ -29,7 +29,7 @@ const createAReview = (review) => {
 
 // async action creator for user login
 export const createAReviewThunk = (spotId, review, user) => async (dispatch) => {
-    console.log('SPOT ID HERE', spotId)
+    // console.log('SPOT ID HERE', spotId)
     const res = await csrfFetch(`/api/spots/${spotId}/reviews`, {
         method: "POST",
         headers: {

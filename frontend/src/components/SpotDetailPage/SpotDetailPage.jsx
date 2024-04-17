@@ -31,7 +31,7 @@ function SpotDetailsPage() {
     };
 
     res();
-  }, [dispatch, spotId]);
+  }, [dispatch, setErrors, spotId]);
 
   const handleClick = (e) => {
     e.preventDefault();
