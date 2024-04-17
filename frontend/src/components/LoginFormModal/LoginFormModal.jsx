@@ -24,15 +24,6 @@ function LoginFormModal() {
       .catch(async (res) => {
         console.log(res);
         setErrors({credential: res.message})
-        // Handle errors
-        // if (res instanceof Error && res.message === 'Invalid credentials') {
-        //   // Handle invalid credentials error
-        //   setErrors({ credential: "The provided credentials were invalid" });
-        // } else {
-        //   // Handle other errors
-        //   console.error("An error occurred during login:", res);
-        //   // You can add additional error handling logic here
-        // }
       });
   };
   

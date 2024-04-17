@@ -49,12 +49,13 @@ ul {
   background-color: white;
   border: 10px black;
   box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.2);
-  right: 60px;
+  right: -43px;
+  top: 50px;
   left: auto;
   list-style: none;
   display: flex;
   flex-direction: column;
-  align-items: flex-begin;
+  align-items: flex-start;
   width: 140px;
   font-size: 18px;
   border-radius: 10px;
@@ -135,6 +136,50 @@ ul {
 .user-logo {
   font-size: 24px;
   margin-top: 12px;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between; /* Ensure logo stays on left and auth/user buttons stay on right */
+  align-items: center;
+  border-bottom: solid lightgray 1px;
+  padding: 10px 20px; /* Add padding for better spacing */
+}
+
+.logo-name {
+  color: red;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex; /* Ensure logo and name are displayed as flex items */
+  align-items: center; /* Center align logo and name vertically */
+}
+
+.logo-name img {
+  height: 28px;
+  margin-right: 10px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.logo-name span {
+  transition: color 0.3s ease-in-out;
+}
+
+.logo-name:hover img {
+  transform: rotate(360deg);
+}
+
+.logo-name:hover span {
+  color: rgb(255, 123, 67);
+}
+
+.right-section {
+  display: flex; /* Ensure right section elements are displayed as flex items */
+  align-items: center; /* Center align right section elements vertically */
+}
+
+.create-new-spot-main {
+  height: 20px;
+  color: teal;
+  text-decoration: none;
 }
 
 

@@ -6,7 +6,7 @@ import OpenModalButton from '../OpenModalButton';
 import LoginFormModal from '../LoginFormModal';
 import SignupFormModal from '../SignupFormModal';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
-import './Navigation'; 
+import './Navigation.css'; 
 
 function ProfileButton({ user }) {
   const dispatch = useDispatch();

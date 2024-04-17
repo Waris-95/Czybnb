@@ -46,7 +46,7 @@ function CreateReviewForm({ spot }) { // Adjust prop name from spotId to spot
           rows={3} cols={30}
           minLength="30"
           value={review}
-          placeholder="Leave your review here"
+          placeholder="Leave your review here..."
           onChange={(e) => setReview(e.target.value)}
           required
         />

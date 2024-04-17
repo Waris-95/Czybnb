@@ -1,6 +1,6 @@
 .search-contain {
     position: absolute;
-    top: 80px; /* Adjust this value to set the distance below the navigation bar */
+    top: 85px; /* Adjust this value to set the distance below the navigation bar */
     left: 50%;
     transform: translateX(-50%);
   }
