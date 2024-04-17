@@ -7,6 +7,30 @@
   grid-template-areas: "pawbnb createspot profilelogo";
 }
 
+.icon-container {
+  position: relative; /* Make it a positioning context */
+  width: 40px; /* Adjust width as needed */
+  height: 40px; /* Adjust height as needed */
+}
+
+.icon-wrapper {
+  position: absolute; /* Position the wrapper relative to its container */
+  top: 50%; /* Align to the vertical center of the container */
+  left: 50%; /* Align to the horizontal center of the container */
+  transform: translate(-50%, -50%); /* Center the wrapper */
+  border: 2px solid black; /* Add border */
+  border-radius: 40%; /* Make it a circle */
+  padding: 5px; /* Add padding for better spacing */
+  display: flex; /* Align icons horizontally */
+}
+
+.hamburger-icon,
+.user-logo {
+  margin-right: 10px; /* Add margin between the icons */
+  margin-top: 14px;
+}
+
+
 .snorebnb {
   grid-area: pawbnb;
   font-weight: bold;
@@ -49,7 +73,7 @@ ul {
   background-color: white;
   border: 10px black;
   box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.2);
-  right: -43px;
+  right: 4px;
   top: 50px;
   left: auto;
   list-style: none;
@@ -87,16 +111,19 @@ ul {
 .create-spot-container-main {
   height: 20px;
   padding-top: 20px;
+  margin-right: 30px;
 }
 
 .create-spot-container-main:hover {
   border-bottom: solid thin teal;
+  margin-right: 30px;
 }
 
 .create-new-spot-main {
   height: 20px;
   color: teal;
   text-decoration: none;
+  margin-right: 30px;
 }
 
 .hidden {

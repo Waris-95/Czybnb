@@ -17,32 +17,30 @@ function SignupFormModal() {
   const disabled = username.length < 4 || password.length < 6;
   const signUpButton = disabled ? "login-button-on" : "login-button-off";
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (password === confirmPassword) {
-      setErrors({});
-      return dispatch(
-        sessionActions.signup({
+      try {
+        const user = {
           email,
           username,
           firstName,
           lastName,
           password,
-        })
-      )
-        .then(closeModal)
-        .catch(async (res) => {
-          const data = await res.json();
-          if (data && data.errors) {
-            setErrors((prevErrors) => ({ ...prevErrors, ...data.errors }));
-          }
-          if (!email.includes("@")) {
-            setErrors((prevErrors) => ({
-              ...prevErrors,
-              email: "Invalid email",
-            }));
-          }
-        });
+        };
+        const response = await dispatch(sessionActions.signup(user));
+        if (!response.ok) {
+          // const data = await response.json();
+          const errorMessage =
+            // data.errors?.email || "A user with that email already exists";
+          setErrors({ _error: errorMessage });
+        } else {
+          closeModal();
+        }
+      } catch (err) {
+        console.error("Signup failed:", err);
+        setErrors({ _error: "Username must be unique" });
+      }
     } else {
       setErrors({
         confirmPassword:
@@ -50,7 +48,6 @@ function SignupFormModal() {
       });
     }
   };
-
 
   return (
     <div className="signup-modal">
@@ -60,24 +57,9 @@ function SignupFormModal() {
           {errors.confirmPassword}
         </p>
       )}
-      {errors.email && (
+      {errors._error && (
         <p style={{ marginTop: "0", fontSize: "15px", color: "red" }}>
-          {errors.email}
-        </p>
-      )}
-      {errors.username && (
-        <p style={{ marginTop: "0", fontSize: "15px", color: "red" }}>
-          {errors.username}
-        </p>
-      )}
-      {errors.firstName && (
-        <p style={{ marginTop: "0", fontSize: "15px", color: "red" }}>
-          {errors.firstName}
-        </p>
-      )}
-      {errors.lastName && (
-        <p style={{ marginTop: "0", fontSize: "15px", color: "red" }}>
-          {errors.lastName}
+          {errors._error}
         </p>
       )}
       <form className="signup-form" onSubmit={handleSubmit}>
@@ -126,7 +108,6 @@ function SignupFormModal() {
             required
           />
         </label>
-        {errors.password && <p>{errors.password}</p>}
         <label>
           Confirm Password
           <input

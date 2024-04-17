@@ -15,7 +15,11 @@ function CreateReviewForm({ spot }) { // Adjust prop name from spotId to spot
   const { closeModal } = useModal();
 
   useEffect(() => {
-    if (review.length > 9 && stars > 0) setDisabled(false);
+   if (review.length > 9 && stars > 0) {
+    setDisabled(false);
+   } else {
+    setDisabled(true);
+   }
   }, [review, stars]);
 
   const handleSubmit = (e) => {

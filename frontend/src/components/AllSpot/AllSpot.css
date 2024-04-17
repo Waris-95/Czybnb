@@ -48,7 +48,7 @@
 .all-spots-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center; /* Center items horizontally */
+  /* justify-content: center;  */
   max-width: 1000px;
   margin: 50px auto 0; /* Adjust the margin-top value as needed */
 }
@@ -66,31 +66,31 @@
 
 
 /* Media queries for tablets and phones */
-@media only screen and (max-width: 1024px) { /* Tablets and smaller screens */
+@media only screen and (max-width: 1024px) { 
   .spot-tile {
-    width: 100%; /* Adjust width to fit smaller screens */
-    margin: 0 auto 20px; /* Center and add spacing between tiles */
+    width: 100%;
+    margin: 0 auto 20px;
   }
   
   .all-spots-container {
-    padding: 0 20px; /* Add padding to the container for better spacing */
+    padding: 0 20px; 
   }
 }
-@media only screen and (max-width: 414px) { /* iPhone 12 and similar devices */
+@media only screen and (max-width: 414px) {
   .spot-tile {
-    height: auto; /* Allow height to adjust based on content */
-    margin-bottom: 20px; /* Add bottom margin for spacing between spots */
+    height: auto; 
+    margin-bottom: 20px;
   }
 
   .spot-text {
-    height: auto; /* Allow height to adjust based on content */
+    height: auto;
   }
 
   #spot-img {
-    height: 150px; /* Adjust image height for smaller screens */
+    height: 150px; 
   }
   
   .all-spots-container {
-    padding: 0 20px; /* Add padding to the container for better spacing */
+    padding: 0 20px;
   }
 }

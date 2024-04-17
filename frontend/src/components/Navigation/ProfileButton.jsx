@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle, FaBars } from 'react-icons/fa'; // Import FaBars for the hamburger icon
 import * as sessionActions from '../../store/session';
 import OpenModalButton from '../OpenModalButton';
 import LoginFormModal from '../LoginFormModal';
@@ -34,8 +34,7 @@ function ProfileButton({ user }) {
 
   const closeMenu = () => setShowMenu(false);
 
-  const logout = (e) => {
-    e.preventDefault();
+  const logout = () => {
     dispatch(sessionActions.logout());
     closeMenu();
   };
@@ -44,20 +43,31 @@ function ProfileButton({ user }) {
 
   return (
     <>
-      <button className="user-logo" onClick={toggleMenu}>
-        <FaUserCircle />
-      </button>
+      {/* Container for the icons */}
+      <div className="icon-container" onClick={toggleMenu}>
+        <div className="icon-wrapper">
+          {/* Hamburger Icon */}
+          <div className="hamburger-icon">
+            <FaBars />
+          </div>
+          {/* User Icon */}
+          <div className="user-logo">
+            <FaUserCircle />
+          </div>
+        </div>
+      </div>
+
+      {/* User menu */}
       <ul className={ulClassName} ref={ulRef}>
         {user ? (
           <>
-            <li>{user.username}</li>
-            <li>{user.firstName} {user.lastName}</li>
+            <li>Hello, {user.username && ` ${user.username}`}</li> {/* Add the greeting here */}
             <li>{user.email}</li>
             <li>
               <Link to="/spots/current" onClick={closeMenu}>Manage Spots</Link>
             </li>
             <li>
-              <button onClick={logout}>Log Out</button>
+              <Link to="/" onClick={logout}>Log Out</Link>
             </li>
           </>
         ) : (

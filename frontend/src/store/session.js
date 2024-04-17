@@ -3,6 +3,7 @@ import { csrfFetch } from './csrf';
 // action types as constants
 const SET_USER = "session/setUser";
 const REMOVE_USER = "session/removeUser";
+const SIGNUP_ERROR = "session/signupError";
 
 // action creator function to set user in the state
 const setUser = (user) => {
@@ -15,6 +16,14 @@ const setUser = (user) => {
 const removeUser = () => {
   return {
     type: REMOVE_USER
+  };
+};
+
+// action creator function to handle signup errors
+const signupError = (error) => {
+  return {
+    type: SIGNUP_ERROR,
+    payload: error
   };
 };
 
@@ -62,14 +71,23 @@ export const signup = (user) => async (dispatch) => {
         password
       })
     });
+
+    if (!response.ok) {
+      // If response is not ok, handle server-side errors
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Signup failed');
+    }
+
     const data = await response.json();
     dispatch(setUser(data.user));
     return response;
   } catch (err) {
-    const dataErr = await err.json()
-    console.log(dataErr)
+    // Handle errors, dispatching action for signup errors
+    dispatch(signupError(err.message || 'Signup failed'));
+    console.error('Signup failed:', err);
+    throw err; // Rethrow the error to let the component handle it
   }
-}
+};
 
 // async action creator for logout
 export const logout = () => async (dispatch) => {

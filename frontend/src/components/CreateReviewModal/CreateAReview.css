@@ -27,11 +27,9 @@ button {
   padding: 10px 20px; /* Increase padding for better clickability */
   color: white;
   font-size: 16px; /* Increase font size for emphasis */
-  text-transform: uppercase; /* Uppercase text for a bold appearance */
+  /* text-transform: uppercase;  */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add subtle shadow for depth */
   transition: background-color 0.3s ease, transform 0.2s ease;
-  display: inline-block;
-  margin: 20px auto;
 }
 
 /* Hover effect for submit button */
@@ -54,3 +52,4 @@ button {
   background-color: #f9f9f9; /* Light gray background for contrast */
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
+

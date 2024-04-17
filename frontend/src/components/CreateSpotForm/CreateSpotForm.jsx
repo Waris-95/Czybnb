@@ -199,7 +199,7 @@ function CreateSpotForm({ formType = "Create A Spot", spot }) {
       <div className="create-a-spot-div">
         <form className="create-a-spot-form" onSubmit={handleSubmit}>
           {formType === "Create A Spot" ? (
-            <h2 style={{ margin: "0" }}>Create a new Spot</h2>
+            <h2 style={{ margin: "0" }}>Create a New Spot</h2>
           ) : (
             <h2 style={{ margin: "0" }}>Update your Spot</h2>
           )}
@@ -234,58 +234,71 @@ function CreateSpotForm({ formType = "Create A Spot", spot }) {
               *{errors.address}
             </p>
           )}
-          <span className="form-labels">City</span>
-          <input
+          <div className="form-row">
+    <div>
+        <span className="form-labels">City</span>
+        <input
             type="text"
             name="city"
             placeholder="City"
             value={city}
             onChange={(e) => setCity(e.target.value)}
-          />
-          {errors.city && (
+        />
+        {errors.city && (
             <p style={{ fontSize: "12px", color: "red", margin: "5px 0 0 0" }}>
-              *{errors.city}
+                *{errors.city}
             </p>
-          )}
-          <span className="form-labels">State</span>
-          <input
+        )}
+    </div>
+    <div>
+        <span className="form-labels">State</span>
+        <input
             type="text"
             name="state"
             placeholder="State"
             value={state}
             onChange={(e) => setState(e.target.value)}
-          />
-          {errors.state && (
+        />
+        {errors.state && (
             <p style={{ fontSize: "12px", color: "red", margin: "5px 0 0 0" }}>
-              *{errors.state}
+                *{errors.state}
             </p>
-          )}
-          <span className="form-labels">Latitude</span>
-          <input
+        )}
+    </div>
+</div>
+<div className="form-row">
+    <div>
+        <span className="form-labels">Latitude</span>
+        <input
             type="number"
             name="latitude"
             placeholder="Latitude"
             value={latitude}
             onChange={(e) => setLatitude(e.target.value)}
-          />
-          {errors.lat && (
+        />
+        {errors.lat && (
             <p style={{ fontSize: "12px", color: "red", margin: "5px 0 0 0" }}>
-              *{errors.lat}
+                *{errors.lat}
             </p>
-          )}
-          <span className="form-labels">Longitude</span>
-          <input
+        )}
+    </div>
+    <div>
+        <span className="form-labels">Longitude</span>
+        <input
             type="number"
             name="longitude"
             placeholder="Longitude"
             value={longitude}
             onChange={(e) => setLongitude(e.target.value)}
-          />
-          {errors.lng && (
+        />
+        {errors.lng && (
             <p style={{ fontSize: "12px", color: "red", margin: "5px 0 0 0" }}>
-              *{errors.lng}
+                *{errors.lng}
             </p>
-          )}
+        )}
+    </div>
+</div>
+
           <span id="form-split-one"></span>
           <span style={{ fontSize: "15px", fontWeight: "500" }}>
             Describe your place to guests
@@ -322,7 +335,7 @@ function CreateSpotForm({ formType = "Create A Spot", spot }) {
           <input
             type="text"
             name="title"
-            placeholder="Create a title for your spot"
+            placeholder="Name of your spot"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -344,7 +357,7 @@ function CreateSpotForm({ formType = "Create A Spot", spot }) {
           <input
             type="number"
             name="pricePerNight"
-            placeholder="Price per night ($USD)"
+            placeholder="Price per night (USD)"
             step={"0.01"}
             min={0}
             value={price}
@@ -368,7 +381,7 @@ function CreateSpotForm({ formType = "Create A Spot", spot }) {
                   margin: "10px 0",
                 }}
               >
-                Submit photos to publish your spot.
+                Submit a link to at least one photo to publish your spot.
               </span>
               <input
                 className="spot-img-urls"

@@ -44,6 +44,31 @@
     margin: 8px 0px;
 }
 
+.create-a-spot-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-family: "Avenir";
+}
+
+.form-row {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline; /* Align items along their baseline */
+    margin-bottom: 10px; /* Add some margin between each row */
+}
+
+.form-row .form-labels {
+    width: 100px; /* Set a fixed width for the labels */
+    text-align: right; /* Align the text to the right within the label */
+    margin-right: 10px; /* Add some spacing between the label and input */
+}
+
+.form-row input {
+    flex: 1; /* This ensures that the inputs take up remaining space */
+}
+
+
 #create-spot-submit-button {
     align-self: center;
     width: 150px;
