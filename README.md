@@ -2,7 +2,7 @@
 
 CzyBnB is a full-stack web application inspired by Airbnb. It allows users to create spots, add reviews, and manage bookings, offering a diverse range of accommodations for exploration.
 
-## [🚀 Live Site: CzyBnB](https://your-live-site-url.com)
+## [🚀 Live Site: CzyBnB](https://auth-me-3ebb.onrender.com/)
 
 ## Table of Contents
 
