@@ -27,24 +27,24 @@ const createAReview = (review) => {
     }
 }
 
-// async action creator for user login
+// Corrected createAReviewThunk function
 export const createAReviewThunk = (spotId, review, user) => async (dispatch) => {
-    // console.log('SPOT ID HERE', spotId)
     const res = await csrfFetch(`/api/spots/${spotId}/reviews`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(review)
+        body: JSON.stringify({ ...review, userId: user.id }) // Include userId in the review object
     });
 
     if (res.ok) {
         const rev = await res.json();
-        rev.User = user
+        rev.User = user;
         dispatch(createAReview(rev));
-        return rev
+        return rev;
     }
 };
+
 
 export const getReviewsForSpotThunk = (spotId) => async (dispatch) => {
     const res = await csrfFetch(`/api/spots/${spotId}/reviews`);

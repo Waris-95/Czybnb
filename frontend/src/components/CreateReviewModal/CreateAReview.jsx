@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useModal } from "../../context/Modal";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createAReviewThunk } from "../../store/review"; // Import only the necessary action creator
 import "./CreateAReview.css";
 
 function CreateReviewForm({ spot }) { // Adjust prop name from spotId to spot
   const dispatch = useDispatch();
+  const user = useSelector(state => state.session.user);
+ 
 
   const [review, setReview] = useState("");
   const [stars, setStars] = useState(0);
@@ -30,7 +32,8 @@ function CreateReviewForm({ spot }) { // Adjust prop name from spotId to spot
     dispatch(
       createAReviewThunk(
         spot.id, // Access spotId from spot object
-        { review, stars } // Pass review object containing review and stars
+        { review, stars }, // Pass review object containing review and stars
+        user
       )
     )
       .then(closeModal)
