@@ -82,38 +82,36 @@ function SpotReviews({ spot }) {
       )}
       <span style={{ marginTop: "7px" }}></span>
       {reviews.length > 0 ? (
-  <div className="reviews">
-    {reviews.map((review) => (
-      <div className="individual-review" key={review.id}>
-       <span id="review-firstName">{review.User ? review.User.firstName : (user ? user.firstName : '')}</span>
-
-        <span id="review-date">
-          {formatDate(review.createdAt)}
-        </span>
-        <p
-          style={{
-            margin: "0",
-            marginBottom: "10px",
-            overflowWrap: "break-word",
-          }}
-        >
-          {review.review}
-        </p>
-        {user && user.id === review.userId && (
-          <OpenModalButton
-            buttonText={"Delete"}
-            modalComponent={<DeleteAReviewModal review={review} />}
-          />
-        )}
-      </div>
-    ))}
-  </div>
-) : (
-  <span id="review-firstName">Be the first to post a review!</span>
-)}
+        <div className="reviews">
+          {reviews.map((review) => (
+            <div className="individual-review" key={review.id}>
+              <span id="review-firstName">{review.User ? review.User.firstName : ''}</span>
+              <span id="review-date">
+                {formatDate(review.createdAt)}
+              </span>
+              <p
+                style={{
+                  margin: "0",
+                  marginBottom: "10px",
+                  overflowWrap: "break-word",
+                }}
+              >
+                {review.review}
+              </p>
+              {user && user.id === review.userId && (
+                <OpenModalButton
+                  buttonText={"Delete"}
+                  modalComponent={<DeleteAReviewModal review={review} />}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <span id="review-firstName">Be the first to post a review!</span>
+      )}
     </div>
   );
 }
-
 
 export default SpotReviews;
