@@ -163,3 +163,30 @@ router.get('/', validateQueryParams, async (req, res, next) => {
     next(error);
   }
 });
+
+# 🚀 Getting Started
+
+1. Clone this repository: [CzyBnB Repository](https://github.com/Waris-95/czybnb)
+2. Install dependencies for the backend and frontend by navigating to each directory in separate terminals and running `npm install`.
+3. Create a `.env` file using the provided `.envexample`.
+4. Set up your database with information from your `.env` file and then run the following commands:
+   - `npx dotenv sequelize db:create`
+   - `npx dotenv sequelize db:migrate`
+   - `npx dotenv sequelize db:seed:all`
+5. Start the app for both backend and frontend using `npm start`.
+6. Now you can use the Demo User or Create an account.
+
+## ✨ Features
+
+### Spots
+
+- Users can create a Spot.
+- Users can read/view other Spots.
+- Users can update their Spot.
+- Users can delete their Spot.
+
+### Reviews
+
+- Users can create Reviews on Spots.
+- Users can read/view all of the Reviews on a Spot.
+- Users can delete their Review(s) on a Spot.
