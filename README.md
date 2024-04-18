@@ -18,19 +18,19 @@ CzyBnB is a full-stack web application inspired by Airbnb. It allows users to cr
 - [✨ Features](#features)
 - [📞 Contact](#contact)
 
-## [🌟 MVP Feature List](#mvp-feature-list)
+## [🌟 Feature List](https://github.com/Waris-95/czybnb/wiki/Features-List)
 
 Explore the minimum viable product feature list required for CzyBnB.
 
-## [💡 Database Schema](#database-schema)
+## [💡 Database Schema](https://github.com/Waris-95/czybnb/wiki/Database-Schema)
 
 Discover the schema of the PostgreSQL database powering CzyBnB.
 
-## [📚 User Stories](#user-stories)
+## [📚 User Stories](https://github.com/Waris-95/czybnb/wiki/User-Stories)
 
 Immerse yourself in captivating user stories, detailing each feature's journey and acceptance criteria.
 
-## [🔗 API Docs](#api-docs)
+## [🔗 API Docs](https://github.com/Waris-95/czybnb/wiki/API-Routes)
 
 Browse the API documentation for JSON data interaction between frontend and backend routes.
 
