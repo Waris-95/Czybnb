@@ -85,7 +85,7 @@ function SpotReviews({ spot }) {
         <div className="reviews">
           {reviews.map((review) => (
             <div className="individual-review" key={review.id}>
-              <span id="review-firstName">{review.User ? review.User.firstName : ''}</span>
+              <span id="review-firstName">{review.User ? review.User.firstName : user.firstName}</span>
               <span id="review-date">
                 {formatDate(review.createdAt)}
               </span>

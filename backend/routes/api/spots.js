@@ -443,18 +443,25 @@ router.post(
           .json({ message: 'User already has a review for this spot' });
       }
 
+      // Fetch the user's first name and last name
+      const user = await User.findByPk(req.user.id);
+
       const newReview = await Review.create({
         userId: req.user.id,
         spotId,
         review,
         stars,
       });
-      res.status(201).json(newReview);
+
+      // Include user's first name and last name in the response
+      const { id, firstName, lastName } = user;
+      res.status(201).json({ ...newReview.toJSON(), User: { id, firstName, lastName } });
     } catch (error) {
       next(error);
     }
   }
 );
+
 
 // Get all Bookings for a Spot based on the Spot's id
 router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {

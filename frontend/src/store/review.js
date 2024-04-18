@@ -39,7 +39,6 @@ export const createAReviewThunk = (spotId, review, user) => async (dispatch) => 
 
     if (res.ok) {
         const rev = await res.json();
-        rev.User = user;
         dispatch(createAReview(rev));
         return rev;
     }
