@@ -163,6 +163,7 @@ router.get('/', validateQueryParams, async (req, res, next) => {
     next(error);
   }
 });
+```
 
 # 🚀 Getting Started
 
