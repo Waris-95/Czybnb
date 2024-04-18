@@ -18,25 +18,38 @@ CzyBnB is a full-stack web application inspired by Airbnb. It allows users to cr
 - [✨ Features](#features)
 - [📞 Contact](#contact)
 
-## 🌟 MVP Feature List
+## [🌟 MVP Feature List](#mvp-feature-list)
 
 Explore the minimum viable product feature list required for CzyBnB.
 
-## 💡 Database Schema
+## [💡 Database Schema](#database-schema)
 
 Discover the schema of the PostgreSQL database powering CzyBnB.
 
-## 📚 User Stories
+## [📚 User Stories](#user-stories)
 
 Immerse yourself in captivating user stories, detailing each feature's journey and acceptance criteria.
 
-## 🔗 API Docs
+## [🔗 API Docs](#api-docs)
 
 Browse the API documentation for JSON data interaction between frontend and backend routes.
 
 ## 🛠️ Technologies Used
 
-Discover the technologies utilized in the development of CzyBnB.
+<div style=display:flex>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" style=width:50px />
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" style=width:50px />
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg" style=width:50px /> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" style=width:50px /> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" style=width:50px /> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" style=width:50px /> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sequelize/sequelize-original.svg" style=width:50px />
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" style=width:50px />
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" style=width:50px />
+<img src="https://raw.githubusercontent.com/devicons/devicon/1119b9f84c0290e0f0b38982099a2bd027a48bf1/icons/socketio/socketio-original-wordmark.svg" style=width:50px />
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" style=width:50px /> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visualstudio/visualstudio-plain.svg" style=width:50px />
+</div>
 
 ## 🌅 Landing Page
 
@@ -55,28 +68,32 @@ Discover the technologies utilized in the development of CzyBnB.
 
 
 
-🚀 Getting Started
+# 🚀 Getting Started
 
-Clone this repository: CzyBnB Repository
-Install dependencies for the backend and frontend by navigating to each directory in separate terminals and running npm install.
-Create a .env file using the provided .envexample.
-Set up your database with information from your .env file and then run the following commands:
-npx dotenv sequelize db:create
-npx dotenv sequelize db:migrate
-npx dotenv sequelize db:seed:all
-Start the app for both backend and frontend using npm start.
-Now you can use the Demo User or Create an account.
-✨ Features
+1. Clone this repository: [CzyBnB Repository](https://github.com/Waris-95/czybnb)
+2. Install dependencies for the backend and frontend by navigating to each directory in separate terminals and running `npm install`.
+3. Create a `.env` file using the provided `.envexample`.
+4. Set up your database with information from your `.env` file and then run the following commands:
+   - `npx dotenv sequelize db:create`
+   - `npx dotenv sequelize db:migrate`
+   - `npx dotenv sequelize db:seed:all`
+5. Start the app for both backend and frontend using `npm start`.
+6. Now you can use the Demo User or Create an account.
 
-Spots
-Users can create a Spot.
-Users can read/view other Spots.
-Users can update their Spot.
-Users can delete their Spot.
+## ✨ Features
 
-Reviews
-Users can create Reviews on Spots.
-Users can read/view all of the Reviews on a Spot.
-Users can delete their Review(s) on a Spot.
+### Spots
+
+- Users can create a Spot.
+- Users can read/view other Spots.
+- Users can update their Spot.
+- Users can delete their Spot.
+
+### Reviews
+
+- Users can create Reviews on Spots.
+- Users can read/view all of the Reviews on a Spot.
+- Users can delete their Review(s) on a Spot.
+
 
 
