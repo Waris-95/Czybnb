@@ -64,9 +64,10 @@ Browse the API documentation for JSON data interaction between frontend and back
 ```javascript
 
 // GET all spots with query filters
-/* This route retrieves spots with optional query filters such as latitude, longitude, price range, etc.
-It performs a query based on the provided filters and returns paginated results along with average ratings
-and preview images for each spot. */
+/* This route retrieves spots with optional query filters
+such as latitude, longitude, price range, etc. It performs a query based
+on the provided filters and returns paginated results along with average
+ratings and preview images for each spot. */
 
 router.get('/', validateQueryParams, async (req, res, next) => {
   try {
