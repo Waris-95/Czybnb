@@ -4,6 +4,7 @@ import { getAllSpotsThunk } from "../../store/spots";
 import SpotTile from '../SpotTile/SpotTile';
 import "./AllSpot.css";
 import SearchBox from "../Navigation/SearchBox/SearchBox";
+import DarkMode from '../DarkMode/DarkMode'; // Import DarkMode component
 
 function AllSpots() {
 	const [searchField, setSearchField] = useState("");
@@ -33,6 +34,7 @@ function AllSpots() {
 
 	return (
 		<div className="all-spots-container">
+			<DarkMode /> 
 			<SearchBox
 				className="search-box"
 				onChangeHandler={onSearchChange}
