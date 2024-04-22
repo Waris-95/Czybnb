@@ -2,7 +2,7 @@
 .dark_mode {
     position: relative; /* Add position relative */
     top: -37px; /* Adjust position */
-    left: 250px; /* Adjust position */
+    left: 280px; /* Adjust position */
 }
 
 .dark_mode_label {

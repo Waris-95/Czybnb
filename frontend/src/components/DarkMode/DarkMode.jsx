@@ -1,24 +1,25 @@
-import { useTheme } from '../../context/ThemeContext';
-import "./DarkMode.css";
+// DarkMode.jsx
+import { useTheme } from "../../context/ThemeContext";
+import './DarkMode.css'
 
 const DarkMode = () => {
-    const { isDarkMode, toggleTheme } = useTheme();
+  const { themeName, toggleTheme } = useTheme();
 
-    return (
-        <div className='dark_mode'>
-            <input
-                className='dark_mode_input'
-                type='checkbox'
-                id='darkmode-toggle'
-                checked={isDarkMode}
-                onChange={toggleTheme}
-            />
-            <label className='dark_mode_label' htmlFor='darkmode-toggle'>
-                {/* <Sun />
-                <Moon /> */}
-            </label>
-        </div>
-    );
+  return (
+    <div className={`dark_mode ${themeName}`}>
+      <input
+        className='dark_mode_input'
+        type='checkbox'
+        id='darkmode-toggle'
+        checked={themeName === "dark"}
+        onChange={toggleTheme}
+      />
+      <label className='dark_mode_label' htmlFor='darkmode-toggle'>
+        {/* Your moon and sun icons */}
+      </label>
+    </div>
+  );
 };
 
 export default DarkMode;
+

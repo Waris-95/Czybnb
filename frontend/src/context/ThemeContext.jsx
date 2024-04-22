@@ -1,22 +1,25 @@
-// ThemeContext.js
-import { createContext, useState, useContext } from 'react';
+import { createContext, useContext, useState } from 'react';
 
-const ThemeContext = createContext();
+export const ThemeContext = createContext();
 
-export const ThemeProvider = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+export const useTheme = () => useContext(ThemeContext);
+
+export default function ThemeProvider({ children }) {
+  const [themeName, setThemeName] = useState("light"); // Default theme is light
 
   const toggleTheme = () => {
-    setIsDarkMode(prev => !prev);
+    // Toggle between light and dark themes
+    setThemeName(prevTheme => (prevTheme === "light" ? "dark" : "light"));
   };
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
+    <ThemeContext.Provider
+      value={{
+        themeName,
+        toggleTheme
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );
-};
-
-export const useTheme = () => {
-  return useContext(ThemeContext);
-};
+}

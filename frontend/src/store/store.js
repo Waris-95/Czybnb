@@ -3,6 +3,7 @@ import sessionReducer from "./session";
 import spotsReducer from "./spots";
 import { thunk } from "redux-thunk";
 import reviewsReducer from "./review";
+import mapsReducer from "./maps";
 
 // Define a simple reducer
 // const exampleReducer = (state = {}, action) => {
@@ -19,7 +20,8 @@ const rootReducer = combineReducers({
   // example: exampleReducer,
   session: sessionReducer,
   spots: spotsReducer,
-  reviews: reviewsReducer
+  reviews: reviewsReducer,
+  maps: mapsReducer,
 });
 
 let enhancer;

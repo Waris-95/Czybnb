@@ -1,13 +1,11 @@
-/* TODO: Add sitewide styles */
-
-:root {
-    --body_background: white;
-    --body_color: black;
-    --link_color: navy;
-}
-
-[data-theme="dark"] {
-    --body_background: #282c34;
-    --body_color: white;
-    --link_color: cyan;
-}
+/* index.css */
+.light .app {
+    background-color: #ffffff;
+    color: #000000;
+  }
+  
+  .dark .app {
+    background-color: #000000;
+    color: #ffffff;
+  }
+  
