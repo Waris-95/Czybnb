@@ -12,7 +12,7 @@ function AllSpots() {
   const dispatch = useDispatch();
   const spotsObj = useSelector((state) => state.spots);
   const spots = spotsObj ? Object.values(spotsObj) : [];
-  const { themeName, toggleTheme } = useTheme(); // Access themeName and toggleTheme from context
+  const { themeName} = useTheme(); // Access themeName and toggleTheme from context
   console.log(themeName); // LOG ADDED
 
   useEffect(() => {
