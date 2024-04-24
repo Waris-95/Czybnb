@@ -1,1 +1,11 @@
-/* TODO: Add sitewide styles */
+/* index.css */
+.light .app {
+    background-color: #ffffff;
+    color: #000000;
+  }
+  
+  .dark .app {
+    background-color: #000000;
+    color: #ffffff;
+  }
+  

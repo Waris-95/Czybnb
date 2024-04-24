@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { getASpotThunk } from "../../store/spots";
 import { useDispatch, useSelector } from "react-redux";
 import SpotReviews from "../SpotReviews/SpotReviews";
+import MapContainer from "../Maps/index.jsx";  
 import { FaStar } from "react-icons/fa"; // Import FaStar icon from react-icons/fa
 import "./SpotDetailPage.css";
 
@@ -152,6 +153,7 @@ function SpotDetailsPage() {
         </div>
         <div className="spot-review">
           <SpotReviews spot={spot} />
+          <MapContainer />
         </div>
       </div>
     </>

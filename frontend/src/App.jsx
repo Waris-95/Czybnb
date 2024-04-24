@@ -10,6 +10,7 @@ import SpotDetailPage from "./components/SpotDetailPage/SpotDetailPage";
 import AllSpot from "./components/AllSpot/AllSpot";
 import Footer from "./components/Footer/Footer"; 
 import { FaExclamationCircle } from 'react-icons/fa';
+// import DarkMode from './components/DarkMode/DarkMode';
 
 // Custom silly 404 component
 function Silly404() {
@@ -47,6 +48,7 @@ function Layout() {
     <>
       <Navigation isLoaded={isLoaded} />
       {isLoaded && <Outlet />}
+      {/* <DarkMode />  */}
       <Footer />
     </>
   );
