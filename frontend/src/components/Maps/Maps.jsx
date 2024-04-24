@@ -1,4 +1,3 @@
-import React from 'react';
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 
 const containerStyle = {
@@ -16,6 +15,7 @@ const Maps = ({ apiKey }) => {
     id: 'google-map-script',
     googleMapsApiKey: apiKey,
   });
+  console.log(Maps)
 
   return (
     <>
@@ -30,4 +30,4 @@ const Maps = ({ apiKey }) => {
   );
 };
 
-export default React.memo(Maps);
+export default Maps;
