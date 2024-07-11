@@ -9,7 +9,6 @@ const loadApiKey = (key) => ({
 });
 
 export const getKey = () => async (dispatch) => {
-  console.log('\n\n\n', 'hahhhhahahahah')
   const res = await csrfFetch('/api/maps/key', {
     method: 'POST',
   });

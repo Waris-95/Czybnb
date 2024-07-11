@@ -1,16 +1,16 @@
 /* Updated CSS for DarkMode component */
 .dark_mode {
-    position: relative; /* Add position relative */
-    top: -37px; /* Adjust position */
-    left: 280px; /* Adjust position */
+    position: relative;
+    top: -37px;
+    left: 280px;
 }
 
 .dark_mode_label {
     width: 65px;
     height: 30px;
-    position: absolute; /* Change position to absolute */
-    top: 0; /* Position at the top */
-    left: 0; /* Position at the left */
+    position: absolute;
+    top: 0;
+    left: 0;
     background: #ebebeb;
     border-radius: 200px;
     box-shadow: inset 0px 5px 15px rgba(0, 0, 0, 0.4),
@@ -43,8 +43,7 @@
 }
 
 .dark_mode_input:checked + .dark_mode_label:after {
-    left: 62px;
-    transform: translateX(-100%);
+    left: 37px;
     background: linear-gradient(180deg, #777, #3a3a3a);
 }
 
@@ -52,29 +51,29 @@
     width: 30px;
 }
 
-.dark_mode_label img {
+.dark_mode_label .sun,
+.dark_mode_label .moon {
     position: absolute;
     width: 20px;
     top: 5px;
     z-index: 100;
-}
-
-.dark_mode_label img.sun {
-    right: -5px; /* Adjust position */
-    fill: #fff;
     transition: 0.3s;
 }
 
-.dark_mode_label img.moon {
-    left: 40px;
-    fill: #7e7e7e;
-    transition: 0.3s;
+.dark_mode_label .sun {
+    left: 5px;
+    color: #ffcc89;
 }
 
-.dark_mode_input:checked + .dark_mode_label img.sun {
-    filter: invert(100%);
+.dark_mode_label .moon {
+    right: 5px;
+    color: #7e7e7e;
 }
 
-.dark_mode_input:checked + .dark_mode_label img.moon {
-    filter: invert(0%);
+.dark_mode_input:checked + .dark_mode_label .sun {
+    color: #7e7e7e;
+}
+
+.dark_mode_input:checked + .dark_mode_label .moon {
+    color: #ffcc89;
 }

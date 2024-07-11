@@ -11,11 +11,13 @@ import AllSpot from "./components/AllSpot/AllSpot";
 import Footer from "./components/Footer/Footer"; 
 import { FaExclamationCircle } from 'react-icons/fa';
 // import DarkMode from './components/DarkMode/DarkMode';
+import { ThemeContext } from "./context/ThemeContext";
 
 // Custom silly 404 component
 function Silly404() {
+	const { themeName } = ThemeContext
 	return (
-		<div
+		<div className={themeName ? "dark": "light"}
 			style={{
 				display: "flex",
 				justifyContent: "center",

@@ -2,14 +2,17 @@
   "name": "stayeasebnb",
   "version": "1.0.0",
   "description": "## Database Schema Design ![schema](https://github.com/Waris-95/Airbnb-project/assets/124799691/bf897457-6724-4233-9e71-178a1046e930)",
-  "main": "index.js",
+  "main": "backend/bin/www",
   "scripts": {
     "install": "npm --prefix backend install backend",
     "dev:backend": "npm install --prefix backend start",
     "sequelize": "npm run --prefix backend sequelize",
     "sequelize-cli": "npm run --prefix backend sequelize-cli",
-    "start": "npm start --prefix backend",
-    "build": "npm run --prefix backend build"
+    "start": "npm run start:backend",
+    "build": "npm run --prefix backend build",
+    "start:backend": "cd backend && npm run start:development",
+    "start:frontend": "cd frontend && npm start",
+    "start:both": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
   },
   "repository": {
     "type": "git",
@@ -23,6 +26,9 @@
   },
   "homepage": "https://github.com/Waris-95/API-project#readme",
   "dependencies": {
+    "concurrently": "^7.0.0",
+    "dotenv-cli": "^7.4.2",
+    "react-icons": "^5.2.1",
     "redux-thunk": "^3.1.0"
   }
 }

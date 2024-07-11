@@ -9,7 +9,6 @@ const MapContainer = ({ lat, lng }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log(key, '!!!!!!!!!!!!!!!KEYYYYYYYYYY')
     if (!key) {
       dispatch(getKey());
     }

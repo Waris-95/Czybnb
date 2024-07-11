@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 export const ThemeContext = createContext();
 
@@ -8,17 +8,15 @@ export default function ThemeProvider({ children }) {
   const [themeName, setThemeName] = useState("light"); // Default theme is light
 
   const toggleTheme = () => {
-    // Toggle between light and dark themes
     setThemeName(prevTheme => (prevTheme === "light" ? "dark" : "light"));
   };
 
+  useEffect(() => {
+    document.body.className = themeName;
+  }, [themeName]);
+
   return (
-    <ThemeContext.Provider
-      value={{
-        themeName,
-        toggleTheme
-      }}
-    >
+    <ThemeContext.Provider value={{ themeName, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );

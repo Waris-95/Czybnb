@@ -1,6 +1,6 @@
-// DarkMode.jsx
 import { useTheme } from "../../context/ThemeContext";
-import './DarkMode.css'
+import './DarkMode.css';
+import { FaSun, FaMoon } from 'react-icons/fa';
 
 const DarkMode = () => {
   const { themeName, toggleTheme } = useTheme();
@@ -15,11 +15,11 @@ const DarkMode = () => {
         onChange={toggleTheme}
       />
       <label className='dark_mode_label' htmlFor='darkmode-toggle'>
-        {/* Your moon and sun icons */}
+        <FaSun className='sun' />
+        <FaMoon className='moon' />
       </label>
     </div>
   );
 };
 
 export default DarkMode;
-

@@ -4,85 +4,226 @@ const { Spot } = require("../models");
 
 let options = {};
 if (process.env.NODE_ENV === "production") {
-    options.schema = process.env.SCHEMA;
+  options.schema = process.env.SCHEMA;
 }
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-    async up(queryInterface, Sequelize) {
-        // options.tableName = "Spots"; // Corrected the table name to "Spots"
-        await Spot.bulkCreate(
-          [
-            {
-              ownerId: 1,
-              address: "456 New Street",
-              city: "Cityville",
-              state: "Texas",
-              country: "United States",
-              lat: 38.123456,
-              lng: -120.987654,
-              name: "New Home",
-              description: "A modern space for a delightful stay.",
-              price: 88,
-            },
-            {
-              ownerId: 2,
-              address: "987 Mountain View",
-              city: "Scenic City",
-              state: "Montana",
-              country: "United States",
-              lat: 45.678901,
-              lng: -109.876543,
-              name: "Mountain Retreat",
-              description: "Escape to nature in this peaceful retreat.",
-              price: 45,
-            },
-            {
-              ownerId: 3,
-              address: "1234 Lakeside Drive",
-              city: "Waterside",
-              state: "Florida",
-              country: "United States",
-              lat: 28.987654,
-              lng: -81.234567,
-              name: "Lakeside Haven",
-              description: "Enjoy the serenity by the lake.",
-              price: 64,
-            },
-            {
-              ownerId: 2,
-              address: "567 Tech Hub",
-              city: "Innovation City",
-              state: "California",
-              country: "United States",
-              lat: 37.765432,
-              lng: -122.345678,
-              name: "Tech Oasis",
-              description: "An inspiring space for innovation.",
-              price: 120,
-            },
-          ],
-            { validate: true }
-        );
-    },
+  async up(queryInterface, Sequelize) {
+    await Spot.bulkCreate(
+      [
+        {
+          ownerId: 1,
+          address: "456 New Street",
+          city: "Cityville",
+          state: "Texas",
+          country: "United States",
+          lat: 38.123456,
+          lng: -120.987654,
+          name: "New Home",
+          description: "A modern space for a delightful stay.",
+          price: 88,
+        },
+        {
+          ownerId: 2,
+          address: "987 Mountain View",
+          city: "Scenic City",
+          state: "Montana",
+          country: "United States",
+          lat: 45.678901,
+          lng: -109.876543,
+          name: "Mountain Retreat",
+          description: "Escape to nature in this peaceful retreat.",
+          price: 45,
+        },
+        {
+          ownerId: 3,
+          address: "1234 Lakeside Drive",
+          city: "Waterside",
+          state: "Florida",
+          country: "United States",
+          lat: 28.987654,
+          lng: -81.234567,
+          name: "Lakeside Haven",
+          description: "Enjoy the serenity by the lake.",
+          price: 64,
+        },
+        {
+          ownerId: 2,
+          address: "567 Tech Hub",
+          city: "Innovation City",
+          state: "California",
+          country: "United States",
+          lat: 37.765432,
+          lng: -122.345678,
+          name: "Tech Oasis",
+          description: "An inspiring space for innovation.",
+          price: 120,
+        },
+        {
+          ownerId: 1,
+          address: "789 Beach Blvd",
+          city: "Seaside",
+          state: "California",
+          country: "United States",
+          lat: 34.019456,
+          lng: -118.491191,
+          name: "Beachfront Paradise",
+          description: "Relax and unwind at this beachfront paradise.",
+          price: 200,
+        },
+        {
+          ownerId: 3,
+          address: "321 Forest Lane",
+          city: "Woodland",
+          state: "Oregon",
+          country: "United States",
+          lat: 44.123987,
+          lng: -123.456789,
+          name: "Forest Getaway",
+          description: "A serene retreat in the woods.",
+          price: 150,
+        },
+        {
+          ownerId: 2,
+          address: "654 Urban St",
+          city: "Metropolis",
+          state: "New York",
+          country: "United States",
+          lat: 40.712776,
+          lng: -74.005974,
+          name: "City Center Loft",
+          description: "Experience the vibrant city life in this stylish loft.",
+          price: 250,
+        },
+        {
+          ownerId: 1,
+          address: "100 Mountain Rd",
+          city: "Hilltown",
+          state: "Colorado",
+          country: "United States",
+          lat: 39.550051,
+          lng: -105.782067,
+          name: "Hilltop Haven",
+          description: "A cozy cabin with stunning mountain views.",
+          price: 90,
+        },
+        {
+          ownerId: 3,
+          address: "500 River Rd",
+          city: "Riverbend",
+          state: "Tennessee",
+          country: "United States",
+          lat: 35.517491,
+          lng: -86.580447,
+          name: "Riverside Escape",
+          description: "A charming cottage by the river.",
+          price: 80,
+        },
+        {
+          ownerId: 2,
+          address: "123 Suburbia Ln",
+          city: "Pleasantville",
+          state: "Ohio",
+          country: "United States",
+          lat: 40.417287,
+          lng: -82.907123,
+          name: "Suburban Comfort",
+          description: "A spacious home in a quiet neighborhood.",
+          price: 100,
+        },
+        {
+          ownerId: 1,
+          address: "789 Farm Way",
+          city: "Countryside",
+          state: "Kentucky",
+          country: "United States",
+          lat: 38.200905,
+          lng: -84.873284,
+          name: "Country Farmhouse",
+          description: "Experience the charm of country living.",
+          price: 70,
+        },
+        {
+          ownerId: 3,
+          address: "456 Desert Dr",
+          city: "Desertville",
+          state: "Arizona",
+          country: "United States",
+          lat: 34.048927,
+          lng: -111.093735,
+          name: "Desert Oasis",
+          description: "A luxurious retreat in the desert.",
+          price: 150,
+        },
+        {
+          ownerId: 2,
+          address: "123 City Park",
+          city: "Parkview",
+          state: "Utah",
+          country: "United States",
+          lat: 40.760780,
+          lng: -111.891045,
+          name: "Parkview Retreat",
+          description: "A lovely home near the city park.",
+          price: 110,
+        },
+        {
+          ownerId: 1,
+          address: "987 Island Rd",
+          city: "Islandview",
+          state: "Hawaii",
+          country: "United States",
+          lat: 21.306944,
+          lng: -157.858337,
+          name: "Island Paradise",
+          description: "A tropical paradise with stunning ocean views.",
+          price: 300,
+        },
+        {
+          ownerId: 3,
+          address: "1000 Historic St",
+          city: "Heritage",
+          state: "Virginia",
+          country: "United States",
+          lat: 37.431573,
+          lng: -78.656894,
+          name: "Historic Manor",
+          description: "Stay in a beautifully restored historic home.",
+          price: 180,
+        },
+      ],
+      { validate: true }
+    );
+  },
 
-    async down(queryInterface, Sequelize) {
-        // Corrected the table name to "Spot"
-        options.tableName = "Spots";
-        const Op = Sequelize.Op;
-        return queryInterface.bulkDelete(
-            options,
-            {
-                name: {
-                    [Op.in]: [
-                        "New Home",
-                        "Mountain Retreate",
-                        "Lakeside Haven",
-                        "Tech Oasis",
-                    ],
-                },
-            },
-            {}
-        );
-    },
+  async down(queryInterface, Sequelize) {
+    options.tableName = "Spots";
+    const Op = Sequelize.Op;
+    return queryInterface.bulkDelete(
+      options,
+      {
+        name: {
+          [Op.in]: [
+            "New Home",
+            "Mountain Retreat",
+            "Lakeside Haven",
+            "Tech Oasis",
+            "Beachfront Paradise",
+            "Forest Getaway",
+            "City Center Loft",
+            "Hilltop Haven",
+            "Riverside Escape",
+            "Suburban Comfort",
+            "Country Farmhouse",
+            "Desert Oasis",
+            "Parkview Retreat",
+            "Island Paradise",
+            "Historic Manor",
+          ],
+        },
+      },
+      {}
+    );
+  },
 };
