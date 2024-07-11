@@ -15,6 +15,7 @@ import mapsReducer from "./maps";
 //   }
 // };
 
+
 // Combine reducers
 const rootReducer = combineReducers({
   // example: exampleReducer,
