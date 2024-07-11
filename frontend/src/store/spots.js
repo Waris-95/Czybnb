@@ -2,6 +2,7 @@
 import { csrfFetch } from "./csrf";
 
 
+
 // action types as constants
 const ALL_SPOTS = "spots/ALL_SPOTS";
 const SPOT_DETAILS = "spots/SPOT_DETAILS";
