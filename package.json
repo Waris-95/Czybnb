@@ -10,7 +10,7 @@
     "sequelize-cli": "npm run --prefix backend sequelize-cli",
     "start": "npm run start:backend",
     "build": "npm run --prefix backend build",
-    "start:backend": "cd backend && npm run start:development",
+    "start:backend": "cd backend && NODE_ENV=production npm run start:development",
     "start:frontend": "cd frontend && npm start",
     "start:both": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
   },
